@@ -1,0 +1,22 @@
+#include "../shell.h"
+
+void shell_echo(char **args)
+{
+	bool newline = true;
+	int i = 0;
+
+	if (args[i] && strcmp(args[i], "-n") == 0)
+	{
+		newline = false;
+		i++;
+	}
+	while (args[i])
+	{
+		write(1, args[i], strlen(args[i]));
+		if (args[i + 1])
+			write(1, " ", 1);
+		i++;
+	}
+	if (newline)
+		write(1, "\n", 1);
+}
