@@ -22,7 +22,7 @@ void execute_syntax_tree(ASTreeNode *node) {
 		}
 		else if (strcmp(node->command, "move") == 0)
 		{
-			move_cursor(10, 0);
+			move_cursor(0, 0);
 		}
 		 else if (strcmp(node->command, "man") == 0) {
 			shell_man(node->args ? node->args[0] : NULL);
@@ -31,7 +31,7 @@ void execute_syntax_tree(ASTreeNode *node) {
 			if (pid == 0) {
 				if (execvp(node->command, node->args) == -1) {
 					perror("execvp");
-					_exit(1);
+					exit(1);
 				}
 			} else if (pid < 0) {
 				perror("fork");

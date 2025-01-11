@@ -9,26 +9,44 @@ void ignore_signals(void)
 
 void set_prompt(const char *prompt)
 {
-	int again = 1;
-	while (again)
-	{
-		again = 0;
-		char *input = readline(prompt);
-		if (input == NULL || strcmp(input, "exit") == 0)
-		{
-			free(input);
-			break;
-		}
-		if (*input) {
-			// puts("Received Input: ");
-			// puts(input);
-			process_command(input);
-			add_history(input);
-		}
-		free(input);
-		again = 1;
-	}
+    int running = 1;
+
+    // Clear screen once at the beginning
+    term_clear_screen();
+
+    while (running)
+    {
+        // Move cursor to the desired position (row 0, column 0)
+        move_cursor(0, 0);
+
+        // Print the prompt
+        write(STDOUT_FILENO, prompt, strlen(prompt));
+
+        // Handle custom input
+        char buf[8192] = {0};
+        size_t len = 0;
+        handle_input(buf, &len, sizeof(buf));
+
+        // Exit if the buffer is empty or contains "exit"
+        if (strcmp(buf, "exit") == 0)
+        {
+            running = 0;
+            continue;
+        }
+
+        if (len > 0)
+        {
+            process_command(buf);
+
+			// HISTORY simulation
+            // add_to_history(buf);
+        }
+
+        // Optional: Clear the screen after each command
+        term_clear_screen();
+    }
 }
+
 
 int main()
 {

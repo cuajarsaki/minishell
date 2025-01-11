@@ -17,7 +17,7 @@ void lexer_build(char *input, LexerBuffer *lexerbuf)
 	glob_t globbuf;
 	memset(&globbuf, 0, sizeof(globbuf));
 
-	char *token = strtok(input, " \t\n");
+	char *token = ft_strtok(input, " \t\n");
 	int first_call = 1; // Track whether it's the first call to glob
 
 	while (token != NULL) {
@@ -26,7 +26,7 @@ void lexer_build(char *input, LexerBuffer *lexerbuf)
 			// Handle glob error if needed
 		}
 		first_call = 0; // After the first call, always use GLOB_APPEND
-		token = strtok(NULL, " \t\n");
+		token = ft_strtok(NULL, " \t\n");
 	}
 
 	lexerbuf->tokens = globbuf.gl_pathv;

@@ -1,4 +1,9 @@
 #include "../shell.h"
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
 
 void write_fd_to_stdout(int fd)
 {
@@ -11,31 +16,38 @@ void write_fd_to_stdout(int fd)
 			return;
 		}
 	}
-
 	if (bytes_read == -1) {
 		perror("read");
 	}
 }
 
-void	shell_man(char *arg)
+void shell_man(char *arg)
 {
-	int fd;
+	int fd = -1;
 
 	if (arg)
 	{
-		if (strcmp(arg, "ls") == 0)
-		{
+		if (strcmp(arg, "ls") == 0) {
 			fd = open("./commands_manual/ls.txt", O_RDONLY);
 		}
-		
+		else if (strcmp(arg, "cd") == 0) {
+			fd = open("./commands_manual/cd.txt", O_RDONLY);
+		}
+		else if (strcmp(arg, "echo") == 0) {
+			fd = open("./commands_manual/echo.txt", O_RDONLY);
+		}
+		else {
+			fprintf(stderr, "No manual entry for %s\n", arg);
+		}
 	}
-
-	
-	if (fd > 0)
-	{
+	else {
+		fprintf(stderr, "Usage: man <command>\n");
+	}
+	if (fd > 0) {
 		puts("\n\n\n--- MANUAL ---\n\n");
 		write_fd_to_stdout(fd);
+		close(fd);
+	} else if (fd == -1 && arg && strcmp(arg, "ls") == 0) {
+		perror("open");
 	}
-	
-	
 }

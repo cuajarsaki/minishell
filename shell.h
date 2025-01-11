@@ -1,6 +1,7 @@
 #ifndef SHELL_H
 #define SHELL_H
 
+#include "libft/libft.h"
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,5 +49,7 @@ void setup_terminal();
 void term_clear_screen();
 void move_cursor(int row, int col);
 void reset_cursor();
+void handle_backspace(char *buf, size_t *len);
+void handle_input(char *buf, size_t *len, size_t max_len);
 
 #endif

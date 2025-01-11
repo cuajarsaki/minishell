@@ -6,70 +6,120 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <signal.h>
 
 static struct termios old_termios, new_termios;
 
-// Reset terminal settings to original state
 void reset_terminal_settings()
 {
-	tcsetattr(STDIN_FILENO, TCSANOW, &old_termios);
+    tcsetattr(STDIN_FILENO, TCSANOW, &old_termios);
 }
 
-// Set up the terminal for custom input handling
 void setup_terminal()
 {
-	// Save current terminal settings
-	if (tcgetattr(STDIN_FILENO, &old_termios) < 0)
-	{
-		perror("Failed to get terminal attributes");
-		exit(EXIT_FAILURE);
-	}
+    if (tcgetattr(STDIN_FILENO, &old_termios) < 0)
+    {
+        perror("Failed to get terminal attributes");
+        exit(EXIT_FAILURE);
+    }
 
-	new_termios = old_termios;
+    new_termios = old_termios;
 
-	// Disable canonical mode and local echo
-	new_termios.c_lflag &= ~(ICANON | ECHO);
+    // Disable canonical mode, echo, signals, and other features
+    new_termios.c_lflag &= ~(ICANON | ECHO | ISIG | IEXTEN);
+    new_termios.c_iflag &= ~(IXON);
+    new_termios.c_cc[VMIN] = 1;
+    new_termios.c_cc[VTIME] = 0;
 
-	// Apply new settings
-	if (tcsetattr(STDIN_FILENO, TCSANOW, &new_termios) < 0)
-	{
-		perror("Failed to set terminal attributes");
-		exit(EXIT_FAILURE);
-	}
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &new_termios) < 0)
+    {
+        perror("Failed to set terminal attributes");
+        exit(EXIT_FAILURE);
+    }
 
-	// Ensure terminal is reset on program exit
-	atexit(reset_terminal_settings);
+    atexit(reset_terminal_settings);
 
-	// Initialize termcap database
-	if (tgetent(NULL, getenv("TERM")) < 0)
-	{
-		perror("Failed to initialize termcap");
-		exit(EXIT_FAILURE);
-	}
+    if (tgetent(NULL, getenv("TERM")) < 0)
+    {
+        perror("Failed to initialize termcap");
+        exit(EXIT_FAILURE);
+    }
 }
 
-// Clear the screen using termcap
-void term_clear_screen(void)
+void term_clear_screen()
 {
-	char *clear_cmd = tgetstr("cl", NULL);
-	if (clear_cmd)
-		tputs(clear_cmd, 1, putchar);
-	else
-		fprintf(stderr, "Clear screen capability not supported.\n");
+    char *clear_cmd = tgetstr("cl", NULL);
+    if (clear_cmd)
+        tputs(clear_cmd, 1, putchar);
+    else
+        fprintf(stderr, "Clear screen capability not supported.\n");
 }
 
-// Move the cursor to a specific position
 void move_cursor(int row, int col)
 {
-	char *cursor_cmd = tgetstr("cm", NULL);
-	if (cursor_cmd)
-		tputs(tgoto(cursor_cmd, col, row), 1, putchar);
-	else
-		fprintf(stderr, "Cursor movement capability not supported.\n");
+    char *cursor_cmd = tgetstr("cm", NULL);
+    if (cursor_cmd)
+        tputs(tgoto(cursor_cmd, col, row), 1, putchar);
+    else
+        fprintf(stderr, "Cursor movement capability not supported.\n");
 }
 
-// Restore the terminal cursor to the starting position
 void reset_cursor()
 {
-	move_cursor(0, 0);
+    move_cursor(0, 0);
+}
+
+void handle_backspace(char *buf, size_t *len)
+{
+    if (*len > 0)
+    {
+        buf[--(*len)] = '\0';
+        write(STDOUT_FILENO, "\b \b", 3); // Erase the last character visually
+    }
+}
+
+void	reset_cmd_line(char *buf, size_t *len)
+{
+            write(STDOUT_FILENO, "^C\n", 3);
+            buf[0] = '\0';
+            *len = 0; 
+}
+
+void	exit_program()
+{
+	exit(0);
+}
+
+void handle_input(char *buf, size_t *len, size_t max_len)
+{
+    char c;
+    while (read(STDIN_FILENO, &c, 1) > 0)
+    {
+        if (c == '\n') // Enter key
+        {
+            buf[*len] = '\0';
+            write(STDOUT_FILENO, "\n", 1);
+            return;
+        }
+        else if (c == 127) // Backspace key
+        {
+            handle_backspace(buf, len);
+        }
+        else if (c == 3) // Ctrl-C
+        {
+            return reset_cmd_line(buf, len);
+       }
+        else if (c == 4) // Ctrl-D
+        {
+            if (*len == 0)
+            {
+				exit_program();
+            }
+        }
+        else if (*len < max_len - 1)
+        {
+            buf[(*len)++] = c;
+            write(STDOUT_FILENO, &c, 1); // Echo the character manually
+        }
+    }
 }
