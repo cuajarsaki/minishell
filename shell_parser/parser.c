@@ -2,53 +2,64 @@
 
 void process_command(char *input)
 {
-	LexerBuffer lexerbuf = {0};
-	lexer_build(input, &lexerbuf);
-	if (lexerbuf.count > 0) {
-		ASTreeNode *exectree = parse_tokens(&lexerbuf);
-		execute_syntax_tree(exectree);
-		free(exectree);
-	}
-	lexer_free(&lexerbuf);
+    LexerBuffer lexerbuf = {0};
+    lexer_build(input, &lexerbuf); // Tokenize the input
+    if (lexerbuf.count > 0) {
+        ASTreeNode *exectree = parse_tokens(&lexerbuf); // Build the syntax tree
+        execute_syntax_tree(exectree); // Execute the command
+        free(exectree); // Free the syntax tree
+    }
+    lexer_free(&lexerbuf); // Clean up lexer buffer
 }
 
 void lexer_build(char *input, LexerBuffer *lexerbuf)
 {
-	glob_t globbuf;
-	memset(&globbuf, 0, sizeof(globbuf));
+    size_t capacity = 10; // Use size_t for consistency with lexerbuf->count
+    lexerbuf->tokens = malloc(capacity * sizeof(char *));
+    lexerbuf->count = 0;
 
-	char *token = ft_strtok(input, " \t\n");
-	int first_call = 1; // Track whether it's the first call to glob
+    char *token = ft_strtok(input, " \t\n"); // Tokenize the input string
+    while (token != NULL) {
+        if (lexerbuf->count >= capacity) {
+            // Expand the token array dynamically if needed
+            capacity *= 2;
+            lexerbuf->tokens = realloc(lexerbuf->tokens, capacity * sizeof(char *));
+        }
+        // Duplicate the token and store it
+        lexerbuf->tokens[lexerbuf->count++] = strdup(token);
 
-	while (token != NULL) {
-		int flags = first_call ? GLOB_DOOFFS | GLOB_NOCHECK : GLOB_DOOFFS | GLOB_NOCHECK | GLOB_APPEND;
-		if (glob(token, flags, NULL, &globbuf) != 0) {
-			// Handle glob error if needed
-		}
-		first_call = 0; // After the first call, always use GLOB_APPEND
-		token = ft_strtok(NULL, " \t\n");
-	}
-
-	lexerbuf->tokens = globbuf.gl_pathv;
-	lexerbuf->count = globbuf.gl_pathc;
+        token = ft_strtok(NULL, " \t\n"); // Get the next token
+    }
 }
 
 
-void lexer_free(LexerBuffer *lexerbuf) {
-	if (lexerbuf->tokens) {
-		globfree(&(glob_t){.gl_pathv = lexerbuf->tokens, .gl_pathc = lexerbuf->count});
-		lexerbuf->tokens = NULL;
-		lexerbuf->count = 0;
-	}
+void lexer_free(LexerBuffer *lexerbuf)
+{
+    if (lexerbuf->tokens) {
+        for (size_t i = 0; i < lexerbuf->count; i++) { // Use size_t for the loop counter
+            free(lexerbuf->tokens[i]); // Free each token string
+        }
+        free(lexerbuf->tokens); // Free the token array
+        lexerbuf->tokens = NULL;
+        lexerbuf->count = 0;
+    }
 }
 
 
 ASTreeNode *parse_tokens(LexerBuffer *lexerbuf)
 {
-	ASTreeNode *node = malloc(sizeof(ASTreeNode));
-	node->command = lexerbuf->tokens[0];
-	node->args = &lexerbuf->tokens[1];
-	node->left = NULL;
-	node->right = NULL;
-	return node;
+    // Allocate memory for the AST node
+    ASTreeNode *node = malloc(sizeof(ASTreeNode));
+
+    // The first token is the command
+    node->command = lexerbuf->tokens[0];
+
+    // The remaining tokens are arguments
+    node->args = &lexerbuf->tokens[1];
+
+    // No left or right nodes for this implementation
+    node->left = NULL;
+    node->right = NULL;
+
+    return node;
 }
