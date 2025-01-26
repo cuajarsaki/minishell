@@ -3,6 +3,7 @@
 		"shell.h": "c",
 		"stdbool.h": "c",
 		"stdio.h": "c",
-		"libft.h": "c"
+		"libft.h": "c",
+		"stddef.h": "c"
 	}
 }

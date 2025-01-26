@@ -27,27 +27,29 @@ void shell_man(char *arg)
 
 	if (arg)
 	{
-		if (strcmp(arg, "ls") == 0) {
+		if (ft_strcmp(arg, "ls") == 0) {
 			fd = open("./commands_manual/ls.txt", O_RDONLY);
 		}
-		else if (strcmp(arg, "cd") == 0) {
+		else if (ft_strcmp(arg, "cd") == 0) {
 			fd = open("./commands_manual/cd.txt", O_RDONLY);
 		}
-		else if (strcmp(arg, "echo") == 0) {
+		else if (ft_strcmp(arg, "echo") == 0) {
 			fd = open("./commands_manual/echo.txt", O_RDONLY);
 		}
 		else {
-			fprintf(stderr, "No manual entry for %s\n", arg);
+			write(STDERR_FILENO, "No manual entry for ", 20);
+			write(STDERR_FILENO, arg, ft_strlen(arg));
+			write(STDERR_FILENO, "\n", 1);
 		}
 	}
 	else {
-		fprintf(stderr, "Usage: man <command>\n");
+		write(STDERR_FILENO, "Usage: man <command>\n", 22);
 	}
 	if (fd > 0) {
-		puts("\n\n\n--- MANUAL ---\n\n");
+		write(STDOUT_FILENO, "\n\n\n--- MANUAL ---\n\n", 21);
 		write_fd_to_stdout(fd);
 		close(fd);
-	} else if (fd == -1 && arg && strcmp(arg, "ls") == 0) {
+	} else if (fd == -1 && arg && ft_strcmp(arg, "ls") == 0) {
 		perror("open");
 	}
 }
