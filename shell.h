@@ -27,6 +27,19 @@ typedef struct {
 	size_t count;
 } LexerBuffer;
 
+// History constants
+#define HISTORY_SIZE 10
+
+// History variables
+extern char *command_history[HISTORY_SIZE];
+extern int history_start;
+extern int history_count;
+extern int history_index;
+
+// History management functions
+void add_to_history(const char *command);
+const char *get_history(int direction);
+
 void ignore_signals(void);
 void set_prompt(const char *prompt);
 void process_command(char *input);
@@ -42,8 +55,7 @@ void	execute_syntax_tree(ASTreeNode *node);
 void	shell_echo(char **args);
 void	shell_man(char *arg);
 
-
-//TERMCAMPS
+//TERMCAP FUNCTIONS
 void reset_terminal_settings();
 void setup_terminal();
 void term_clear_screen();
@@ -51,5 +63,8 @@ void move_cursor(int row, int col);
 void reset_cursor();
 void handle_backspace(char *buf, size_t *len);
 void handle_input(char *buf, size_t *len, size_t max_len);
+
+void free_history(void);
+
 
 #endif

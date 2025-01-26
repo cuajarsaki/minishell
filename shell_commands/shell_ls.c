@@ -7,7 +7,7 @@ void	shell_ls(char **args)
 	char *	path;
 	int		arg_counter;
 
-	path = strdup(".");
+	path = ft_strdup(".");
 	include_dot = 0;
 	color = 0;
 	arg_counter = 0;
@@ -15,11 +15,11 @@ void	shell_ls(char **args)
 	{
 		if (args[arg_counter][0] == '-')
 		{
-			if (strcmp(args[arg_counter], "-a") == 0)
+			if (ft_strcmp(args[arg_counter], "-a") == 0)
 			{
 				include_dot = 1;
 			}
-			else if(strcmp(args[arg_counter], "-color") == 0)
+			else if(ft_strcmp(args[arg_counter], "-color") == 0)
 			{
 				color = 1;
 			}
@@ -51,17 +51,17 @@ void	shell_ls(char **args)
 				if (c % 2 == 0)
 				{
 					write(STDOUT_FILENO, "\033[31m", 5);
-					write(STDOUT_FILENO, entry->d_name, strlen(entry->d_name));
+					write(STDOUT_FILENO, entry->d_name, ft_strlen(entry->d_name));
 					write(STDOUT_FILENO, "\033[0m", 4);
 				}
 				else
 				{
-					write(STDOUT_FILENO, entry->d_name, strlen(entry->d_name));
+					write(STDOUT_FILENO, entry->d_name, ft_strlen(entry->d_name));
 				}
 			}
 			else
 			{
-				write(STDOUT_FILENO, entry->d_name, strlen(entry->d_name));
+				write(STDOUT_FILENO, entry->d_name, ft_strlen(entry->d_name));
 			}
 			
 			write(STDOUT_FILENO, "\n", 1);

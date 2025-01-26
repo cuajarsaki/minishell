@@ -52,7 +52,8 @@ void term_clear_screen()
     if (clear_cmd)
         tputs(clear_cmd, 1, putchar);
     else
-        fprintf(stderr, "Clear screen capability not supported.\n");
+		write(STDERR_FILENO, "Clear screen capability not supported.\n", 40);
+
 }
 
 void move_cursor(int row, int col)
@@ -61,7 +62,8 @@ void move_cursor(int row, int col)
     if (cursor_cmd)
         tputs(tgoto(cursor_cmd, col, row), 1, putchar);
     else
-        fprintf(stderr, "Cursor movement capability not supported.\n");
+		fprintf(stderr, "Cursor movement capability not supported.\n");
+
 }
 
 void reset_cursor()
@@ -90,36 +92,71 @@ void	exit_program()
 	exit(0);
 }
 
-void handle_input(char *buf, size_t *len, size_t max_len)
-{
+void handle_input(char *buf, size_t *len, size_t max_len) {
     char c;
-    while (read(STDIN_FILENO, &c, 1) > 0)
-    {
-        if (c == '\n') // Enter key
-        {
+
+    while (read(STDIN_FILENO, &c, 1) > 0) {
+        if (c == '\033') { // Escape character
+            char seq[3] = {0};
+            if (read(STDIN_FILENO, &seq[0], 1) == 0) continue;
+            if (read(STDIN_FILENO, &seq[1], 1) == 0) continue;
+
+            if (seq[0] == '[') {
+                if (seq[1] == 'A') { // Up arrow
+                    const char *prev_command = get_history(-1);
+                    if (prev_command) {
+                        // Clear the buffer and load the previous command
+                        ft_memset(buf, 0, *len);
+                        *len = ft_strlen(prev_command);
+                        ft_strncpy(buf, prev_command, *len);
+
+                        // Clear the line and display the command
+                        write(STDOUT_FILENO, "\r\033[K", 4); // Clear line
+                        write(STDOUT_FILENO, "minishell ❤  ", 14); // Print prompt with one extra space
+                        write(STDOUT_FILENO, buf, *len);
+                    }
+                } else if (seq[1] == 'B') { // Down arrow
+                    const char *next_command = get_history(1);
+                    if (next_command) {
+                        // Clear the buffer and load the next command
+                        ft_memset(buf, 0, *len);
+                        *len = ft_strlen(next_command);
+                        ft_strncpy(buf, next_command, *len);
+
+                        // Clear the line and display the command
+                        write(STDOUT_FILENO, "\r\033[K", 4); // Clear line
+                        write(STDOUT_FILENO, "minishell ❤  ", 14); // Print prompt with one extra space
+                        write(STDOUT_FILENO, buf, *len);
+                    }
+                }
+            }
+
+            continue;
+        } else if (c == '\n') { // Enter key
             buf[*len] = '\0';
             write(STDOUT_FILENO, "\n", 1);
+            add_to_history(buf); // Save the command to history
             return;
-        }
-        else if (c == 127) // Backspace key
-        {
-            handle_backspace(buf, len);
-        }
-        else if (c == 3) // Ctrl-C
-        {
-            return reset_cmd_line(buf, len);
-       }
-        else if (c == 4) // Ctrl-D
-        {
-            if (*len == 0)
-            {
-				exit_program();
+        } else if (c == 127) { // Backspace key
+            if (*len > 0) {
+                buf[--(*len)] = '\0'; // Remove the last character from the buffer
+                write(STDOUT_FILENO, "\b \b", 3); // Move cursor back, clear the char, and move back again
             }
-        }
-        else if (*len < max_len - 1)
-        {
+        } else if (c == 3) { // Ctrl-C
+            write(STDOUT_FILENO, "^C\n", 3); // Visual feedback for Ctrl-C
+            buf[0] = '\0'; // Clear the buffer
+            *len = 0; // Reset length
+            return; // Exit the current input
+        } else if (c == 4) { // Ctrl-D
+            if (*len == 0) { // If the buffer is empty, exit the program
+                write(STDOUT_FILENO, "exit\n", 5); // Optional exit message
+                exit(0);
+            }
+        } else if (*len < max_len - 1) {
             buf[(*len)++] = c;
-            write(STDOUT_FILENO, &c, 1); // Echo the character manually
+            write(STDOUT_FILENO, &c, 1); // Echo the character
         }
     }
 }
+
+

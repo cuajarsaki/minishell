@@ -1,16 +1,23 @@
 #include "../shell.h"
 
-void process_command(char *input)
-{
+void process_command(char *input) {
     LexerBuffer lexerbuf = {0};
     lexer_build(input, &lexerbuf); // Tokenize the input
     if (lexerbuf.count > 0) {
         ASTreeNode *exectree = parse_tokens(&lexerbuf); // Build the syntax tree
-        execute_syntax_tree(exectree); // Execute the command
+
+        // Try executing the command and handle errors gracefully
+        if (exectree) {
+            execute_syntax_tree(exectree);
+        } else {
+            write(STDERR_FILENO, "Error: Failed to parse command\n", 31);
+        }
         free(exectree); // Free the syntax tree
     }
+
     lexer_free(&lexerbuf); // Clean up lexer buffer
 }
+
 
 void lexer_build(char *input, LexerBuffer *lexerbuf)
 {
@@ -23,10 +30,10 @@ void lexer_build(char *input, LexerBuffer *lexerbuf)
         if (lexerbuf->count >= capacity) {
             // Expand the token array dynamically if needed
             capacity *= 2;
-            lexerbuf->tokens = realloc(lexerbuf->tokens, capacity * sizeof(char *));
+            lexerbuf->tokens = ft_realloc(lexerbuf->tokens, lexerbuf->count, capacity);
         }
         // Duplicate the token and store it
-        lexerbuf->tokens[lexerbuf->count++] = strdup(token);
+        lexerbuf->tokens[lexerbuf->count++] = ft_strdup(token);
 
         token = ft_strtok(NULL, " \t\n"); // Get the next token
     }
