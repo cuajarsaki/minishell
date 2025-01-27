@@ -37,7 +37,7 @@ extern int history_count;
 extern int history_index;
 
 // History management functions
-void add_to_history(const char *command);
+void add_to_history(char *command);
 const char *get_history(int direction);
 
 void ignore_signals(void);

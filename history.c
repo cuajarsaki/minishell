@@ -8,7 +8,7 @@ int		history_start = 0;
 int		history_count = 0;
 int		history_index = -1;
 
-void	add_to_history(const char *command)
+void	add_to_history(char *command)
 {
 	if (history_count < HISTORY_SIZE)
 	{
