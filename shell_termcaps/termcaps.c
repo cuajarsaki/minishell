@@ -17,6 +17,13 @@ void reset_terminal_settings()
 
 void setup_terminal()
 {
+
+	if (!isatty(STDIN_FILENO))
+	{
+		perror("Standard input is not a terminal");
+		exit(EXIT_FAILURE);
+	}
+
     if (tcgetattr(STDIN_FILENO, &old_termios) < 0)
     {
         perror("Failed to get terminal attributes");
