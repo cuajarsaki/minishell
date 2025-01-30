@@ -1,14 +1,16 @@
 #include "../shell.h"
 
-void process_command(char *input) {
+void process_command(char *input, t_env *env_list)
+{
     LexerBuffer lexerbuf = {0};
     lexer_build(input, &lexerbuf); // Tokenize the input
+
     if (lexerbuf.count > 0) {
         ASTreeNode *exectree = parse_tokens(&lexerbuf); // Build the syntax tree
 
         // Try executing the command and handle errors gracefully
         if (exectree) {
-            execute_syntax_tree(exectree);
+            execute_syntax_tree(exectree, env_list); // Pass env_list here
         } else {
             write(STDERR_FILENO, "Error: Failed to parse command\n", 31);
         }
@@ -17,7 +19,6 @@ void process_command(char *input) {
 
     lexer_free(&lexerbuf); // Clean up lexer buffer
 }
-
 
 void lexer_build(char *input, LexerBuffer *lexerbuf)
 {
