@@ -66,9 +66,9 @@ void expand_arguments(char **args, t_env *env_list)
 
 int execute_builtin(ASTreeNode *node, t_env **env_list)
 {
-    printf("\n[DEBUG] Command: %s\n", node->command);
-    for (int i = 0; node->args && node->args[i]; i++)
-        printf("[DEBUG] Arg[%d]: %s\n", i, node->args[i]);
+    // printf("\n[DEBUG] Command: %s\n", node->command);
+    // for (int i = 0; node->args && node->args[i]; i++)
+    //     printf("[DEBUG] Arg[%d]: %s\n", i, node->args[i]);
 
     if (ft_strcmp(node->command, "export") != 0) 
     { // Skip expansion for export
@@ -101,7 +101,7 @@ int execute_builtin(ASTreeNode *node, t_env **env_list)
     }
     if (ft_strcmp(node->command, "export") == 0) {
         if (node->args && node->args[0]) {
-            printf(RED "DEBUG: export command entered\n" RESET);
+            // printf(RED "DEBUG: export command entered\n" RESET);
 
             char *arg = strdup(node->args[0]);
             if (!arg) {
@@ -109,11 +109,11 @@ int execute_builtin(ASTreeNode *node, t_env **env_list)
                 return 1;
             }
 
-            printf(RED "DEBUG: Argument received: %s\n" RESET, arg);
+            // printf(RED "DEBUG: Argument received: %s\n" RESET, arg);
 
             char *equal_sign = strchr(arg, '=');
             if (!equal_sign) {
-                printf(RED "DEBUG: Equal sign not found\n" RESET);
+                // printf(RED "DEBUG: Equal sign not found\n" RESET);
                 printf(RED "❌ [ERROR] Invalid format! Use: export VAR=value\n" RESET);
                 free(arg);
                 return 1;
@@ -123,22 +123,22 @@ int execute_builtin(ASTreeNode *node, t_env **env_list)
             char *key = arg;
             char *value = equal_sign + 1;
 
-            printf(RED "DEBUG: Key extracted: %s\n" RESET, key);
-            printf(RED "DEBUG: Value extracted (before processing): %s\n" RESET, value);
+            // printf(RED "DEBUG: Key extracted: %s\n" RESET, key);
+            // printf(RED "DEBUG: Value extracted (before processing): %s\n" RESET, value);
 
             // Correctly handle quoted values with spaces
             if ((*value == '"' || *value == '\'') && value[strlen(value) - 1] == *value) {
-                printf(RED "DEBUG: Value detected as quoted\n" RESET);
+                // printf(RED "DEBUG: Value detected as quoted\n" RESET);
                 value++; // Skip opening quote
                 value[strlen(value) - 1] = '\0'; // Remove closing quote
             } else {
-                printf(RED "DEBUG: Value is NOT quoted\n" RESET);
+                // printf(RED "DEBUG: Value is NOT quoted\n" RESET);
             }
 
-            printf(RED "DEBUG: Value after processing: %s\n" RESET, value);
+            // printf(RED "DEBUG: Value after processing: %s\n" RESET, value);
 
             set_env_value(env_list, key, value);
-            printf(RED "DEBUG: Environment variable set successfully\n" RESET);
+            // printf(RED "DEBUG: Environment variable set successfully\n" RESET);
 
             free(arg);
         }

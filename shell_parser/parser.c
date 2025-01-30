@@ -48,7 +48,7 @@ void lexer_build(char *input, LexerBuffer *lexerbuf)
                 char quote_type = *ptr++; // Store quote type and move forward
                 token[i++] = quote_type; // Keep the opening quote
 
-                printf("[DEBUG] Found opening quote: %c\n", quote_type);
+                // printf("[DEBUG] Found opening quote: %c\n", quote_type);
 
                 while (*ptr && *ptr != quote_type) // Capture everything inside quotes
                     token[i++] = *ptr++;
@@ -57,7 +57,7 @@ void lexer_build(char *input, LexerBuffer *lexerbuf)
                 {
                     token[i++] = *ptr; // Keep the closing quote
                     ptr++; // Move past closing quote
-                    printf("[DEBUG] Found closing quote: %c\n", quote_type);
+                    // printf("[DEBUG] Found closing quote: %c\n", quote_type);
                 }
                 else
                 {
@@ -81,12 +81,12 @@ void lexer_build(char *input, LexerBuffer *lexerbuf)
 
         lexerbuf->tokens[lexerbuf->count++] = ft_strdup(token);
 
-        printf("[DEBUG] Stored Token: %s\n", token);
+        // printf("[DEBUG] Stored Token: %s\n", token);
     }
 
-    printf("[DEBUG] Final Token Count: %zu\n", lexerbuf->count);
-    for (size_t j = 0; j < lexerbuf->count; j++)
-        printf("[DEBUG] lexerbuf->tokens[%zu]: %s\n", j, lexerbuf->tokens[j]);
+    // printf("[DEBUG] Final Token Count: %zu\n", lexerbuf->count);
+    // for (size_t j = 0; j < lexerbuf->count; j++)
+        // printf("[DEBUG] lexerbuf->tokens[%zu]: %s\n", j, lexerbuf->tokens[j]);
 }
 
 
