@@ -15,6 +15,44 @@
 #include <fcntl.h>
 #include <stdbool.h>
 
+
+
+
+typedef struct s_ast
+{
+	t_list	*cmd_tables;
+} t_ast;
+
+typedef struct s_cmd_table
+{
+	t_list	*cmds;
+	char	*delimiter;
+	int		nb_cmds;
+	int		**pipes;
+	t_list	*pids;
+	int		return_value;
+} t_cmd_table;
+
+typedef struct s_cmd
+{
+	t_list	*tokens;
+	t_list	*redirs;
+} t_cmd;
+
+typedef struct s_redir
+{
+	char	*direction;
+	char	type[2];
+} t_redir;
+
+
+t_ast	*get_ast(const char *input);
+void exec_ast(t_ast *ast);
+
+//OLD CODE
+
+
+
 typedef struct ASTreeNode {
 	char *command;
 	char **args;
@@ -37,13 +75,14 @@ typedef struct {
 
 // History constants
 #define HISTORY_SIZE 10
-
+int execute_builtin(ASTreeNode *node, t_env **env_list);
 // History variables
 extern char *command_history[HISTORY_SIZE];
 extern int history_start;
 extern int history_count;
 extern int history_index;
 
+void handle_pipe(ASTreeNode *node, t_env *env_list);
 
 
 t_env *init_env_list(void);

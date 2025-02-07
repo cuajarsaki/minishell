@@ -1,125 +1,205 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
+/*   Updated: 2025/02/07 14:09:32 by jidler           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../shell.h"
 
-void process_command(char *input, t_env *env_list)
+#include <ctype.h>
+
+/* ************************************************************************** */
+/*                            UTILITY FUNCTIONS                               */
+/* ************************************************************************** */
+
+void	ft_skip_spaces(const char *input, int *curr_pos)
 {
-    LexerBuffer lexerbuf = {0};
-    lexer_build(input, &lexerbuf); // Tokenize the input
-
-    if (lexerbuf.count > 0) {
-        ASTreeNode *exectree = parse_tokens(&lexerbuf); // Build the syntax tree
-
-        // Try executing the command and handle errors gracefully
-        if (exectree) {
-            execute_syntax_tree(exectree, env_list); // Pass env_list here
-        } else {
-            write(STDERR_FILENO, "Error: Failed to parse command\n", 31);
-        }
-        free(exectree); // Free the syntax tree
-    }
-
-    lexer_free(&lexerbuf); // Clean up lexer buffer
+	while (input[*curr_pos] && isspace(input[*curr_pos]))
+		(*curr_pos)++;
 }
 
-void lexer_build(char *input, LexerBuffer *lexerbuf)
+int		is_cmd_delimiter(char c)
 {
-    size_t capacity = 10;
-    lexerbuf->tokens = malloc(capacity * sizeof(char *));
-    lexerbuf->count = 0;
-
-    char *ptr = input;
-    while (*ptr)
-    {
-        while (*ptr == ' ' || *ptr == '\t' || *ptr == '\n') // Skip whitespace
-            ptr++;
-
-        if (*ptr == '\0') break;
-
-        char token[1024] = {0}; // Temporary buffer for token
-        int i = 0;
-        int is_assignment = 0; // Flag to track assignment operation
-
-        while (*ptr && *ptr != ' ' && *ptr != '\t' && *ptr != '\n')
-        {
-            if (*ptr == '=') 
-                is_assignment = 1; // If an '=' is found, treat the whole thing as one token
-
-            if ((*ptr == '"' || *ptr == '\'') && is_assignment) // Handle quoted values
-            {
-                char quote_type = *ptr++; // Store quote type and move forward
-                token[i++] = quote_type; // Keep the opening quote
-
-                // printf("[DEBUG] Found opening quote: %c\n", quote_type);
-
-                while (*ptr && *ptr != quote_type) // Capture everything inside quotes
-                    token[i++] = *ptr++;
-
-                if (*ptr == quote_type) // Ensure closing quote is found
-                {
-                    token[i++] = *ptr; // Keep the closing quote
-                    ptr++; // Move past closing quote
-                    // printf("[DEBUG] Found closing quote: %c\n", quote_type);
-                }
-                else
-                {
-                    printf("[ERROR] Missing closing quote for: %c\n", quote_type);
-                }
-            }
-            else // Normal characters
-            {
-                token[i++] = *ptr++;
-            }
-        }
-
-        token[i] = '\0'; // Null-terminate the token
-
-        // Store the whole assignment as one token
-        if (lexerbuf->count >= capacity)
-        {
-            capacity *= 2;
-            lexerbuf->tokens = ft_realloc(lexerbuf->tokens, lexerbuf->count, capacity);
-        }
-
-        lexerbuf->tokens[lexerbuf->count++] = ft_strdup(token);
-
-        // printf("[DEBUG] Stored Token: %s\n", token);
-    }
-
-    // printf("[DEBUG] Final Token Count: %zu\n", lexerbuf->count);
-    // for (size_t j = 0; j < lexerbuf->count; j++)
-        // printf("[DEBUG] lexerbuf->tokens[%zu]: %s\n", j, lexerbuf->tokens[j]);
+	return (c == ';' || c == '&');
 }
 
-
-
-
-
-void lexer_free(LexerBuffer *lexerbuf)
+int		is_cmd_table_delimiter(const char *str)
 {
-    if (lexerbuf->tokens) {
-        for (size_t i = 0; i < lexerbuf->count; i++) { // Use size_t for the loop counter
-            free(lexerbuf->tokens[i]); // Free each token string
-        }
-        free(lexerbuf->tokens); // Free the token array
-        lexerbuf->tokens = NULL;
-        lexerbuf->count = 0;
-    }
+	return (strncmp(str, "||", 2) == 0 || strncmp(str, "&&", 2) == 0 || *str == ';');
 }
 
-
-ASTreeNode *parse_tokens(LexerBuffer *lexerbuf)
+char	*get_cmd_table_delimiter(const char *input, int *curr_pos)
 {
-    // Allocate memory for the AST node
-    ASTreeNode *node = malloc(sizeof(ASTreeNode));
+	if (input[*curr_pos] == ';')
+	{
+		(*curr_pos)++;
+		return (strdup(";"));
+	}
+	else if (strncmp(&input[*curr_pos], "||", 2) == 0)
+	{
+		*curr_pos += 2;
+		return (strdup("||"));
+	}
+	else if (strncmp(&input[*curr_pos], "&&", 2) == 0)
+	{
+		*curr_pos += 2;
+		return (strdup("&&"));
+	}
+	return (strdup(""));
+}
 
-    // The first token is the command
-    node->command = lexerbuf->tokens[0];
+/* ************************************************************************** */
+/*                           PARSING FUNCTIONS                                */
+/* ************************************************************************** */
 
-    // The remaining tokens are arguments
-    node->args = &lexerbuf->tokens[1];
+t_redir	*get_redir(const char *input, int *curr_pos)
+{
+	t_redir	*redir;
 
-    // No left or right nodes for this implementation
-    node->left = NULL;
-    node->right = NULL;
+	redir = (t_redir *)malloc(sizeof(t_redir));
+	if (!redir)
+		return (NULL);
 
-    return node;
+	// Identify redirection type
+	if (strncmp(&input[*curr_pos], ">>", 2) == 0)
+	{
+		strcpy(redir->type, ">>");
+		*curr_pos += 2;
+	}
+	else
+	{
+		redir->type[0] = input[(*curr_pos)++];
+		redir->type[1] = '\0';
+	}
+
+	ft_skip_spaces(input, curr_pos);
+
+	// Extract redirection target (filename)
+	int start = *curr_pos;
+	while (input[*curr_pos] && !isspace(input[*curr_pos]) && !is_cmd_delimiter(input[*curr_pos]) && input[*curr_pos] != '|')
+		(*curr_pos)++;
+
+	redir->direction = strndup(&input[start], *curr_pos - start);
+	return (redir);
+}
+
+char	*get_token(const char *input, int *curr_pos)
+{
+	ft_skip_spaces(input, curr_pos); // Skip leading spaces before reading a token
+	int start = *curr_pos;
+
+	// Extract token until space, command delimiter, or redirection
+	while (input[*curr_pos] && !isspace(input[*curr_pos]) && !is_cmd_delimiter(input[*curr_pos]) && input[*curr_pos] != '|' && input[*curr_pos] != '>' && input[*curr_pos] != '<')
+		(*curr_pos)++;
+
+	// Return NULL if no token found (prevents empty tokens from being added)
+	if (*curr_pos == start)
+		return (NULL);
+
+	return (strndup(&input[start], *curr_pos - start));
+}
+
+t_cmd	*get_cmd(const char *input, int *curr_pos)
+{
+	t_cmd	*cmd;
+	t_list	*new_node;
+
+	cmd = (t_cmd *)malloc(sizeof(t_cmd));
+	if (!cmd)
+		return (NULL);
+	cmd->tokens = NULL;
+	cmd->redirs = NULL;
+
+	while (input[*curr_pos] && !is_cmd_delimiter(input[*curr_pos]) && input[*curr_pos] != '|')
+	{
+		ft_skip_spaces(input, curr_pos);
+
+		if (input[*curr_pos] == '>' || input[*curr_pos] == '<')
+		{
+			new_node = ft_lstnew((void *)get_redir(input, curr_pos));
+			if (!new_node)
+				return (NULL);
+			ft_lstadd_back(&cmd->redirs, new_node);
+		}
+		else
+		{
+			char *token = get_token(input, curr_pos);
+			if (token)
+			{
+				new_node = ft_lstnew((void *)token);
+				if (!new_node)
+					return (NULL);
+				ft_lstadd_back(&cmd->tokens, new_node);
+			}
+		}
+	}
+	return (cmd);
+}
+
+t_cmd_table	*get_cmd_table(const char *input, int *curr_pos)
+{
+	t_cmd_table	*cmd_table;
+	t_list		*cmd;
+
+	cmd_table = (t_cmd_table *)malloc(sizeof(t_cmd_table));
+	if (!cmd_table)
+		return (NULL);
+	cmd_table->cmds = NULL;
+	cmd_table->delimiter = NULL;
+
+	while (input[*curr_pos] && !is_cmd_table_delimiter(&input[*curr_pos]))
+	{
+		ft_skip_spaces(input, curr_pos);
+
+		// Parse commands inside this table
+		cmd = ft_lstnew((void *)get_cmd(input, curr_pos));
+		if (!cmd)
+		{
+			free(cmd_table);
+			return (NULL);
+		}
+		ft_lstadd_back(&cmd_table->cmds, cmd);
+
+		// Handle pipes within the same command table
+		if (input[*curr_pos] == '|' && input[*curr_pos + 1] != '|')
+		{
+			(*curr_pos)++; // Skip the `|`
+			continue; // Stay inside the same `t_cmd_table`
+		}
+	}
+
+	cmd_table->delimiter = get_cmd_table_delimiter(input, curr_pos);
+	return (cmd_table);
+}
+
+t_ast	*get_ast(const char *input)
+{
+	t_ast	*ast;
+	t_list	*cmd_table;
+	int		curr_pos;
+
+	ast = (t_ast *)malloc(sizeof(t_ast));
+	if (!ast)
+		return (NULL);
+	ast->cmd_tables = NULL;
+
+	curr_pos = 0;
+	while (input[curr_pos])
+	{
+		ft_skip_spaces(input, &curr_pos);
+		cmd_table = ft_lstnew((void *)get_cmd_table(input, &curr_pos));
+		if (!cmd_table)
+		{
+			free(ast);
+			return (NULL);
+		}
+		ft_lstadd_back(&ast->cmd_tables, cmd_table);
+	}
+	return (ast);
 }

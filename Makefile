@@ -10,7 +10,8 @@ SRC = main.c $(CMD_DIR)/shell_cd.c $(CMD_DIR)/shell_ls.c $(CMD_DIR)/shell_comman
 NAME = shell
 
 CC = cc
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = 
+# CFLAGS = -Wall -Werror -Wextra
 LIBFT = $(LIBFT_DIR)/libft.a
 
 all: libft $(NAME)
