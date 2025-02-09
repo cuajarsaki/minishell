@@ -40,24 +40,115 @@ void exec_ast(t_ast *ast, t_env *env_list)
 /*                 🏆 EXECUTE A SINGLE COMMAND TABLE                          */
 /* ************************************************************************** */
 
+// void exec_command_group(t_command_group *command_group, t_env *env_list)
+// {
+//     t_list *cmds;
+//     int i;
+
+//     cmds = command_group->cmds;
+//     command_group->cmd_amount = ft_lstsize(cmds);
+//     i = 0;
+
+// 	if (command_group->cmd_amount > 1)
+// 	{
+// 		printf("Pipe Execution\n");
+// 	}
+
+//     while (cmds)
+//     {
+//         /* Pass env_list into exec_cmd */
+//         exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
+//         cmds = cmds->next;
+//         i++;
+//     }
+
+//     exec_parent(&command_group->pids); // Wait for processes
+// }
+
 void exec_command_group(t_command_group *command_group, t_env *env_list)
 {
-    t_list *cmds;
-    int i;
+    t_list *cmds = command_group->cmds;
+    int cmd_count = ft_lstsize(cmds);
+    int i = 0;
+    int pipe_fd[2];
+    int prev_pipe_fd = -1;  // Previous command's output
 
-    cmds = command_group->cmds;
-    command_group->cmd_amount = ft_lstsize(cmds);
-    i = 0;
+    if (cmd_count == 0)
+        return;
 
-    while (cmds)
-    {
-        /* Pass env_list into exec_cmd */
+	if (cmd_count == 1)
+	{
         exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
         cmds = cmds->next;
         i++;
+		exec_parent(&command_group->pids); // Wait for processes
+		return;
+	}
+		
+
+    while (cmds)
+    {
+        // Create a pipe only if there’s another command after this one
+        if (i < cmd_count - 1)
+        {
+            if (pipe(pipe_fd) < 0)
+            {
+                perror("pipe");
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        pid_t pid = fork();
+        if (pid < 0)
+        {
+            perror("fork");
+            exit(EXIT_FAILURE);
+        }
+        else if (pid == 0)
+        {
+            // CHILD PROCESS
+            
+            // If there's a previous pipe, read from it
+            if (prev_pipe_fd != -1)
+            {
+                dup2(prev_pipe_fd, STDIN_FILENO);
+                close(prev_pipe_fd);
+            }
+
+            // If there's a next command, write output to the pipe
+            if (i < cmd_count - 1)
+            {
+                dup2(pipe_fd[1], STDOUT_FILENO);
+                close(pipe_fd[1]);
+                close(pipe_fd[0]); // Close unused read-end
+            }
+
+            exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
+            exit(EXIT_FAILURE);
+        }
+        else
+        {
+            // PARENT PROCESS
+            ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
+
+            // Close previous read-end, since it's no longer needed
+            if (prev_pipe_fd != -1)
+                close(prev_pipe_fd);
+
+            // Store the new read-end for the next command
+            if (i < cmd_count - 1)
+            {
+                close(pipe_fd[1]);  // Close write-end in parent
+                prev_pipe_fd = pipe_fd[0];  // Keep read-end for next iteration
+            }
+
+            cmds = cmds->next;
+            i++;
+        }
     }
 
-    exec_parent(&command_group->pids); // Wait for processes
+    // Parent waits for all child processes to complete
+    exec_parent(&command_group->pids);
 }
 
 /* ************************************************************************** */

@@ -117,7 +117,7 @@ void handle_input(char *buf, size_t *len, size_t max_len) {
                         *len = ft_strlen(prev_command);
                         ft_strncpy(buf, prev_command, *len);
                         write(STDOUT_FILENO, "\r\033[K", 4);
-                        write(STDOUT_FILENO, "minishell ❤  ", 14);
+                        write(STDOUT_FILENO, "histshell ❤  ", 14);
                         write(STDOUT_FILENO, buf, *len);
                         cursor_pos = *len;
                     }
@@ -128,7 +128,7 @@ void handle_input(char *buf, size_t *len, size_t max_len) {
                         *len = ft_strlen(next_command);
                         ft_strncpy(buf, next_command, *len);
                         write(STDOUT_FILENO, "\r\033[K", 4);
-                        write(STDOUT_FILENO, "minishell ❤  ", 14);
+                        write(STDOUT_FILENO, "histshell ❤  ", 14);
                         write(STDOUT_FILENO, buf, *len);
                         cursor_pos = *len;
                     }
@@ -158,7 +158,7 @@ void handle_input(char *buf, size_t *len, size_t max_len) {
                 (*len)--;
                 cursor_pos--;
                 write(STDOUT_FILENO, "\r\033[K", 4); // Clear the line
-                write(STDOUT_FILENO, "minishell ❤  ", 14);
+                write(STDOUT_FILENO, "b1ffshell ❤  ", 14);
                 write(STDOUT_FILENO, buf, *len); // Rewrite the buffer
                 write(STDOUT_FILENO, "\033[D", 3 * (*len - cursor_pos)); // Move cursor back
             }
@@ -173,14 +173,15 @@ void handle_input(char *buf, size_t *len, size_t max_len) {
                 write(STDOUT_FILENO, "exit\n", 5);
                 exit(0);
             }
-        } else if (*len < max_len - 1) {
+        } 
+		else if (*len < max_len - 1) {
             for (size_t i = *len; i > cursor_pos; i--) {
                 buf[i] = buf[i - 1];
             }
             buf[cursor_pos++] = c;
             (*len)++;
             write(STDOUT_FILENO, "\r\033[K", 4); // Clear the line
-            write(STDOUT_FILENO, "minishell ❤  ", 14);
+            write(STDOUT_FILENO, "b2ffshell ❤  ", 14);
             write(STDOUT_FILENO, buf, *len); // Rewrite the buffer
             write(STDOUT_FILENO, "\033[D", 3 * (*len - cursor_pos)); // Move cursor back
         }
