@@ -12,7 +12,7 @@
 #define COLOR_GREEN    "\033[32m"  // Command
 #define COLOR_YELLOW   "\033[33m"  // Token
 #define COLOR_CYAN     "\033[36m"  // Redirection
-#define COLOR_MAGENTA  "\033[35m"  // Delimiter
+#define COLOR_MAGENTA  "\033[35m"  // seperator
 #define COLOR_RESET    "\033[0m"   // Reset to default
 
 /* Print indentation based on depth */
@@ -69,11 +69,11 @@ void print_cmds(t_list *cmds, int depth)
 }
 
 /* Debug function to print command tables */
-void print_cmd_tables(t_list *cmd_tables, int depth)
+void print_command_groups(t_list *command_groups, int depth)
 {
-    while (cmd_tables)
+    while (command_groups)
     {
-        t_cmd_table *cmd_table = (t_cmd_table *)cmd_tables->content;
+        t_command_group *command_group = (t_command_group *)command_groups->content;
         
         print_indent(depth);
         printf(COLOR_BLUE "|  +--------------------------------+\n" COLOR_RESET);
@@ -81,15 +81,15 @@ void print_cmd_tables(t_list *cmd_tables, int depth)
         print_indent(depth);
         printf(COLOR_BLUE "|  | Command Table                  |\n" COLOR_RESET);
         
-        print_cmds(cmd_table->cmds, depth + 1);
+        print_cmds(command_group->cmds, depth + 1);
         
         print_indent(depth);
-        printf(COLOR_MAGENTA "|  | Delimiter: \"%s\"\n" COLOR_RESET, cmd_table->delimiter);
+        printf(COLOR_MAGENTA "|  | seperator: \"%s\"\n" COLOR_RESET, command_group->seperator);
         
         print_indent(depth);
         printf(COLOR_BLUE "|  +--------------------------------+\n" COLOR_RESET);
         
-        cmd_tables = cmd_tables->next;
+        command_groups = command_groups->next;
     }
 }
 
@@ -104,7 +104,7 @@ void debug_ast(t_ast *ast)
 
     printf("+====================================+\n");
     printf("| " COLOR_BLUE "AST\n" COLOR_RESET);
-    print_cmd_tables(ast->cmd_tables, 1);
+    print_command_groups(ast->command_groups, 1);
 	printf("+====================================+\n");
 }
 
@@ -143,12 +143,9 @@ void set_prompt(const char *prompt, t_env *env_list)
             continue;
         }
         if (len > 0) {
-            // process_command(buf, env_list); // Pass env_list to process_command
-
-			current_AST = get_ast(buf);
+			current_AST = get_ast(buf, env_list);
 			debug_ast(current_AST);
-
-			exec_ast(current_AST);
+			exec_ast(current_AST, env_list);
 
             ft_memset(buf, 0, sizeof(buf));
             len = 0;

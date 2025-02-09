@@ -4,7 +4,7 @@ void shell_echo(char **args)
 {
 	bool newline = true;
 	int i = 0;
-
+	
 	if (args[i] && ft_strcmp(args[i], "-n") == 0)
 	{
 		newline = false;

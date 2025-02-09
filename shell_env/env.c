@@ -6,7 +6,7 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 12:14:25 by jidler            #+#    #+#             */
-/*   Updated: 2025/01/30 13:02:12 by jidler           ###   ########.fr       */
+/*   Updated: 2025/02/09 15:53:54 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,16 +62,6 @@ char *get_env_value(t_env *env_list, const char *key)
         env_list = env_list->next;
     }
     return NULL;
-}
-
-// Function to print all env variables
-void print_env_list(t_env *env_list)
-{
-    while (env_list)
-    {
-        printf("%s=%s\n", env_list->key, env_list->value);
-        env_list = env_list->next;
-    }
 }
 
 // Function to free environment list

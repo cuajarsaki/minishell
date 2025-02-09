@@ -3,9 +3,10 @@ PAR_DIR = shell_parser
 EXE_DIR = shell_executor
 LIBFT_DIR = libft
 
-SRC = main.c $(CMD_DIR)/shell_cd.c $(CMD_DIR)/shell_ls.c $(CMD_DIR)/shell_commands.c \
-	$(PAR_DIR)/parser.c $(EXE_DIR)/executor.c $(CMD_DIR)/shell_echo.c $(CMD_DIR)/shell_man.c \
-	shell_termcaps/termcaps.c history.c shell_env/env.c
+SRC = main.c $(CMD_DIR)/shell_cd.c $(CMD_DIR)/shell_commands.c \
+	$(PAR_DIR)/parser.c $(EXE_DIR)/executor.c $(CMD_DIR)/shell_echo.c \
+	shell_termcaps/termcaps.c history.c shell_env/env.c $(CMD_DIR)/shell_pwd.c \
+	$(CMD_DIR)/shell_export.c $(CMD_DIR)/shell_unset.c $(CMD_DIR)/shell_env.c\
 
 NAME = shell
 
