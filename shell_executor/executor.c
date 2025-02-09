@@ -155,21 +155,87 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
 /*                  🏆 EXECUTE A SINGLE COMMAND                               */
 /* ************************************************************************** */
 
+// void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
+// {
+//     if (cmd->tokens != NULL)
+//     {
+//         /* Check if built-in */
+//         if (is_builtin(cmd)){
+// 			printf("Exectuing BuildIN\n");
+//             exec_cmd_builtin(cmd, env_list);
+
+// 		}
+//         else
+// 		{
+// 			printf("Exectuing External\n");
+//             exec_cmd_external(cmd, command_group, process_index, env_list);
+// 		}
+//     }
+// }
+
 void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
 {
-    if (cmd->tokens != NULL)
-    {
-        /* Check if built-in */
-        if (is_builtin(cmd)){
-			printf("Exectuing BuildIN\n");
-            exec_cmd_builtin(cmd, env_list);
+    int fd_in = -1, fd_out = -1;
+    t_list *redirs = cmd->redirs;
 
-		}
-        else
-		{
-			printf("Exectuing External\n");
-            exec_cmd_external(cmd, command_group, process_index, env_list);
-		}
+    // Process redirections
+    while (redirs)
+    {
+        t_redir *redir = (t_redir *)redirs->content;
+
+        if (strcmp(redir->type, ">") == 0)
+        {
+            fd_out = open(redir->direction, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            if (fd_out == -1)
+            {
+                perror("open");
+                exit(EXIT_FAILURE);
+            }
+        }
+        else if (strcmp(redir->type, ">>") == 0)
+        {
+            fd_out = open(redir->direction, O_WRONLY | O_CREAT | O_APPEND, 0644);
+            if (fd_out == -1)
+            {
+                perror("open");
+                exit(EXIT_FAILURE);
+            }
+        }
+        else if (strcmp(redir->type, "<") == 0)
+        {
+            fd_in = open(redir->direction, O_RDONLY);
+            if (fd_in == -1)
+            {
+                perror("open");
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        redirs = redirs->next;
+    }
+
+    // Apply redirections
+    if (fd_in != -1)
+    {
+        dup2(fd_in, STDIN_FILENO);
+        close(fd_in);
+    }
+
+    if (fd_out != -1)
+    {
+        dup2(fd_out, STDOUT_FILENO);
+        close(fd_out);
+    }
+
+    // Execute the command (built-in or external)
+    if (is_builtin(cmd))
+    {
+        exec_cmd_builtin(cmd, env_list);
+        exit(EXIT_SUCCESS);
+    }
+    else
+    {
+        exec_cmd_external(cmd, command_group, process_index, env_list);
     }
 }
 
