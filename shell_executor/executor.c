@@ -173,71 +173,138 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
 //     }
 // }
 
+char *find_executable_in_path(const char *cmd) {
+    char *path_env = getenv("PATH");
+    if (!path_env || strlen(path_env) == 0) {
+        return NULL; // No PATH environment variable
+    }
+
+    char *paths = strdup(path_env);
+    char *dir = strtok(paths, ":");
+
+    while (dir) {
+        char full_path[1024];
+        snprintf(full_path, sizeof(full_path), "%s/%s", dir, cmd);
+        if (access(full_path, X_OK) == 0) {
+            free(paths);
+            return strdup(full_path); // Return a valid command path
+        }
+        dir = strtok(NULL, ":");
+    }
+
+    free(paths);
+    return NULL;
+}
+
 void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
 {
-    int fd_in = -1, fd_out = -1;
-    t_list *redirs = cmd->redirs;
-
-    // Process redirections
-    while (redirs)
+    if (cmd->tokens != NULL)
     {
-        t_redir *redir = (t_redir *)redirs->content;
-
-        if (strcmp(redir->type, ">") == 0)
+        /* Check if built-in */
+        if (is_builtin(cmd))
         {
-            fd_out = open(redir->direction, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-            if (fd_out == -1)
-            {
-                perror("open");
-                exit(EXIT_FAILURE);
-            }
+            printf("Executing Built-in\n");
+            exec_cmd_builtin(cmd, env_list);
         }
-        else if (strcmp(redir->type, ">>") == 0)
+        else
         {
-            fd_out = open(redir->direction, O_WRONLY | O_CREAT | O_APPEND, 0644);
-            if (fd_out == -1)
+            char **tokens = convert_list_to_arr(cmd->tokens);
+            char *cmd_path = tokens[0];
+
+            // If command has '/' (absolute or relative path), check existence
+            if (strchr(cmd_path, '/') != NULL)
             {
-                perror("open");
-                exit(EXIT_FAILURE);
+                if (access(cmd_path, X_OK) == -1)
+                {
+                    fprintf(stderr, "b2ffshell ❤: command not found: %s\n", cmd_path);
+                    free(tokens);
+                    return;
+                }
             }
-        }
-        else if (strcmp(redir->type, "<") == 0)
-        {
-            fd_in = open(redir->direction, O_RDONLY);
-            if (fd_in == -1)
+            else
             {
-                perror("open");
-                exit(EXIT_FAILURE);
+                // Search for the command in PATH
+                char *resolved_path = find_executable_in_path(cmd_path);
+                if (!resolved_path)
+                {
+                    fprintf(stderr, "b2ffshell ❤: command not found: %s\n", cmd_path);
+                    free(tokens);
+                    return;
+                }
+                free(resolved_path);
             }
+
+            printf("Executing External\n");
+            exec_cmd_external(cmd, command_group, process_index, env_list);
         }
-
-        redirs = redirs->next;
-    }
-
-    // Apply redirections
-    if (fd_in != -1)
-    {
-        dup2(fd_in, STDIN_FILENO);
-        close(fd_in);
-    }
-
-    if (fd_out != -1)
-    {
-        dup2(fd_out, STDOUT_FILENO);
-        close(fd_out);
-    }
-
-    // Execute the command (built-in or external)
-    if (is_builtin(cmd))
-    {
-        exec_cmd_builtin(cmd, env_list);
-        exit(EXIT_SUCCESS);
-    }
-    else
-    {
-        exec_cmd_external(cmd, command_group, process_index, env_list);
     }
 }
+
+// void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
+// {
+//     int fd_in = -1, fd_out = -1;
+//     t_list *redirs = cmd->redirs;
+
+//     // Process redirections
+//     while (redirs)
+//     {
+//         t_redir *redir = (t_redir *)redirs->content;
+
+//         if (strcmp(redir->type, ">") == 0)
+//         {
+//             fd_out = open(redir->direction, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+//             if (fd_out == -1)
+//             {
+//                 perror("open");
+//                 exit(EXIT_FAILURE);
+//             }
+//         }
+//         else if (strcmp(redir->type, ">>") == 0)
+//         {
+//             fd_out = open(redir->direction, O_WRONLY | O_CREAT | O_APPEND, 0644);
+//             if (fd_out == -1)
+//             {
+//                 perror("open");
+//                 exit(EXIT_FAILURE);
+//             }
+//         }
+//         else if (strcmp(redir->type, "<") == 0)
+//         {
+//             fd_in = open(redir->direction, O_RDONLY);
+//             if (fd_in == -1)
+//             {
+//                 perror("open");
+//                 exit(EXIT_FAILURE);
+//             }
+//         }
+
+//         redirs = redirs->next;
+//     }
+
+//     // Apply redirections
+//     if (fd_in != -1)
+//     {
+//         dup2(fd_in, STDIN_FILENO);
+//         close(fd_in);
+//     }
+
+//     if (fd_out != -1)
+//     {
+//         dup2(fd_out, STDOUT_FILENO);
+//         close(fd_out);
+//     }
+
+//     // Execute the command (built-in or external)
+//     if (is_builtin(cmd))
+//     {
+//         exec_cmd_builtin(cmd, env_list);
+//         exit(EXIT_SUCCESS);
+//     }
+//     else
+//     {
+//         exec_cmd_external(cmd, command_group, process_index, env_list);
+//     }
+// }
 
 /* ************************************************************************** */
 /*              🏆 EXECUTE BUILT-IN COMMANDS (NO FORKING REQUIRED)            */

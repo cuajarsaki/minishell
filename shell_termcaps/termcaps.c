@@ -99,6 +99,33 @@ void	exit_program()
 	exit(0);
 }
 
+
+void history_up(char *buf, size_t *len, size_t *cursor_pos) {
+    const char *prev_command = get_history(-1);
+    if (prev_command) {
+        ft_memset(buf, 0, *len);
+        *len = ft_strlen(prev_command);
+        ft_strncpy(buf, prev_command, *len);
+        write(STDOUT_FILENO, "\r\033[K", 4);
+        write(STDOUT_FILENO, "histshell ❤  ", 14);
+        write(STDOUT_FILENO, buf, *len);
+        *cursor_pos = *len;
+    }
+}
+
+void history_down(char *buf, size_t *len, size_t *cursor_pos) {
+    const char *next_command = get_history(1);
+    if (next_command) {
+        ft_memset(buf, 0, *len);
+        *len = ft_strlen(next_command);
+        ft_strncpy(buf, next_command, *len);
+        write(STDOUT_FILENO, "\r\033[K", 4);
+        write(STDOUT_FILENO, "histshell ❤  ", 14);
+        write(STDOUT_FILENO, buf, *len);
+        *cursor_pos = *len;
+    }
+}
+
 void handle_input(char *buf, size_t *len, size_t max_len) {
     char c;
     size_t cursor_pos = *len; // Tracks the current cursor position
@@ -111,27 +138,9 @@ void handle_input(char *buf, size_t *len, size_t max_len) {
 
             if (seq[0] == '[') {
                 if (seq[1] == 'A') { // Up arrow
-                    const char *prev_command = get_history(-1);
-                    if (prev_command) {
-                        ft_memset(buf, 0, *len);
-                        *len = ft_strlen(prev_command);
-                        ft_strncpy(buf, prev_command, *len);
-                        write(STDOUT_FILENO, "\r\033[K", 4);
-                        write(STDOUT_FILENO, "histshell ❤  ", 14);
-                        write(STDOUT_FILENO, buf, *len);
-                        cursor_pos = *len;
-                    }
+                    history_up(buf, len, &cursor_pos);
                 } else if (seq[1] == 'B') { // Down arrow
-                    const char *next_command = get_history(1);
-                    if (next_command) {
-                        ft_memset(buf, 0, *len);
-                        *len = ft_strlen(next_command);
-                        ft_strncpy(buf, next_command, *len);
-                        write(STDOUT_FILENO, "\r\033[K", 4);
-                        write(STDOUT_FILENO, "histshell ❤  ", 14);
-                        write(STDOUT_FILENO, buf, *len);
-                        cursor_pos = *len;
-                    }
+                    history_down(buf, len, &cursor_pos);
                 } else if (seq[1] == 'D') { // Left arrow
                     if (cursor_pos > 0) {
                         cursor_pos--;
@@ -173,8 +182,7 @@ void handle_input(char *buf, size_t *len, size_t max_len) {
                 write(STDOUT_FILENO, "exit\n", 5);
                 exit(0);
             }
-        } 
-		else if (*len < max_len - 1) {
+        } else if (*len < max_len - 1) {
             for (size_t i = *len; i > cursor_pos; i--) {
                 buf[i] = buf[i - 1];
             }
