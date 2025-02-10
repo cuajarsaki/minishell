@@ -14,7 +14,7 @@
 #include <readline/history.h>
 #include <fcntl.h>
 #include <stdbool.h>
-
+#include <sys/wait.h>
 
 
 
