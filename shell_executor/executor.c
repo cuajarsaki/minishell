@@ -196,14 +196,130 @@ char *find_executable_in_path(const char *cmd) {
     return NULL;
 }
 
+void cleanup_fds(int fd_in, int fd_out)
+{
+    if (fd_in != -1)
+        close(fd_in);
+    if (fd_out != -1)
+        close(fd_out);
+}
+
+
+void apply_redirections(int fd_in, int fd_out)
+{
+    if (fd_in != -1)
+    {
+        if (dup2(fd_in, STDIN_FILENO) == -1) // Redirect input
+            perror("dup2 input redirection");
+        close(fd_in);
+    }
+    if (fd_out != -1)
+    {
+        if (dup2(fd_out, STDOUT_FILENO) == -1) // Redirect output
+            perror("dup2 output redirection");
+        close(fd_out);
+    }
+}
+
+void set_filedirectories(t_cmd *cmd, int *fd_in, int *fd_out)
+{
+    t_list *redirs;
+
+    if (!cmd) // Handle NULL cmd
+        return;
+
+    redirs = cmd->redirs;
+    *fd_in = -1;  // Initialize file descriptors to -1 (unset)
+    *fd_out = -1;
+
+    while (redirs)
+    {
+        t_redir *redir = (t_redir *)redirs->content;
+
+		if (ft_strncmp(redir->type, ">>", 2) == 0) // Append output
+        {
+            if (*fd_out != -1)
+                close(*fd_out);
+
+            *fd_out = open(redir->direction, O_WRONLY | O_CREAT | O_APPEND, 0644);
+            if (*fd_out == -1)
+            {
+                perror("open");
+                return;
+            }
+        }
+        else if (ft_strncmp(redir->type, ">", 1) == 0) // Overwrite output
+        {
+            if (*fd_out != -1) // Close previous output redirection
+                close(*fd_out);
+
+            *fd_out = open(redir->direction, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            if (*fd_out == -1)
+            {
+                perror("open");
+                return;
+            }
+        }
+        else if (ft_strncmp(redir->type, "<", 1) == 0) // Input redirection
+        {
+            if (*fd_in != -1)
+                close(*fd_in);
+
+            *fd_in = open(redir->direction, O_RDONLY);
+            if (*fd_in == -1)
+            {
+                perror("open");
+                return;
+            }
+        }
+
+        redirs = redirs->next;
+    }
+}
+
+void save_fds(int *saved_stdin, int *saved_stdout)
+{
+    *saved_stdin = dup(STDIN_FILENO);
+    *saved_stdout = dup(STDOUT_FILENO);
+    if (*saved_stdin == -1 || *saved_stdout == -1)
+        perror("save_fds: dup failed");
+}
+
+
+void restore_fds(int saved_stdin, int saved_stdout)
+{
+    if (dup2(saved_stdin, STDIN_FILENO) == -1)
+        perror("restore_fds: dup2 stdin failed");
+    if (dup2(saved_stdout, STDOUT_FILENO) == -1)
+        perror("restore_fds: dup2 stdout failed");
+
+    close(saved_stdin);
+    close(saved_stdout);
+}
+
+
+
 void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
 {
+	int fd_in;
+    int fd_out;
+
+	int saved_stdin, saved_stdout;
+
+    set_filedirectories(cmd, &fd_in, &fd_out);
+
+	printf("fd_in: %d\n", fd_in);
+	printf("fd_out: %d\n", fd_out);
+
+	save_fds(&saved_stdin, &saved_stdout);
+	apply_redirections(fd_in, fd_out);
+
     if (cmd->tokens != NULL)
     {
         /* Check if built-in */
         if (is_builtin(cmd))
         {
-            printf("Executing Built-in\n");
+            // printf("Executing Built-in\n");
             exec_cmd_builtin(cmd, env_list);
         }
         else
@@ -217,6 +333,8 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
                 if (access(cmd_path, X_OK) == -1)
                 {
                     fprintf(stderr, "b2ffshell ❤: command not found: %s\n", cmd_path);
+					restore_fds(saved_stdin, saved_stdout);
+					cleanup_fds(fd_in, fd_out);
                     free(tokens);
                     return;
                 }
@@ -228,83 +346,24 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
                 if (!resolved_path)
                 {
                     fprintf(stderr, "b2ffshell ❤: command not found: %s\n", cmd_path);
-                    free(tokens);
+					
+					restore_fds(saved_stdin, saved_stdout);
+					cleanup_fds(fd_in, fd_out);
+					free(tokens);
                     return;
                 }
                 free(resolved_path);
             }
 
-            printf("Executing External\n");
+            // printf("Executing External\n");
             exec_cmd_external(cmd, command_group, process_index, env_list);
         }
     }
+	restore_fds(saved_stdin, saved_stdout);
+	cleanup_fds(fd_in, fd_out);
 }
 
-// void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
-// {
-//     int fd_in = -1, fd_out = -1;
-//     t_list *redirs = cmd->redirs;
 
-//     // Process redirections
-//     while (redirs)
-//     {
-//         t_redir *redir = (t_redir *)redirs->content;
-
-//         if (strcmp(redir->type, ">") == 0)
-//         {
-//             fd_out = open(redir->direction, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-//             if (fd_out == -1)
-//             {
-//                 perror("open");
-//                 exit(EXIT_FAILURE);
-//             }
-//         }
-//         else if (strcmp(redir->type, ">>") == 0)
-//         {
-//             fd_out = open(redir->direction, O_WRONLY | O_CREAT | O_APPEND, 0644);
-//             if (fd_out == -1)
-//             {
-//                 perror("open");
-//                 exit(EXIT_FAILURE);
-//             }
-//         }
-//         else if (strcmp(redir->type, "<") == 0)
-//         {
-//             fd_in = open(redir->direction, O_RDONLY);
-//             if (fd_in == -1)
-//             {
-//                 perror("open");
-//                 exit(EXIT_FAILURE);
-//             }
-//         }
-
-//         redirs = redirs->next;
-//     }
-
-//     // Apply redirections
-//     if (fd_in != -1)
-//     {
-//         dup2(fd_in, STDIN_FILENO);
-//         close(fd_in);
-//     }
-
-//     if (fd_out != -1)
-//     {
-//         dup2(fd_out, STDOUT_FILENO);
-//         close(fd_out);
-//     }
-
-//     // Execute the command (built-in or external)
-//     if (is_builtin(cmd))
-//     {
-//         exec_cmd_builtin(cmd, env_list);
-//         exit(EXIT_SUCCESS);
-//     }
-//     else
-//     {
-//         exec_cmd_external(cmd, command_group, process_index, env_list);
-//     }
-// }
 
 /* ************************************************************************** */
 /*              🏆 EXECUTE BUILT-IN COMMANDS (NO FORKING REQUIRED)            */
