@@ -11,7 +11,7 @@ SRC = main.c free.c $(CMD_DIR)/shell_cd.c $(CMD_DIR)/shell_commands.c \
 NAME = shell
 
 CC = cc
-CFLAGS = 
+CFLAGS = -g3 -fsanitize=address
 # CFLAGS = -Wall -Werror -Wextra
 LIBFT = $(LIBFT_DIR)/libft.a
 

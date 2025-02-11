@@ -1,6 +1,6 @@
 NAME		= libft.a
 CC			= cc
-CFLAGS		= -Wall -Werror -Wextra
+CFLAGS		= -Wall -Werror -Wextra -g3 -fsanitize=address
 OBJ			= ft_isalnum.o ft_itoa.o ft_memset.o ft_split.o ft_strlcat.o ft_strnstr.o ft_toupper.o \
 			  ft_isalpha.o ft_memchr.o ft_putchar_fd.o ft_strchr.o ft_strlcpy.o ft_strrchr.o \
 			  ft_atoi.o ft_isascii.o ft_memcmp.o ft_putendl_fd.o ft_strdup.o ft_strlen.o \
