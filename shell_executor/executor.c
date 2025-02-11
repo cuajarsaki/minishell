@@ -27,10 +27,12 @@ void exec_ast(t_ast *ast, t_env *env_list)
     while (command_group_node)
     {
         command_group = (t_command_group *)command_group_node->content;
+        command_group->pids = NULL;
         /* Pass env_list down to the next function */
         exec_command_group(command_group, env_list);
 
         seperator = command_group->seperator;
+        free_command_group(command_group);
         // (Ignoring logical operators for now)
         command_group_node = command_group_node->next;
     }
@@ -354,7 +356,7 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
                 }
                 free(resolved_path);
             }
-
+            free(tokens);
             // printf("Executing External\n");
             exec_cmd_external(cmd, command_group, process_index, env_list);
         }
@@ -376,7 +378,16 @@ void exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
     if (strcmp(program, "echo") == 0)
         shell_echo(convert_list_to_arr(cmd->tokens->next));
     else if (strcmp(program, "cd") == 0)
-        shell_cd((char *)cmd->tokens->next->content);
+    {
+        if (cmd->tokens->next && cmd->tokens->next->content)
+        {
+            shell_cd((char *)cmd->tokens->next->content);
+        }
+        else
+        {
+             shell_cd(NULL); 
+        }
+    }
     else if (strcmp(program, "pwd") == 0)
         shell_pwd();
     else if (strcmp(program, "export") == 0)
@@ -423,17 +434,22 @@ void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_i
 /*              🏆 WAIT FOR ALL CHILD PROCESSES TO FINISH                     */
 /* ************************************************************************** */
 
+
+
 void exec_parent(t_list **pids)
 {
     int status;
     pid_t pid;
+    t_list *pids_now;
 
-    while (*pids)
+    pids_now = *pids;
+    while (pids_now)
     {
-        pid = (pid_t)(intptr_t)(*pids)->content;
+        pid = (pid_t)(intptr_t)(pids_now)->content;
         waitpid(pid, &status, 0);
-        *pids = (*pids)->next;
+        pids_now = (pids_now)->next;
     }
+
 }
 
 /* ************************************************************************** */

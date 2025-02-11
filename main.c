@@ -133,6 +133,7 @@ void set_prompt(const char *prompt, t_env *env_list)
 
     term_clear_screen();
     while (running) {
+        
         write(STDOUT_FILENO, prompt, ft_strlen(prompt));
         ft_memset(buf, 0, sizeof(buf));
         len = 0;
@@ -146,7 +147,7 @@ void set_prompt(const char *prompt, t_env *env_list)
 			current_AST = get_ast(buf, env_list);
 			debug_ast(current_AST);
 			exec_ast(current_AST, env_list);
-
+            free_ast(current_AST);
             ft_memset(buf, 0, sizeof(buf));
             len = 0;
         }
