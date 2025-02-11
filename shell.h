@@ -104,6 +104,9 @@ void shell_unknown_command(char *cmd);
 void lexer_build(char *input, LexerBuffer *lexerbuf);
 void lexer_free(LexerBuffer *lexerbuf);
 void	shell_echo(char **args);
+void free_ast(t_ast *ast);
+void free_cmd(t_cmd *cmd);
+void free_command_group(t_command_group *command_group);
 
 //TERMCAP FUNCTIONS
 void reset_terminal_settings();

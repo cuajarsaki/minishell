@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/02/09 16:31:58 by jidler           ###   ########.fr       */
+/*   Updated: 2025/02/12 00:24:27 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,7 +196,7 @@ t_command_group	*get_command_group(const char *input, int *curr_pos, t_env *env_
 		cmd = ft_lstnew((void *)get_cmd(input, curr_pos, env_list));
 		if (!cmd)
 		{
-			free(command_group);
+			ft_lstclear(&command_group->cmds, (void (*)(void *))free_cmd);
 			return (NULL);
 		}
 		ft_lstadd_back(&command_group->cmds, cmd);
