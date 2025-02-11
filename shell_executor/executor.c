@@ -377,7 +377,16 @@ void exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
     if (strcmp(program, "echo") == 0)
         shell_echo(convert_list_to_arr(cmd->tokens->next));
     else if (strcmp(program, "cd") == 0)
-        shell_cd((char *)cmd->tokens->next->content);
+    {
+        if (cmd->tokens->next && cmd->tokens->next->content)
+        {
+            shell_cd((char *)cmd->tokens->next->content);
+        }
+        else
+        {
+             shell_cd(NULL); 
+        }
+    }
     else if (strcmp(program, "pwd") == 0)
         shell_pwd();
     else if (strcmp(program, "export") == 0)
