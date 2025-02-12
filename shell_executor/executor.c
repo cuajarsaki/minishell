@@ -374,28 +374,26 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
 void exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
 {
     char *program = (char *)cmd->tokens->content;
+    char **args =convert_list_to_arr(cmd->tokens->next);
 
     if (strcmp(program, "echo") == 0)
-        shell_echo(convert_list_to_arr(cmd->tokens->next));
+        shell_echo(args);
     else if (strcmp(program, "cd") == 0)
     {
         if (cmd->tokens->next && cmd->tokens->next->content)
-        {
             shell_cd((char *)cmd->tokens->next->content);
-        }
         else
-        {
              shell_cd(NULL); 
-        }
     }
     else if (strcmp(program, "pwd") == 0)
         shell_pwd();
     else if (strcmp(program, "export") == 0)
-        shell_export(convert_list_to_arr(cmd->tokens->next), env_list);
+        shell_export(args, env_list);
     else if (strcmp(program, "unset") == 0)
-        shell_unset(convert_list_to_arr(cmd->tokens->next), env_list);
+        shell_unset(args, env_list);
     else if (strcmp(program, "env") == 0)
         shell_env(env_list);
+    free(args);
 }
 
 /* ************************************************************************** */
