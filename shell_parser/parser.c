@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/02/12 00:24:27 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/12 15:45:53 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,34 +52,115 @@ char	*get_command_group_seperator(const char *input, int *curr_pos)
 	}
 	return (strdup(""));
 }
-
-static char *expand_env_token(const char *token, t_env *env_list)
+char	*expand_env_token(const char *token, t_env *env_list)
 {
-    // 1) If token is NULL or empty, just return a copy
-    if (!token || !*token)
-        return (token ? strdup(token) : NULL);
+	char	*result;
+	char	*var_value;
+	char	*var_name;
+	int		i = 0, j;
+	int		len = strlen(token);
 
-    // 2) If token does NOT start with '$', return a copy unchanged
-    if (token[0] != '$')
-        return strdup(token);
+	// Allocate result buffer (initially empty)
+	result = calloc(1, sizeof(char));
+	if (!result)
+		return (NULL);
 
-    // 3) Extract the variable name (everything after '$')
-    const char *var_name = token + 1;
+	while (i < len)
+	{
+		// If we find a '$' and it's not inside single quotes
+		if (token[i] == '$' && token[i + 1] && (isalnum(token[i + 1]) || token[i + 1] == '_'))
+		{
+			j = i + 1;
+			// Find the end of the variable name (alphanumeric + '_')
+			while (token[j] && (isalnum(token[j]) || token[j] == '_'))
+				j++;
 
-    // Edge case: if the token is just "$", no var_name
-    if (!*var_name)
-        return strdup("$"); // or return strdup("") depending on your shell’s behavior
+			// Extract variable name
+			var_name = strndup(&token[i + 1], j - i - 1);
+			var_value = get_env_value(env_list, var_name);
+			free(var_name);
 
-    // 4) Look up var_name in env_list
-    char *val = get_env_value(env_list, var_name);
+			// If variable exists, append its value; else, append an empty string
+			if (var_value)
+				result = realloc(result, strlen(result) + strlen(var_value) + 1);
+			else
+				result = realloc(result, strlen(result) + 1);
 
-    // If not found, some shells use an empty string
-    if (!val)
-        val = "";
+			strcat(result, var_value ? var_value : "");
 
-    // 5) Return a newly allocated copy of the expansion
-    return strdup(val);
+			i = j; // Move past variable
+		}
+		else
+		{
+			// Append non-variable characters
+			size_t new_len = strlen(result) + 2;
+			result = realloc(result, new_len);
+			strncat(result, &token[i], 1);
+			i++;
+		}
+	}
+
+	return result;
 }
+
+
+// static char *expand_env_token(const char *token, t_env *env_list)
+// {
+//     // 1) If token is NULL or empty, just return a copy
+//     if (!token || !*token)
+//         return (token ? strdup(token) : NULL);
+
+//     // 2) If token does NOT start with '$', return a copy unchanged
+//     if (token[0] != '$')
+//         return strdup(token);
+
+//     // 3) Extract the variable name (everything after '$')
+//     const char *var_name = token + 1;
+
+//     // Edge case: if the token is just "$", no var_name
+//     if (!*var_name)
+//         return strdup("$"); // or return strdup("") depending on your shell’s behavior
+
+//     // 4) Look up var_name in env_list
+//     char *val = get_env_value(env_list, var_name);
+
+//     // If not found, some shells use an empty string
+//     if (!val)
+//         val = "";
+
+//     // 5) Return a newly allocated copy of the expansion
+//     return strdup(val);
+// }
+
+char	*remove_quotes(const char *token)
+{
+	int		len;
+	char	quote;
+	char	*new_token;
+
+	if (!token)
+		return (NULL);
+
+	len = strlen(token);
+	if (len < 2)
+		return strdup(token); // No quotes to remove
+
+	// Check if token starts and ends with the same quote
+	if ((token[0] == '\'' || token[0] == '\"') && token[0] == token[len - 1])
+	{
+		quote = token[0];
+		// ✅ Remove only the first and last quotes, keep everything else
+		new_token = strndup(token + 1, len - 2);
+	}
+	else
+	{
+		// No matching surrounding quotes, return as is
+		new_token = strdup(token);
+	}
+
+	return new_token;
+}
+
 
 /* ************************************************************************** */
 /*                           PARSING FUNCTIONS                                */
@@ -116,21 +197,156 @@ t_redir	*get_redir(const char *input, int *curr_pos)
 	return (redir);
 }
 
-char	*get_token(const char *input, int *curr_pos)
+
+// char	*get_token(const char *input, int *curr_pos)
+// {
+// 	ft_skip_spaces(input, curr_pos); // Skip leading spaces
+
+// 	int		start = *curr_pos;
+// 	int		i = *curr_pos;
+// 	char	quote = 0; // Variable to track open quote
+
+// 	// Check if the first character is a quote
+// 	if (input[i] == '\'' || input[i] == '\"')
+// 	{
+// 		quote = input[i]; // Store the type of quote used
+// 		i++; // Move past opening quote
+
+// 		// Find the closing quote
+// 		while (input[i] && input[i] != quote)
+// 			i++;
+
+// 		// If found, move past the closing quote
+// 		if (input[i] == quote)
+// 			i++;
+// 	}
+// 	else
+// 	{
+// 		// Read normally until a space, redirection, or separator
+// 		while (input[i] && !isspace(input[i]) && !is_cmd_seperator(input[i]) && input[i] != '|' && input[i] != '>' && input[i] != '<')
+// 			i++;
+// 	}
+
+// 	// No token found
+// 	if (i == start)
+// 		return (NULL);
+
+// 	// Extract the raw token
+// 	char *raw_token = strndup(&input[start], i - start);
+// 	*curr_pos = i; // Move position forward
+
+// 	// ✅ Remove quotes from the token before returning
+// 	char *clean_token = remove_quotes(raw_token);
+// 	free(raw_token);
+// 	return clean_token;
+// }
+
+typedef struct s_token
 {
-	ft_skip_spaces(input, curr_pos); // Skip leading spaces before reading a token
-	int start = *curr_pos;
+	char	*value;
+	int		is_single_quoted;
+}	t_token;
 
-	// Extract token until space, command seperator, or redirection
-	while (input[*curr_pos] && !isspace(input[*curr_pos]) && !is_cmd_seperator(input[*curr_pos]) && input[*curr_pos] != '|' && input[*curr_pos] != '>' && input[*curr_pos] != '<')
-		(*curr_pos)++;
 
-	// Return NULL if no token found (prevents empty tokens from being added)
-	if (*curr_pos == start)
+t_token	*get_token(const char *input, int *curr_pos)
+{
+	ft_skip_spaces(input, curr_pos); // Skip leading spaces
+
+	int		start = *curr_pos;
+	int		i = *curr_pos;
+	char	quote = 0;
+	t_token	*token_struct = malloc(sizeof(t_token));
+
+	if (!token_struct)
 		return (NULL);
+	token_struct->is_single_quoted = 0;
 
-	return (strndup(&input[start], *curr_pos - start));
+	// Allocate buffer to store final token
+	char	*buffer = calloc(1, sizeof(char));
+	if (!buffer)
+	{
+		free(token_struct);
+		return (NULL);
+	}
+
+	// Read token, handling quotes and escape sequences
+	while (input[i] && !isspace(input[i]) && !is_cmd_seperator(input[i]) && input[i] != '|' && input[i] != '>' && input[i] != '<')
+	{
+		if (input[i] == '\'' || input[i] == '\"')
+		{
+			quote = input[i];
+			if (quote == '\'')
+				token_struct->is_single_quoted = 1;
+
+			i++; // Move past opening quote
+
+			// Process quoted content
+			while (input[i] && input[i] != quote)
+			{
+				// ✅ **Correctly handle `\"` inside double quotes (remove `\` before `"` and `\`)**
+				if (quote == '"' && input[i] == '\\' && (input[i + 1] == '"' || input[i + 1] == '\\'))
+					i++; // Skip the backslash
+
+				// Append the character (escaped or not) to the buffer
+				size_t new_len = strlen(buffer) + 2;
+				buffer = realloc(buffer, new_len);
+				strncat(buffer, &input[i], 1);
+				i++;
+			}
+
+			// Move past closing quote
+			if (input[i] == quote)
+				i++;
+		}
+		else if (input[i] == '\\' && (input[i + 1] == '"' || input[i + 1] == '\\')) // ✅ **Remove `\` before `"` or `\`**
+		{
+			i++; // Skip the backslash
+			// Append only the escaped character
+			size_t new_len = strlen(buffer) + 2;
+			buffer = realloc(buffer, new_len);
+			strncat(buffer, &input[i], 1);
+			i++;
+		}
+		else
+		{
+			// Append normal character to buffer
+			size_t new_len = strlen(buffer) + 2;
+			buffer = realloc(buffer, new_len);
+			strncat(buffer, &input[i], 1);
+			i++;
+		}
+	}
+
+	// No token found
+	if (i == start)
+	{
+		free(token_struct);
+		free(buffer);
+		return (NULL);
+	}
+
+	// Store the final token value
+	token_struct->value = buffer;
+	*curr_pos = i; // Move position forward
+
+	return token_struct;
 }
+
+// char	*get_token(const char *input, int *curr_pos)
+// {
+// 	ft_skip_spaces(input, curr_pos); // Skip leading spaces before reading a token
+// 	int start = *curr_pos;
+
+// 	// Extract token until space, command seperator, or redirection
+// 	while (input[*curr_pos] && !isspace(input[*curr_pos]) && !is_cmd_seperator(input[*curr_pos]) && input[*curr_pos] != '|' && input[*curr_pos] != '>' && input[*curr_pos] != '<')
+// 		(*curr_pos)++;
+
+// 	// Return NULL if no token found (prevents empty tokens from being added)
+// 	if (*curr_pos == start)
+// 		return (NULL);
+
+// 	return (strndup(&input[start], *curr_pos - start));
+// }
 
 t_cmd	*get_cmd(const char *input, int *curr_pos, t_env *env_list)
 {
@@ -156,23 +372,35 @@ t_cmd	*get_cmd(const char *input, int *curr_pos, t_env *env_list)
 		}
 		else
 		{
-			char *token = get_token(input, curr_pos);
-			if (token)
+			t_token *token_struct = get_token(input, curr_pos);
+			if (token_struct)
 			{
-				// 2) Expand it if it starts with '$'
-				char *expanded = expand_env_token(token, env_list); // use your env list
-				free(token); // free the old token
+				printf("[Token: %s]\n", token_struct->value);
 
-				// 3) Create the node with the expanded token
-				new_node = ft_lstnew((void *)expanded);
+				// ✅ Expand environment variables **ONLY if not single-quoted**
+				char *final_token;
+				if (token_struct->is_single_quoted)
+				{
+					final_token = strdup(token_struct->value); // Preserve as-is
+				}
+				else
+				{
+					final_token = expand_env_token(token_struct->value, env_list);
+				}
+
+				free(token_struct->value);
+				free(token_struct);
+
+				// ✅ Store the processed token
+				new_node = ft_lstnew((void *)final_token);
 				if (!new_node)
 				{
-					free(expanded);
+					free(final_token);
 					return (NULL);
 				}
 				ft_lstadd_back(&cmd->tokens, new_node);
 			}
-		}
+		}	
 	}
 	return (cmd);
 }
