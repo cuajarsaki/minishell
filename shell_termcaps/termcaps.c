@@ -33,7 +33,7 @@ void setup_terminal()
     new_termios = old_termios;
 
     // Disable canonical mode, echo, signals, and other features
-    new_termios.c_lflag &= ~(ICANON | ECHO | ISIG | IEXTEN);
+    new_termios.c_lflag &= ~(ICANON | ECHO | IEXTEN);
     new_termios.c_iflag &= ~(IXON);
     new_termios.c_cc[VMIN] = 1;
     new_termios.c_cc[VTIME] = 0;
@@ -98,7 +98,6 @@ void	exit_program()
 {
 	exit(0);
 }
-
 
 void history_up(char *buf, size_t *len, size_t *cursor_pos) {
     const char *prev_command = get_history(-1);
@@ -171,12 +170,6 @@ void handle_input(char *buf, size_t *len, size_t max_len) {
                 write(STDOUT_FILENO, buf, *len); // Rewrite the buffer
                 write(STDOUT_FILENO, "\033[D", 3 * (*len - cursor_pos)); // Move cursor back
             }
-        } else if (c == 3) { // Ctrl-C
-            write(STDOUT_FILENO, "^C\n", 3);
-            buf[0] = '\0';
-            *len = 0;
-            cursor_pos = 0;
-            return;
         } else if (c == 4) { // Ctrl-D
             if (*len == 0) {
                 write(STDOUT_FILENO, "exit\n", 5);

@@ -1,9 +1,5 @@
 #include "shell.h"
 
-
-
-
-
 /*********
  * DEBUG *
  *********/
@@ -112,17 +108,6 @@ void debug_ast(t_ast *ast)
  * ACTUAL MAIN *
  ***************/
 
-
-
-
-void	ignore_signals(void)
-{
-	signal(SIGINT, SIG_IGN);
-	signal(SIGQUIT, SIG_IGN);
-	signal(SIGTSTP, SIG_IGN);
-}
-
-
 void set_prompt(const char *prompt, t_env *env_list)
 {
 	int running = 1;
@@ -159,9 +144,8 @@ int main(void)
     t_env *env_list = init_env_list(); // Initialize environment variables
 
     setup_terminal();
-    ignore_signals();
+    setup_signals();
     set_prompt("minishell ❤ ", env_list); // Pass env_list
-
     free_env_list(env_list); // Free environment variables before exit
     free_history();
     reset_terminal_settings();
