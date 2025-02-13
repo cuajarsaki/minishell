@@ -129,7 +129,7 @@ void handle_input(char *buf, size_t *len, size_t max_len) {
     char c;
     size_t cursor_pos = *len; // Tracks the current cursor position
     ssize_t r;
-    
+
     while ((r = read(STDIN_FILENO, &c, 1)) > 0) {
         
         if (r == -1) {
@@ -187,6 +187,10 @@ void handle_input(char *buf, size_t *len, size_t max_len) {
                 write(STDOUT_FILENO, "exit\n", 5);
                 exit(0);
             }
+        } else if (c == 31) { // Ctrl-/
+            write(STDOUT_FILENO, "\r\033[K", 4);
+            *len = 0;
+            return;
         } else if (*len < max_len - 1) {
             for (size_t i = *len; i > cursor_pos; i--) {
                 buf[i] = buf[i - 1];
