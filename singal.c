@@ -20,7 +20,15 @@ void handle_sigint(int sig)
 
 void setup_signals(void)
 {
-    signal(SIGINT, handle_sigint);
+    struct sigaction sa;
+
+    sa.sa_handler = handle_sigint;
+    sa.sa_flags = 0;
+    sigemptyset(&sa.sa_mask);
+    if (sigaction(SIGINT, &sa, NULL) == -1) {
+        perror("sigaction");
+        exit(EXIT_FAILURE);
+    }
     signal(SIGQUIT, SIG_IGN);
     signal(SIGTSTP, SIG_IGN);
 }

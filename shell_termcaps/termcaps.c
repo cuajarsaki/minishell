@@ -128,8 +128,20 @@ void history_down(char *buf, size_t *len, size_t *cursor_pos) {
 void handle_input(char *buf, size_t *len, size_t max_len) {
     char c;
     size_t cursor_pos = *len; // Tracks the current cursor position
+    ssize_t r;
+    
+    while ((r = read(STDIN_FILENO, &c, 1)) > 0) {
+        
+        if (r == -1) {
+            if (errno == EINTR) {
+                // if Ctrl+C then start a new loop
+                return;
+            } else {
+                perror("read");
+                exit(EXIT_FAILURE);
+            }
+        }
 
-    while (read(STDIN_FILENO, &c, 1) > 0) {
         if (c == '\033') { // Escape character
             char seq[3] = {0};
             if (read(STDIN_FILENO, &seq[0], 1) == 0) continue;

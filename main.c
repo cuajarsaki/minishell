@@ -123,7 +123,6 @@ void set_prompt(const char *prompt, t_env *env_list)
         ft_memset(buf, 0, sizeof(buf));
         len = 0;
         handle_input(buf, &len, sizeof(buf));
-
         if (ft_strcmp(buf, "exit") == 0) {
             running = 0;
             continue;
