@@ -87,13 +87,6 @@ void handle_backspace(char *buf, size_t *len)
     }
 }
 
-void	reset_cmd_line(char *buf, size_t *len)
-{
-            write(STDOUT_FILENO, "^C\n", 3);
-            buf[0] = '\0';
-            *len = 0; 
-}
-
 void	exit_program()
 {
 	exit(0);
@@ -131,17 +124,6 @@ void handle_input(char *buf, size_t *len, size_t max_len) {
     ssize_t r;
 
     while ((r = read(STDIN_FILENO, &c, 1)) > 0) {
-        
-        if (r == -1) {
-            if (errno == EINTR) {
-                // if Ctrl+C then start a new loop
-                return;
-            } else {
-                perror("read");
-                exit(EXIT_FAILURE);
-            }
-        }
-
         if (c == '\033') { // Escape character
             char seq[3] = {0};
             if (read(STDIN_FILENO, &seq[0], 1) == 0) continue;

@@ -12,9 +12,12 @@
 
 #include "shell.h"
 
+volatile sig_atomic_t g_signal_received = 0; 
+
 void handle_sigint(int sig)
 {
     (void)sig;
+    g_signal_received = 1;
     write(STDOUT_FILENO, "^C\n", 4);
 }
 

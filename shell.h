@@ -16,6 +16,8 @@
 #include <stdbool.h>
 #include <sys/wait.h>
 
+extern volatile sig_atomic_t g_signal_received;
+
 typedef struct s_ast
 {
 	t_list	*command_groups;
