@@ -2,7 +2,9 @@
 
 void shell_echo(char **args)
 {
-	bool newline = true;
+	// compile error occurs if dont comment out this line?
+	// need to be double check Å´
+	// bool newline = true;
 	int i = 0;
 	
 	if (args[i] && ft_strcmp(args[i], "-n") == 0)
