@@ -6,7 +6,7 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/02/12 15:45:53 by jidler           ###   ########.fr       */
+/*   Updated: 2025/02/18 09:55:52 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ char	*expand_env_token(const char *token, t_env *env_list)
 	int		len = strlen(token);
 
 	// Allocate result buffer (initially empty)
-	result = calloc(1, sizeof(char));
+	result = ft_calloc(1, sizeof(char));
 	if (!result)
 		return (NULL);
 
@@ -262,7 +262,7 @@ t_token	*get_token(const char *input, int *curr_pos)
 	token_struct->is_single_quoted = 0;
 
 	// Allocate buffer to store final token
-	char	*buffer = calloc(1, sizeof(char));
+	char	*buffer = ft_calloc(1, sizeof(char));
 	if (!buffer)
 	{
 		free(token_struct);

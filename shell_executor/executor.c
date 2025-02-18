@@ -400,6 +400,50 @@ void exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
 /*             🏆 EXECUTE EXTERNAL PROGRAMS (REQUIRES FORKING)                */
 /* ************************************************************************** */
 
+int	has_slash(const char *str)
+{
+	while (*str)
+	{
+		if (*str == '/')
+			return (1);
+		str++;
+	}
+	return (0);
+}
+
+int	ft_execvp(const char *file, char *const argv[])
+{
+	char	*path_env = getenv("PATH");
+	char	**paths = NULL;
+	char	*cmd_path;
+	int		i = 0;
+
+	if (!file || !*file)
+	{
+		errno = ENOENT;
+		return (-1);
+	}
+	if (has_slash(file))  // Instead of strchr(file, '/')
+		return (execve(file, argv, NULL)); // Execute directly if it's an absolute/relative path
+	if (path_env)
+		paths = ft_split(path_env, ':');
+	while (paths && paths[i])
+	{
+		cmd_path = ft_strjoin(paths[i], file);
+		if (access(cmd_path, X_OK) == 0)
+		{
+			execve(cmd_path, argv, NULL);
+			free(cmd_path);
+			break;
+		}
+		free(cmd_path);
+		i++;
+	}
+	free(paths);
+	errno = ENOENT;
+	return (-1);
+}
+
 void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
 {
     /* Convert tokens to a NULL-terminated array for execvp */
