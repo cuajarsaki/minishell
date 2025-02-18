@@ -6,7 +6,7 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/02/18 09:55:52 by jidler           ###   ########.fr       */
+/*   Updated: 2025/02/18 10:11:28 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,34 @@ char	*get_command_group_seperator(const char *input, int *curr_pos)
 	}
 	return (strdup(""));
 }
+
+
+char *ft_realloc_str(char *ptr, size_t new_size)
+{
+    char *new_ptr;
+
+    // Allocate new memory
+    new_ptr = malloc(new_size);
+    if (!new_ptr)
+        return NULL;
+
+    // If ptr was NULL, just return the new allocation
+    if (!ptr)
+    {
+        new_ptr[0] = '\0'; // Ensure empty string
+        return new_ptr;
+    }
+
+    // Copy old content safely
+    ft_strlcpy(new_ptr, ptr, new_size);
+
+    // Free old memory
+    free(ptr);
+
+    return new_ptr;
+}
+
+
 char	*expand_env_token(const char *token, t_env *env_list)
 {
 	char	*result;
@@ -82,9 +110,9 @@ char	*expand_env_token(const char *token, t_env *env_list)
 
 			// If variable exists, append its value; else, append an empty string
 			if (var_value)
-				result = realloc(result, strlen(result) + strlen(var_value) + 1);
+				result = ft_realloc_str(result, strlen(result) + strlen(var_value) + 1);
 			else
-				result = realloc(result, strlen(result) + 1);
+				result = ft_realloc_str(result, strlen(result) + 1);
 
 			strcat(result, var_value ? var_value : "");
 
@@ -94,7 +122,7 @@ char	*expand_env_token(const char *token, t_env *env_list)
 		{
 			// Append non-variable characters
 			size_t new_len = strlen(result) + 2;
-			result = realloc(result, new_len);
+			result = ft_realloc_str(result, new_len);
 			strncat(result, &token[i], 1);
 			i++;
 		}
@@ -289,7 +317,7 @@ t_token	*get_token(const char *input, int *curr_pos)
 
 				// Append the character (escaped or not) to the buffer
 				size_t new_len = strlen(buffer) + 2;
-				buffer = realloc(buffer, new_len);
+				buffer = ft_realloc_str(buffer, new_len);
 				strncat(buffer, &input[i], 1);
 				i++;
 			}
@@ -303,7 +331,7 @@ t_token	*get_token(const char *input, int *curr_pos)
 			i++; // Skip the backslash
 			// Append only the escaped character
 			size_t new_len = strlen(buffer) + 2;
-			buffer = realloc(buffer, new_len);
+			buffer = ft_realloc_str(buffer, new_len);
 			strncat(buffer, &input[i], 1);
 			i++;
 		}
@@ -311,7 +339,7 @@ t_token	*get_token(const char *input, int *curr_pos)
 		{
 			// Append normal character to buffer
 			size_t new_len = strlen(buffer) + 2;
-			buffer = realloc(buffer, new_len);
+			buffer = ft_realloc_str(buffer, new_len);
 			strncat(buffer, &input[i], 1);
 			i++;
 		}
