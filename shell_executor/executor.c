@@ -299,73 +299,81 @@ void restore_fds(int saved_stdin, int saved_stdout)
     close(saved_stdout);
 }
 
-
-
 void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
 {
-	int fd_in;
+    int fd_in;
     int fd_out;
-
-	int saved_stdin, saved_stdout;
+    int saved_stdin, saved_stdout;
 
     set_filedirectories(cmd, &fd_in, &fd_out);
 
-	printf("fd_in: %d\n", fd_in);
-	printf("fd_out: %d\n", fd_out);
+    printf("fd_in: %d\n", fd_in);
+    printf("fd_out: %d\n", fd_out);
 
-	save_fds(&saved_stdin, &saved_stdout);
-	apply_redirections(fd_in, fd_out);
+    save_fds(&saved_stdin, &saved_stdout);
+    apply_redirections(fd_in, fd_out);
 
     if (cmd->tokens != NULL)
     {
         /* Check if built-in */
         if (is_builtin(cmd))
         {
-            // printf("Executing Built-in\n");
             exec_cmd_builtin(cmd, env_list);
         }
         else
         {
-            char **tokens = convert_list_to_arr(cmd->tokens);
-            char *cmd_path = tokens[0];
-
-            // If command has '/' (absolute or relative path), check existence
-            if (strchr(cmd_path, '/') != NULL)
+            pid_t pid = fork();
+            if (pid < 0)
             {
-                if (access(cmd_path, X_OK) == -1)
+                perror("fork");
+                exit(EXIT_FAILURE);
+            }
+            else if (pid == 0)
+            {
+                // CHILD PROCESS
+                char **tokens = convert_list_to_arr(cmd->tokens);
+                char *cmd_path = tokens[0];
+
+                // If command has '/' (absolute or relative path), check existence
+                if (strchr(cmd_path, '/') != NULL)
                 {
-                    fprintf(stderr, "b2ffshell ❤: command not found: %s\n", cmd_path);
-					restore_fds(saved_stdin, saved_stdout);
-					cleanup_fds(fd_in, fd_out);
-                    free(tokens);
-                    return;
+                    if (access(cmd_path, X_OK) == -1)
+                    {
+                        fprintf(stderr, "b2ffshell ❤: command not found: %s\n", cmd_path);
+                        restore_fds(saved_stdin, saved_stdout);
+                        cleanup_fds(fd_in, fd_out);
+                        free(tokens);
+                        exit(EXIT_FAILURE);
+                    }
                 }
+                else
+                {
+                    // Search for the command in PATH
+                    char *resolved_path = find_executable_in_path(cmd_path);
+                    if (!resolved_path)
+                    {
+                        fprintf(stderr, "b2ffshell ❤: command not found: %s\n", cmd_path);
+                        restore_fds(saved_stdin, saved_stdout);
+                        cleanup_fds(fd_in, fd_out);
+                        free(tokens);
+                        exit(EXIT_FAILURE);
+                    }
+                    free(resolved_path);
+                }
+                free(tokens);
+                exec_cmd_external(cmd, command_group, process_index, env_list);
+                // If exec_cmd_external fails, the child process will exit here
             }
             else
             {
-                // Search for the command in PATH
-                char *resolved_path = find_executable_in_path(cmd_path);
-                if (!resolved_path)
-                {
-                    fprintf(stderr, "b2ffshell ❤: command not found: %s\n", cmd_path);
-					
-					restore_fds(saved_stdin, saved_stdout);
-					cleanup_fds(fd_in, fd_out);
-					free(tokens);
-                    return;
-                }
-                free(resolved_path);
+                // PARENT PROCESS
+                ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
+                restore_fds(saved_stdin, saved_stdout);
+                cleanup_fds(fd_in, fd_out);
             }
-            free(tokens);
-            // printf("Executing External\n");
-            exec_cmd_external(cmd, command_group, process_index, env_list);
         }
     }
-	restore_fds(saved_stdin, saved_stdout);
-	cleanup_fds(fd_in, fd_out);
 }
-
-
 
 /* ************************************************************************** */
 /*              🏆 EXECUTE BUILT-IN COMMANDS (NO FORKING REQUIRED)            */
@@ -448,27 +456,14 @@ void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_i
 {
     /* Convert tokens to a NULL-terminated array for execvp */
     char **tokens = convert_list_to_arr(cmd->tokens);
-    pid_t pid = fork();
 
     /* If you do not need env_list here, you can safely ignore it or remove. */
     (void)env_list;
 
-    if (pid < 0)
+    if (execvp(tokens[0], tokens) == -1)
     {
-        perror("fork");
-        exit(EXIT_FAILURE);
-    }
-    else if (pid == 0)
-    {
-        execvp(tokens[0], tokens);
         perror("execvp");
-        exit(EXIT_FAILURE);
-    }
-    else
-    {
-        /* Save PID in the command_group's pids list to wait on later */
-        ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
-        free(tokens);
+        exit(EXIT_FAILURE); // Exit the child process if execvp fails
     }
 }
 
