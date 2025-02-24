@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 19:57:16 by pchung            #+#    #+#             */
-/*   Updated: 2025/02/13 01:15:39 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/25 01:48:40 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void handle_sigint(int sig)
 {
     (void)sig;
     g_signal_received = 1;
-    write(STDOUT_FILENO, "^C\n", 4);
+    write(STDOUT_FILENO, "\n", 2);
 }
 
 void setup_signals(void)
