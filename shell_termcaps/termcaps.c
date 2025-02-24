@@ -66,9 +66,10 @@ void history_down(char *buf, size_t *len, size_t *cursor_pos) {
 void handle_input(char *buf, size_t *len, size_t max_len) {
     char c;
     size_t cursor_pos = *len; // Tracks the current cursor position
-    ssize_t r;
+    ssize_t r ;
 
-    while ((r = read(STDIN_FILENO, &c, 1)) > 0) {
+    while ((r=read(STDIN_FILENO, &c, 1)) >= 0)
+    {
         if (c == '\033') { // Escape character
             char seq[3] = {0};
             if (read(STDIN_FILENO, &seq[0], 1) == 0) continue;
@@ -109,16 +110,22 @@ void handle_input(char *buf, size_t *len, size_t max_len) {
                 write(STDOUT_FILENO, buf, *len); // Rewrite the buffer
                 write(STDOUT_FILENO, "\033[D", 3 * (*len - cursor_pos)); // Move cursor back
             }
-        } else if (c == 4) { // Ctrl-D
+        }
+        else if (r == 0)
+        { // Ctrl-D
             if (*len == 0) {
                 write(STDOUT_FILENO, "exit\n", 5);
                 exit(0);
             }
-        } else if (c == 31) { // Ctrl-/
+        }
+        else if (c == 31)
+        { // Ctrl-/
             write(STDOUT_FILENO, "\r\033[K", 4);
             *len = 0;
             return;
-        } else if (*len < max_len - 1) {
+        }
+        else if (*len < max_len - 1)
+        {
             for (size_t i = *len; i > cursor_pos; i--) {
                 buf[i] = buf[i - 1];
             }
