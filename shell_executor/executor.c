@@ -9,7 +9,7 @@ void exec_command_group(t_command_group *command_group, t_env *env_list);
 void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list);
 void exec_cmd_builtin(t_cmd *cmd, t_env *env_list);
 void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list);
-int  is_builtin(t_cmd *cmd);
+int is_builtin(t_cmd *cmd);
 void exec_parent(t_list **pids);
 char **convert_list_to_arr(t_list *lst);
 
@@ -73,33 +73,16 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
     int cmd_count = ft_lstsize(cmds);
     int i = 0;
     int pipe_fd[2];
-    int prev_pipe_fd = -1;  // Previous command's output
+    int prev_pipe_fd = -1; // Previous command's output
 
     if (cmd_count == 0)
         return;
 
-	if (cmd_count == 1)
-	{
-        exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
-        cmds = cmds->next;
-        i++;
-		exec_parent(&command_group->pids); // Wait for processes
-		return;
-	}
-		
-
-    while (cmds)
+    if (cmd_count == 1)
     {
-        // Create a pipe only if there’s another command after this one
-        if (i < cmd_count - 1)
-        {
-            if (pipe(pipe_fd) < 0)
-            {
-                perror("pipe");
-                exit(EXIT_FAILURE);
-            }
-        }
-
+        // !!!
+        // Separate fork handling for cases with and without pipes (Plz notice me if you want to change approach)
+        // !!
         pid_t pid = fork();
         if (pid < 0)
         {
@@ -109,48 +92,82 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
         else if (pid == 0)
         {
             // CHILD PROCESS
-            
-            // If there's a previous pipe, read from it
-            if (prev_pipe_fd != -1)
-            {
-                dup2(prev_pipe_fd, STDIN_FILENO);
-                close(prev_pipe_fd);
-            }
-
-            // If there's a next command, write output to the pipe
-            if (i < cmd_count - 1)
-            {
-                dup2(pipe_fd[1], STDOUT_FILENO);
-                close(pipe_fd[1]);
-                close(pipe_fd[0]); // Close unused read-end
-            }
-
             exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
-            exit(EXIT_FAILURE);
+            exit(EXIT_SUCCESS); // Exit the child process
         }
         else
         {
             // PARENT PROCESS
             ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
-
-            // Close previous read-end, since it's no longer needed
-            if (prev_pipe_fd != -1)
-                close(prev_pipe_fd);
-
-            // Store the new read-end for the next command
-            if (i < cmd_count - 1)
-            {
-                close(pipe_fd[1]);  // Close write-end in parent
-                prev_pipe_fd = pipe_fd[0];  // Keep read-end for next iteration
-            }
-
-            cmds = cmds->next;
-            i++;
+            exec_parent(&command_group->pids); // Wait for the child process to complete
         }
     }
+    else if (cmd_count > 1)
+    {
+        while (cmds)
+        {
+            // Create a pipe only if there’s another command after this one
+            if (i < cmd_count - 1)
+            {
+                if (pipe(pipe_fd) < 0)
+                {
+                    perror("pipe");
+                    exit(EXIT_FAILURE);
+                }
+            }
 
-    // Parent waits for all child processes to complete
-    exec_parent(&command_group->pids);
+            pid_t pid = fork();
+            if (pid < 0)
+            {
+                perror("fork");
+                exit(EXIT_FAILURE);
+            }
+            else if (pid == 0)
+            {
+                // CHILD PROCESS
+
+                // If there's a previous pipe, read from it
+                if (prev_pipe_fd != -1)
+                {
+                    dup2(prev_pipe_fd, STDIN_FILENO);
+                    close(prev_pipe_fd);
+                }
+
+                // If there's a next command, write output to the pipe
+                if (i < cmd_count - 1)
+                {
+                    dup2(pipe_fd[1], STDOUT_FILENO);
+                    close(pipe_fd[1]);
+                    close(pipe_fd[0]); // Close unused read-end
+                }
+
+                exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
+                exit(EXIT_FAILURE);
+            }
+            else
+            {
+                // PARENT PROCESS
+                ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
+
+                // Close previous read-end, since it's no longer needed
+                if (prev_pipe_fd != -1)
+                    close(prev_pipe_fd);
+
+                // Store the new read-end for the next command
+                if (i < cmd_count - 1)
+                {
+                    close(pipe_fd[1]);         // Close write-end in parent
+                    prev_pipe_fd = pipe_fd[0]; // Keep read-end for next iteration
+                }
+
+                cmds = cmds->next;
+                i++;
+            }
+        }
+
+        // Parent waits for all child processes to complete
+        exec_parent(&command_group->pids);
+    }
 }
 
 /* ************************************************************************** */
@@ -175,19 +192,23 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
 //     }
 // }
 
-char *find_executable_in_path(const char *cmd) {
+char *find_executable_in_path(const char *cmd)
+{
     char *path_env = getenv("PATH");
-    if (!path_env || strlen(path_env) == 0) {
+    if (!path_env || strlen(path_env) == 0)
+    {
         return NULL; // No PATH environment variable
     }
 
     char *paths = strdup(path_env);
     char *dir = strtok(paths, ":");
 
-    while (dir) {
+    while (dir)
+    {
         char full_path[1024];
         snprintf(full_path, sizeof(full_path), "%s/%s", dir, cmd);
-        if (access(full_path, X_OK) == 0) {
+        if (access(full_path, X_OK) == 0)
+        {
             free(paths);
             return strdup(full_path); // Return a valid command path
         }
@@ -205,7 +226,6 @@ void cleanup_fds(int fd_in, int fd_out)
     if (fd_out != -1)
         close(fd_out);
 }
-
 
 void apply_redirections(int fd_in, int fd_out)
 {
@@ -231,14 +251,14 @@ void set_filedirectories(t_cmd *cmd, int *fd_in, int *fd_out)
         return;
 
     redirs = cmd->redirs;
-    *fd_in = -1;  // Initialize file descriptors to -1 (unset)
+    *fd_in = -1; // Initialize file descriptors to -1 (unset)
     *fd_out = -1;
 
     while (redirs)
     {
         t_redir *redir = (t_redir *)redirs->content;
 
-		if (ft_strncmp(redir->type, ">>", 2) == 0) // Append output
+        if (ft_strncmp(redir->type, ">>", 2) == 0) // Append output
         {
             if (*fd_out != -1)
                 close(*fd_out);
@@ -287,7 +307,6 @@ void save_fds(int *saved_stdin, int *saved_stdout)
         perror("save_fds: dup failed");
 }
 
-
 void restore_fds(int saved_stdin, int saved_stdout)
 {
     if (dup2(saved_stdin, STDIN_FILENO) == -1)
@@ -322,55 +341,38 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
         }
         else
         {
-            pid_t pid = fork();
-            if (pid < 0)
-            {
-                perror("fork");
-                exit(EXIT_FAILURE);
-            }
-            else if (pid == 0)
-            {
-                // CHILD PROCESS
-                char **tokens = convert_list_to_arr(cmd->tokens);
-                char *cmd_path = tokens[0];
+            // CHILD PROCESS
+            char **tokens = convert_list_to_arr(cmd->tokens);
+            char *cmd_path = tokens[0];
 
-                // If command has '/' (absolute or relative path), check existence
-                if (strchr(cmd_path, '/') != NULL)
+            // If command has '/' (absolute or relative path), check existence
+            if (strchr(cmd_path, '/') != NULL)
+            {
+                if (access(cmd_path, X_OK) == -1)
                 {
-                    if (access(cmd_path, X_OK) == -1)
-                    {
-                        fprintf(stderr, "b2ffshell ❤: command not found: %s\n", cmd_path);
-                        restore_fds(saved_stdin, saved_stdout);
-                        cleanup_fds(fd_in, fd_out);
-                        free(tokens);
-                        exit(EXIT_FAILURE);
-                    }
+                    fprintf(stderr, "b2ffshell ❤: command not found: %s\n", cmd_path);
+                    restore_fds(saved_stdin, saved_stdout);
+                    cleanup_fds(fd_in, fd_out);
+                    free(tokens);
+                    return; // Return to parent process
                 }
-                else
-                {
-                    // Search for the command in PATH
-                    char *resolved_path = find_executable_in_path(cmd_path);
-                    if (!resolved_path)
-                    {
-                        fprintf(stderr, "b2ffshell ❤: command not found: %s\n", cmd_path);
-                        restore_fds(saved_stdin, saved_stdout);
-                        cleanup_fds(fd_in, fd_out);
-                        free(tokens);
-                        exit(EXIT_FAILURE);
-                    }
-                    free(resolved_path);
-                }
-                free(tokens);
-                exec_cmd_external(cmd, command_group, process_index, env_list);
-                // If exec_cmd_external fails, the child process will exit here
             }
             else
             {
-                // PARENT PROCESS
-                ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
-                restore_fds(saved_stdin, saved_stdout);
-                cleanup_fds(fd_in, fd_out);
+                // Search for the command in PATH
+                char *resolved_path = find_executable_in_path(cmd_path);
+                if (!resolved_path)
+                {
+                    fprintf(stderr, "b2ffshell ❤: command not found: %s\n", cmd_path);
+                    restore_fds(saved_stdin, saved_stdout);
+                    cleanup_fds(fd_in, fd_out);
+                    free(tokens);
+                    return; // Return to parent process
+                }
+                free(resolved_path);
             }
+            free(tokens);
+            exec_cmd_external(cmd, command_group, process_index, env_list);
         }
     }
 }
@@ -382,7 +384,7 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
 void exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
 {
     char *program = (char *)cmd->tokens->content;
-    char **args =convert_list_to_arr(cmd->tokens->next);
+    char **args = convert_list_to_arr(cmd->tokens->next);
 
     if (strcmp(program, "echo") == 0)
         shell_echo(args);
@@ -391,7 +393,7 @@ void exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
         if (cmd->tokens->next && cmd->tokens->next->content)
             shell_cd((char *)cmd->tokens->next->content);
         else
-             shell_cd(NULL); 
+            shell_cd(NULL);
     }
     else if (strcmp(program, "pwd") == 0)
         shell_pwd();
@@ -408,48 +410,48 @@ void exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
 /*             🏆 EXECUTE EXTERNAL PROGRAMS (REQUIRES FORKING)                */
 /* ************************************************************************** */
 
-int	has_slash(const char *str)
+int has_slash(const char *str)
 {
-	while (*str)
-	{
-		if (*str == '/')
-			return (1);
-		str++;
-	}
-	return (0);
+    while (*str)
+    {
+        if (*str == '/')
+            return (1);
+        str++;
+    }
+    return (0);
 }
 
-int	ft_execvp(const char *file, char *const argv[])
+int ft_execvp(const char *file, char *const argv[])
 {
-	char	*path_env = getenv("PATH");
-	char	**paths = NULL;
-	char	*cmd_path;
-	int		i = 0;
+    char *path_env = getenv("PATH");
+    char **paths = NULL;
+    char *cmd_path;
+    int i = 0;
 
-	if (!file || !*file)
-	{
-		errno = ENOENT;
-		return (-1);
-	}
-	if (has_slash(file))  // Instead of strchr(file, '/')
-		return (execve(file, argv, NULL)); // Execute directly if it's an absolute/relative path
-	if (path_env)
-		paths = ft_split(path_env, ':');
-	while (paths && paths[i])
-	{
-		cmd_path = ft_strjoin(paths[i], file);
-		if (access(cmd_path, X_OK) == 0)
-		{
-			execve(cmd_path, argv, NULL);
-			free(cmd_path);
-			break;
-		}
-		free(cmd_path);
-		i++;
-	}
-	free(paths);
-	errno = ENOENT;
-	return (-1);
+    if (!file || !*file)
+    {
+        errno = ENOENT;
+        return (-1);
+    }
+    if (has_slash(file))                   // Instead of strchr(file, '/')
+        return (execve(file, argv, NULL)); // Execute directly if it's an absolute/relative path
+    if (path_env)
+        paths = ft_split(path_env, ':');
+    while (paths && paths[i])
+    {
+        cmd_path = ft_strjoin(paths[i], file);
+        if (access(cmd_path, X_OK) == 0)
+        {
+            execve(cmd_path, argv, NULL);
+            free(cmd_path);
+            break;
+        }
+        free(cmd_path);
+        i++;
+    }
+    free(paths);
+    errno = ENOENT;
+    return (-1);
 }
 
 void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
@@ -463,6 +465,7 @@ void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_i
     if (execvp(tokens[0], tokens) == -1)
     {
         perror("execvp");
+        free(tokens);       // Free the allocated memory
         exit(EXIT_FAILURE); // Exit the child process if execvp fails
     }
 }
@@ -471,22 +474,17 @@ void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_i
 /*              🏆 WAIT FOR ALL CHILD PROCESSES TO FINISH                     */
 /* ************************************************************************** */
 
-
-
 void exec_parent(t_list **pids)
 {
     int status;
-    pid_t pid;
     t_list *pids_now;
 
     pids_now = *pids;
     while (pids_now)
     {
-        pid = (pid_t)(intptr_t)(pids_now)->content;
-        waitpid(pid, &status, 0);
+        waitpid(-1, &status, 0);
         pids_now = (pids_now)->next;
     }
-
 }
 
 /* ************************************************************************** */
@@ -503,17 +501,17 @@ int is_builtin(t_cmd *cmd)
         meaning "not recognized as builtin." If you want them
         recognized as built-ins, return 1 for matches instead.
     */
-    if (!strcmp(program, "echo")   ||
-        !strcmp(program, "cd")     ||
-        !strcmp(program, "pwd")    ||
+    if (!strcmp(program, "echo") ||
+        !strcmp(program, "cd") ||
+        !strcmp(program, "pwd") ||
         !strcmp(program, "export") ||
-        !strcmp(program, "unset")  ||
-        !strcmp(program, "env")    ||
+        !strcmp(program, "unset") ||
+        !strcmp(program, "env") ||
         !strcmp(program, "exit"))
     {
         return 1; // <--- This effectively says "Not builtin" in your logic
     }
-    return 0;     // <--- Everything else also returns "Not builtin"
+    return 0; // <--- Everything else also returns "Not builtin"
 }
 
 /* Convert linked list to a NULL-terminated C-string array */
