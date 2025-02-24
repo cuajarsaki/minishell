@@ -120,6 +120,11 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
             if (pid < 0)
             {
                 perror("fork");
+                if (i < cmd_count - 1)
+                {
+                    close(pipe_fd[0]);
+                    close(pipe_fd[1]);
+                }
                 exit(EXIT_FAILURE);
             }
             else if (pid == 0)
