@@ -9,7 +9,7 @@ SRC = main.c free.c singal.c terminal.c $(CMD_DIR)/shell_cd.c $(CMD_DIR)/shell_c
 	$(CMD_DIR)/shell_export.c $(CMD_DIR)/shell_unset.c $(CMD_DIR)/shell_env.c\
 	custom_implements.c
 
-NAME = shell
+NAME = minishell
 
 CC = cc
 CFLAGS = -g3 -fsanitize=address
