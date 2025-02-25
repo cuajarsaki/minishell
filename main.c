@@ -119,8 +119,7 @@ void set_prompt(const char *prompt, t_env *env_list)
 
     term_clear_screen();
     while (running) {
-        write(STDOUT_FILENO, prompt, ft_strlen(prompt));
-        g_signal_received=0;
+        // write(STDOUT_FILENO, prompt, ft_strlen(prompt));
         ft_memset(buf, 0, sizeof(buf));
         len = 0;
         handle_input(buf, &len, sizeof(buf));
