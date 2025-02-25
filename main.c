@@ -119,16 +119,19 @@ void set_prompt(const char *prompt, t_env *env_list)
 
     term_clear_screen();
     while (running) {
+        init_readline_for_signal();
         // write(STDOUT_FILENO, prompt, ft_strlen(prompt));
         ft_memset(buf, 0, sizeof(buf));
         len = 0;
         handle_input(buf, &len, sizeof(buf));
-
-        if (g_signal_received) {
-        g_signal_received = 0; 
-        buf[0] = '\0';
-        len = 0;
-    }
+        
+        // if (g_signal_received) {
+        //     g_signal_received = 0; 
+        //     buf[0] = '\0';
+        //     len = 0;
+        // }
+            
+        g_signal_received=0;
         if (ft_strcmp(buf, "exit") == 0) {
             running = 0;
             continue;
