@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/14 17:21:32 by pchung            #+#    #+#             */
-/*   Updated: 2025/02/25 02:40:18 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/26 00:18:34 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,15 +36,7 @@ void setup_terminal(struct termios *old_termios)
         exit(EXIT_FAILURE);
     }
 
-    struct termios new_termios = *old_termios;
-
-    // // Disable canonical mode, echo, signals, and other features
-    // new_termios.c_lflag &= ~(ICANON | ECHO | IEXTEN);
-    // new_termios.c_iflag &= ~(IXON);
-    // new_termios.c_cc[VMIN] = 1;
-    // new_termios.c_cc[VTIME] = 0;
-
-    if (tcsetattr(STDIN_FILENO, TCSANOW, &new_termios) < 0)
+    if (tcsetattr(STDIN_FILENO, TCSANOW, old_termios) < 0)
     {
         perror("Failed to set terminal attributes");
         exit(EXIT_FAILURE);
