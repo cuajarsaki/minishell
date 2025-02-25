@@ -16,6 +16,7 @@
 #include <stdbool.h>
 #include <sys/wait.h>
 #include <term.h>
+#include <termios.h>
 
 extern volatile sig_atomic_t g_signal_received;
 
@@ -103,9 +104,6 @@ void free_cmd(t_cmd *cmd);
 void free_command_group(t_command_group *command_group);
 
 // TERMCAP FUNCTIONS
-void move_cursor(int row, int col);
-void reset_cursor();
-void handle_backspace(char *buf, size_t *len);
 void handle_input(char *buf, size_t *len, size_t max_len);
 void free_history(void);
 
@@ -115,6 +113,7 @@ void setup_terminal(struct termios *old_termios);
 void term_clear_screen();
 
 // SINGAL  FUNCTIONS
+void init_readline_for_signal(void);
 void setup_signals(void);
 void handle_sigint(int sig);
 

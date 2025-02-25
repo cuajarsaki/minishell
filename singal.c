@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 19:57:16 by pchung            #+#    #+#             */
-/*   Updated: 2025/02/25 23:54:31 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/26 00:05:54 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ volatile sig_atomic_t g_signal_received = 0;
 
 static int event_hook_readline(void);
 
-    void init_readline_for_signal(void)
+void init_readline_for_signal(void)
 {
     rl_outstream = stderr;
     rl_done = 0;
