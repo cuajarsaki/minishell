@@ -1,54 +1,70 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   history.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/26 15:49:12 by pchung            #+#    #+#             */
+/*   Updated: 2025/02/26 15:54:59 by pchung           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "shell.h"
-#include <stdlib.h>
 
-#define HISTORY_SIZE 10
-
-char	*command_history[HISTORY_SIZE];
-int		history_start = 0;
-int		history_count = 0;
-int		history_index = -1;
-
-void	add_to_history(char *command)
+void add_to_history(t_history *h, char *command)
 {
-	if (history_count < HISTORY_SIZE)
-	{
-		command_history[history_count++] = ft_strdup(command);
-	}
-	else
-	{
-		free(command_history[history_start]);
-		command_history[history_start] = ft_strdup(command);
-		history_start = (history_start + 1) % HISTORY_SIZE;
-	}
-	history_index = history_count;
+    if (h->history_count < HISTORY_SIZE)
+    {
+        h->command_history[h->history_count++] = ft_strdup(command);
+    }
+    else
+    {
+        free(h->command_history[h->history_start]);
+        h->command_history[h->history_start] = ft_strdup(command);
+        h->history_start = (h->history_start + 1) % HISTORY_SIZE;
+    }
+    h->history_index = h->history_count;
 }
 
-const char	*get_history(int direction)
+const char *get_history(t_history *h, int direction)
 {
-	int	index;
+    int index;
 
-	if (history_count == 0)
-		return (NULL);
-	history_index += direction;
-	if (history_index < 0)
-		history_index = 0;
-	else if (history_index >= history_count)
-	{
-		history_index = history_count;
-		return ("");
-	}
-	index = (history_start + history_index) % HISTORY_SIZE;
-	return (command_history[index]);
+    if (h->history_count == 0)
+        return NULL;
+    h->history_index += direction;
+    if (h->history_index < 0)
+        h->history_index = 0;
+    else if (h->history_index >= h->history_count)
+    {
+        h->history_index = h->history_count;
+        return "";
+    }
+    index = (h->history_start + h->history_index) % HISTORY_SIZE;
+    return h->command_history[index];
 }
 
-void	free_history(void)
+void free_history(t_history *h)
 {
-	int	i;
+    int i = 0;
 
-	i = 0;
-	while (i < history_count)
-	{
-		free(command_history[(history_start + i) % HISTORY_SIZE]);
-		i++;
-	}
+    while (i < h->history_count)
+    {
+        free(h->command_history[(h->history_start + i) % HISTORY_SIZE]);
+        i++;
+    }
+    free(h);
+}
+
+t_history *history_new(void)
+{
+    t_history *h = malloc(sizeof(t_history));
+    if (h)
+    {
+        h->history_start = 0;
+        h->history_count = 0;
+        h->history_index = -1;
+    }
+    return h;
 }

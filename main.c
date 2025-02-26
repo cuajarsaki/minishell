@@ -145,11 +145,12 @@ int main(void)
     t_env *env_list = init_env_list(); // Initialize environment variables
 
     struct termios orig_termios;
+    t_history *history = history_new(); 
     setup_terminal(&orig_termios);
     setup_signals();
     run_shell(env_list); // Pass env_list
     free_env_list(env_list); // Free environment variables before exit
-    free_history();
+    free_history(history);
     reset_terminal_settings(&orig_termios);
     
     return 0;
