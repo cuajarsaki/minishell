@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/02/26 13:55:43 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/26 15:04:02 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,6 +166,7 @@ char	*remove_quotes(const char *token)
 	char	quote;
 	char	*new_token;
 
+	(void)quote;
 	if (!token)
 		return (NULL);
 

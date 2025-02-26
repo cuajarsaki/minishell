@@ -16,8 +16,7 @@ NAME    = minishell
 HEADERS = minishell.h
 
 CC      = cc
-# CFLAGS = -Wall -Werror -Wextra
-CFLAGS  = -g3 -fsanitize=address 
+CFLAGS  = -Wall -Werror -Wextra -g3 -fsanitize=address 
 
 LIBFT   = $(LIBFT_DIR)/libft.a
 

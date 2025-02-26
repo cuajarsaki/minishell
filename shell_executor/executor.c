@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/02/26 13:54:53 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/26 15:15:16 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ void exec_ast(t_ast *ast, t_env *env_list)
     t_list *command_group_node;
     t_command_group *command_group;
     char *seperator;
+    (void)seperator;
 
     command_group_node = ast->command_groups;
     while (command_group_node)
@@ -478,6 +479,8 @@ void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_i
 
     /* If you do not need env_list here, you can safely ignore it or remove. */
     (void)env_list;
+    (void)command_group;
+    (void)process_index;
 
     if (execvp(tokens[0], tokens) == -1)
     {
