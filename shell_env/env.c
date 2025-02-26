@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 12:14:25 by jidler            #+#    #+#             */
-/*   Updated: 2025/02/26 13:43:54 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/26 13:46:06 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ char *get_env_value(t_env *env_list, const char *key)
 {
     while (env_list)
     {
-        if (strcmp(env_list->key, key) == 0)
+        if (ft_strcmp(env_list->key, key) == 0)
             return env_list->value;
         env_list = env_list->next;
     }
@@ -82,7 +82,7 @@ void set_env_value(t_env **env_list, const char *key, const char *value)
     t_env *current = *env_list;
     while (current)
     {
-        if (strcmp(current->key, key) == 0) // If variable exists, update it
+        if (ft_strcmp(current->key, key) == 0) // If variable exists, update it
         {
             free(current->value);
             current->value = strdup(value);
@@ -118,7 +118,7 @@ void unset_env_value(t_env **env_list, const char *key)
     t_env *current = *env_list, *prev = NULL;
     while (current)
     {
-        if (strcmp(current->key, key) == 0)
+        if (ft_strcmp(current->key, key) == 0)
         {
             if (prev)
                 prev->next = current->next;
