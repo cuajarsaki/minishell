@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/12 16:12:22 by jidler            #+#    #+#             */
-/*   Updated: 2025/01/15 15:56:08 by jidler           ###   ########.fr       */
+/*   Updated: 2025/02/26 13:52:00 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 
-char	*ft_strdup(char *src)
+char	*ft_strdup(const char *src)
 {
 	int		length;
 	char	*copy;
@@ -20,9 +20,9 @@ char	*ft_strdup(char *src)
 	length = 0;
 	while (src[length])
 		length++;
-	copy = malloc(sizeof(char) * length + 1);
+	copy = malloc(sizeof(char) * (length + 1));
 	if (!copy)
-		return (0);
+		return (NULL);
 	length = 0;
 	while (src[length])
 	{
