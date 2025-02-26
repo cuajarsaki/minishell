@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/02/26 13:53:53 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/26 13:54:53 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,7 +212,7 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
 char *find_executable_in_path(const char *cmd)
 {
     char *path_env = getenv("PATH");
-    if (!path_env || strlen(path_env) == 0)
+    if (!path_env || ft_strlen(path_env) == 0)
     {
         return NULL; // No PATH environment variable
     }

@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 12:14:25 by jidler            #+#    #+#             */
-/*   Updated: 2025/02/26 13:47:26 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/26 13:54:53 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,7 @@ char **convert_env_list_to_array(t_env *env_list)
     temp = env_list;
     for (int i = 0; i < count; i++)
     {
-        size_t len = strlen(temp->key) + strlen(temp->value) + 2;
+        size_t len = ft_strlen(temp->key) + ft_strlen(temp->value) + 2;
         envp[i] = malloc(len);
         if (!envp[i])
             return NULL;

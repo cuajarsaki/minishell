@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/02/26 13:47:26 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/26 13:54:53 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ char	*expand_env_token(const char *token, t_env *env_list)
 	char	*var_value;
 	char	*var_name;
 	int		i = 0, j;
-	int		len = strlen(token);
+	int		len = ft_strlen(token);
 
 	// Allocate result buffer (initially empty)
 	result = ft_calloc(1, sizeof(char));
@@ -110,9 +110,9 @@ char	*expand_env_token(const char *token, t_env *env_list)
 
 			// If variable exists, append its value; else, append an empty string
 			if (var_value)
-				result = ft_realloc_str(result, strlen(result) + strlen(var_value) + 1);
+				result = ft_realloc_str(result, ft_strlen(result) + ft_strlen(var_value) + 1);
 			else
-				result = ft_realloc_str(result, strlen(result) + 1);
+				result = ft_realloc_str(result, ft_strlen(result) + 1);
 
 			strcat(result, var_value ? var_value : "");
 
@@ -121,7 +121,7 @@ char	*expand_env_token(const char *token, t_env *env_list)
 		else
 		{
 			// Append non-variable characters
-			size_t new_len = strlen(result) + 2;
+			size_t new_len = ft_strlen(result) + 2;
 			result = ft_realloc_str(result, new_len);
 			strncat(result, &token[i], 1);
 			i++;
@@ -169,7 +169,7 @@ char	*remove_quotes(const char *token)
 	if (!token)
 		return (NULL);
 
-	len = strlen(token);
+	len = ft_strlen(token);
 	if (len < 2)
 		return ft_strdup(token); // No quotes to remove
 
@@ -316,7 +316,7 @@ t_token	*get_token(const char *input, int *curr_pos)
 					i++; // Skip the backslash
 
 				// Append the character (escaped or not) to the buffer
-				size_t new_len = strlen(buffer) + 2;
+				size_t new_len = ft_strlen(buffer) + 2;
 				buffer = ft_realloc_str(buffer, new_len);
 				strncat(buffer, &input[i], 1);
 				i++;
@@ -330,7 +330,7 @@ t_token	*get_token(const char *input, int *curr_pos)
 		{
 			i++; // Skip the backslash
 			// Append only the escaped character
-			size_t new_len = strlen(buffer) + 2;
+			size_t new_len = ft_strlen(buffer) + 2;
 			buffer = ft_realloc_str(buffer, new_len);
 			strncat(buffer, &input[i], 1);
 			i++;
@@ -338,7 +338,7 @@ t_token	*get_token(const char *input, int *curr_pos)
 		else
 		{
 			// Append normal character to buffer
-			size_t new_len = strlen(buffer) + 2;
+			size_t new_len = ft_strlen(buffer) + 2;
 			buffer = ft_realloc_str(buffer, new_len);
 			strncat(buffer, &input[i], 1);
 			i++;
