@@ -11,7 +11,7 @@ void shell_export(char **args, t_env *env_list)
     // Process each argument in form "KEY=VALUE"
     while (args[i])
     {
-        char *eq = strchr(args[i], '=');
+        char *eq = ft_strchr(args[i], '=');
 
         if (!eq)
         {

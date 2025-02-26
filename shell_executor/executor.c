@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   executor.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
+/*   Updated: 2025/02/26 13:45:31 by pchung           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../shell.h"
 
 /* ************************************************************************** */
@@ -351,7 +363,7 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
             char *cmd_path = tokens[0];
 
             // If command has '/' (absolute or relative path), check existence
-            if (strchr(cmd_path, '/') != NULL)
+            if (ft_strchr(cmd_path, '/') != NULL)
             {
                 if (access(cmd_path, X_OK) == -1)
                 {

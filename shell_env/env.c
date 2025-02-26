@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 12:14:25 by jidler            #+#    #+#             */
-/*   Updated: 2025/02/09 15:53:54 by jidler           ###   ########.fr       */
+/*   Updated: 2025/02/26 13:43:54 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ t_env *init_env_list(void)
     t_env *head = NULL, *tail = NULL;
     for (int i = 0; environ[i]; i++)
     {
-        char *eq = strchr(environ[i], '=');
+        char *eq = ft_strchr(environ[i], '=');
         if (!eq)
             continue;
         *eq = '\0';
