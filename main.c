@@ -109,7 +109,7 @@ void debug_ast(t_ast *ast)
  ***************/
 
 
-void set_prompt(const char *prompt, t_env *env_list)
+void run_shell(t_env *env_list)
 {
 	int running = 1;
     char buf[8192];
@@ -147,7 +147,7 @@ int main(void)
     struct termios orig_termios;
     setup_terminal(&orig_termios);
     setup_signals();
-    set_prompt("minishell ❤ ", env_list); // Pass env_list
+    run_shell(env_list); // Pass env_list
     free_env_list(env_list); // Free environment variables before exit
     free_history();
     reset_terminal_settings(&orig_termios);

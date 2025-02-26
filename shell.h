@@ -90,7 +90,7 @@ void free_env_array(char **envp);
 void add_to_history(char *command);
 const char *get_history(int direction);
 void ignore_signals(void);
-void set_prompt(const char *prompt, t_env *env_list);
+void run_shell(t_env *env_list);
 void process_command(char *input, t_env *env_list);
 void shell_clear(void);
 void shell_cd(char *path);
