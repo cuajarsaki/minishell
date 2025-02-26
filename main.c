@@ -1,15 +1,27 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/26 23:57:54 by pchung            #+#    #+#             */
+/*   Updated: 2025/02/26 23:58:28 by pchung           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "shell.h"
 
 /*********
  * DEBUG *
  *********/
 
-#define COLOR_BLUE     "\033[34m"  // Command Table
-#define COLOR_GREEN    "\033[32m"  // Command
-#define COLOR_YELLOW   "\033[33m"  // Token
-#define COLOR_CYAN     "\033[36m"  // Redirection
-#define COLOR_MAGENTA  "\033[35m"  // seperator
-#define COLOR_RESET    "\033[0m"   // Reset to default
+#define COLOR_BLUE "\033[34m"    // Command Table
+#define COLOR_GREEN "\033[32m"   // Command
+#define COLOR_YELLOW "\033[33m"  // Token
+#define COLOR_CYAN "\033[36m"    // Redirection
+#define COLOR_MAGENTA "\033[35m" // seperator
+#define COLOR_RESET "\033[0m"    // Reset to default
 
 /* Print indentation based on depth */
 void print_indent(int depth)
@@ -47,19 +59,19 @@ void print_cmds(t_list *cmds, int depth)
     while (cmds)
     {
         t_cmd *cmd = (t_cmd *)cmds->content;
-        
+
         print_indent(depth);
         printf(COLOR_GREEN "|  +----------------------------+\n" COLOR_RESET);
 
         print_indent(depth);
         printf(COLOR_GREEN "|  | Command: %s\n" COLOR_RESET, (char *)cmd->tokens->content);
-        
+
         print_tokens(cmd->tokens->next, depth + 1); // Skip first token (command name)
         print_redirs(cmd->redirs, depth + 1);
-        
+
         print_indent(depth);
         printf(COLOR_GREEN "|  +----------------------------+\n" COLOR_RESET);
-        
+
         cmds = cmds->next;
     }
 }
@@ -70,21 +82,21 @@ void print_command_groups(t_list *command_groups, int depth)
     while (command_groups)
     {
         t_command_group *command_group = (t_command_group *)command_groups->content;
-        
+
         print_indent(depth);
         printf(COLOR_BLUE "|  +--------------------------------+\n" COLOR_RESET);
-        
+
         print_indent(depth);
         printf(COLOR_BLUE "|  | Command Table                  |\n" COLOR_RESET);
-        
+
         print_cmds(command_group->cmds, depth + 1);
-        
+
         print_indent(depth);
         printf(COLOR_MAGENTA "|  | seperator: \"%s\"\n" COLOR_RESET, command_group->seperator);
-        
+
         print_indent(depth);
         printf(COLOR_BLUE "|  +--------------------------------+\n" COLOR_RESET);
-        
+
         command_groups = command_groups->next;
     }
 }
@@ -101,38 +113,40 @@ void debug_ast(t_ast *ast)
     printf("+====================================+\n");
     printf("| " COLOR_BLUE "AST\n" COLOR_RESET);
     print_command_groups(ast->command_groups, 1);
-	printf("+====================================+\n");
+    printf("+====================================+\n");
 }
 
 /***************
  * ACTUAL MAIN *
  ***************/
 
-
 void run_shell(t_env *env_list)
 {
-	int running = 1;
+    int running = 1;
     char buf[8192];
     size_t len;
 
-	t_ast	*current_AST;
+    t_ast *current_AST;
 
     term_clear_screen();
-    while (running) {
+    while (running)
+    {
         init_readline_for_signal();
         ft_memset(buf, 0, sizeof(buf));
         len = 0;
         handle_input(buf, &len, sizeof(buf));
-            
-        g_signal_received=0;
-        if (ft_strcmp(buf, "exit") == 0) {
+
+        g_signal_received = 0;
+        if (ft_strcmp(buf, "exit") == 0)
+        {
             running = 0;
             continue;
         }
-        if (len > 0) {
-			current_AST = get_ast(buf, env_list);
-			debug_ast(current_AST);
-			exec_ast(current_AST, env_list);
+        if (len > 0)
+        {
+            current_AST = get_ast(buf, env_list);
+            debug_ast(current_AST);
+            exec_ast(current_AST, env_list);
             free_ast(current_AST);
             ft_memset(buf, 0, sizeof(buf));
             len = 0;
@@ -145,13 +159,10 @@ int main(void)
     t_env *env_list = init_env_list(); // Initialize environment variables
 
     struct termios orig_termios;
-    t_history *history = history_new(); 
     setup_terminal(&orig_termios);
     setup_signals();
-    run_shell(env_list); // Pass env_list
+    run_shell(env_list);     // Pass env_list
     free_env_list(env_list); // Free environment variables before exit
-    free_history(history);
     reset_terminal_settings(&orig_termios);
-    
     return 0;
 }

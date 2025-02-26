@@ -6,7 +6,7 @@ LIBFT_DIR  = libft
 SRC = main.c free.c singal.c terminal.c \
       $(CMD_DIR)/shell_cd.c $(CMD_DIR)/shell_commands.c \
       $(PAR_DIR)/parser.c $(EXE_DIR)/executor.c $(CMD_DIR)/shell_echo.c \
-      shell_termcaps/termcaps.c history.c shell_env/env.c \
+      shell_termcaps/termcaps.c shell_env/env.c \
       $(CMD_DIR)/shell_pwd.c $(CMD_DIR)/shell_export.c \
       $(CMD_DIR)/shell_unset.c $(CMD_DIR)/shell_env.c custom_implements.c
 

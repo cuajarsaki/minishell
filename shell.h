@@ -56,14 +56,6 @@ typedef struct s_env
 	struct s_env *next;
 } t_env;
 
-typedef struct s_history
-{
-    char	*command_history[HISTORY_SIZE];
-    int		history_start;
-    int		history_count;
-    int		history_index;
-} t_history;
-
 t_ast	*get_ast(const char *input, t_env *env_list);
 t_env *init_env_list(void);
 
@@ -102,11 +94,5 @@ void handle_input(char *buf, size_t *len, size_t max_len);
 void init_readline_for_signal(void);
 void setup_signals(void);
 void handle_sigint(int sig);
-
-// HISTORY FUNCTIONS
-void add_to_history(t_history *h, char *command);
-const char *get_history(t_history *h, int direction);
-void free_history(t_history *h);
-t_history *history_new(void);
 
 #endif
