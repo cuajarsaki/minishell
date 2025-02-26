@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 12:14:25 by jidler            #+#    #+#             */
-/*   Updated: 2025/02/26 13:46:06 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/26 13:47:26 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ t_env *new_env_node(char *key, char *value)
     t_env *new = (t_env *)malloc(sizeof(t_env));
     if (!new)
         return NULL;
-    new->key = strdup(key);
-    new->value = strdup(value);
+    new->key = ft_strdup(key);
+    new->value = ft_strdup(value);
     new->next = NULL;
     return new;
 }
@@ -85,7 +85,7 @@ void set_env_value(t_env **env_list, const char *key, const char *value)
         if (ft_strcmp(current->key, key) == 0) // If variable exists, update it
         {
             free(current->value);
-            current->value = strdup(value);
+            current->value = ft_strdup(value);
             return;
         }
         current = current->next;
@@ -95,8 +95,8 @@ void set_env_value(t_env **env_list, const char *key, const char *value)
     t_env *new_node = malloc(sizeof(t_env));
     if (!new_node)
         return;
-    new_node->key = strdup(key);
-    new_node->value = strdup(value);
+    new_node->key = ft_strdup(key);
+    new_node->value = ft_strdup(value);
     new_node->next = NULL;
 
     // Append new node to the list

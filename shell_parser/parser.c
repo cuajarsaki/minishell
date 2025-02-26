@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/02/18 10:11:28 by jidler           ###   ########.fr       */
+/*   Updated: 2025/02/26 13:47:26 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,19 +38,19 @@ char	*get_command_group_seperator(const char *input, int *curr_pos)
 	if (input[*curr_pos] == ';')
 	{
 		(*curr_pos)++;
-		return (strdup(";"));
+		return (ft_strdup(";"));
 	}
 	else if (strncmp(&input[*curr_pos], "||", 2) == 0)
 	{
 		*curr_pos += 2;
-		return (strdup("||"));
+		return (ft_strdup("||"));
 	}
 	else if (strncmp(&input[*curr_pos], "&&", 2) == 0)
 	{
 		*curr_pos += 2;
-		return (strdup("&&"));
+		return (ft_strdup("&&"));
 	}
-	return (strdup(""));
+	return (ft_strdup(""));
 }
 
 
@@ -136,18 +136,18 @@ char	*expand_env_token(const char *token, t_env *env_list)
 // {
 //     // 1) If token is NULL or empty, just return a copy
 //     if (!token || !*token)
-//         return (token ? strdup(token) : NULL);
+//         return (token ? ft_strdup(token) : NULL);
 
 //     // 2) If token does NOT start with '$', return a copy unchanged
 //     if (token[0] != '$')
-//         return strdup(token);
+//         return ft_strdup(token);
 
 //     // 3) Extract the variable name (everything after '$')
 //     const char *var_name = token + 1;
 
 //     // Edge case: if the token is just "$", no var_name
 //     if (!*var_name)
-//         return strdup("$"); // or return strdup("") depending on your shell’s behavior
+//         return ft_strdup("$"); // or return ft_strdup("") depending on your shell’s behavior
 
 //     // 4) Look up var_name in env_list
 //     char *val = get_env_value(env_list, var_name);
@@ -157,7 +157,7 @@ char	*expand_env_token(const char *token, t_env *env_list)
 //         val = "";
 
 //     // 5) Return a newly allocated copy of the expansion
-//     return strdup(val);
+//     return ft_strdup(val);
 // }
 
 char	*remove_quotes(const char *token)
@@ -171,7 +171,7 @@ char	*remove_quotes(const char *token)
 
 	len = strlen(token);
 	if (len < 2)
-		return strdup(token); // No quotes to remove
+		return ft_strdup(token); // No quotes to remove
 
 	// Check if token starts and ends with the same quote
 	if ((token[0] == '\'' || token[0] == '\"') && token[0] == token[len - 1])
@@ -183,7 +183,7 @@ char	*remove_quotes(const char *token)
 	else
 	{
 		// No matching surrounding quotes, return as is
-		new_token = strdup(token);
+		new_token = ft_strdup(token);
 	}
 
 	return new_token;
@@ -409,7 +409,7 @@ t_cmd	*get_cmd(const char *input, int *curr_pos, t_env *env_list)
 				char *final_token;
 				if (token_struct->is_single_quoted)
 				{
-					final_token = strdup(token_struct->value); // Preserve as-is
+					final_token = ft_strdup(token_struct->value); // Preserve as-is
 				}
 				else
 				{
