@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/02/26 13:47:26 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/26 13:53:53 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,7 +218,7 @@ char *find_executable_in_path(const char *cmd)
     }
 
     char *paths = ft_strdup(path_env);
-    char *dir = strtok(paths, ":");
+    char *dir = ft_strtok(paths, ":");
 
     while (dir)
     {
@@ -229,7 +229,7 @@ char *find_executable_in_path(const char *cmd)
             free(paths);
             return ft_strdup(full_path); // Return a valid command path
         }
-        dir = strtok(NULL, ":");
+        dir = ft_strtok(NULL, ":");
     }
 
     free(paths);
