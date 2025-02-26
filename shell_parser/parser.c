@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/02/26 13:54:53 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/26 13:55:43 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int		is_cmd_seperator(char c)
 
 int		is_command_group_seperator(const char *str)
 {
-	return (strncmp(str, "||", 2) == 0 || strncmp(str, "&&", 2) == 0 || *str == ';');
+	return (ft_strncmp(str, "||", 2) == 0 || ft_strncmp(str, "&&", 2) == 0 || *str == ';');
 }
 
 char	*get_command_group_seperator(const char *input, int *curr_pos)
@@ -40,12 +40,12 @@ char	*get_command_group_seperator(const char *input, int *curr_pos)
 		(*curr_pos)++;
 		return (ft_strdup(";"));
 	}
-	else if (strncmp(&input[*curr_pos], "||", 2) == 0)
+	else if (ft_strncmp(&input[*curr_pos], "||", 2) == 0)
 	{
 		*curr_pos += 2;
 		return (ft_strdup("||"));
 	}
-	else if (strncmp(&input[*curr_pos], "&&", 2) == 0)
+	else if (ft_strncmp(&input[*curr_pos], "&&", 2) == 0)
 	{
 		*curr_pos += 2;
 		return (ft_strdup("&&"));
@@ -203,7 +203,7 @@ t_redir	*get_redir(const char *input, int *curr_pos)
 		return (NULL);
 
 	// Identify redirection type
-	if (strncmp(&input[*curr_pos], ">>", 2) == 0)
+	if (ft_strncmp(&input[*curr_pos], ">>", 2) == 0)
 	{
 		strcpy(redir->type, ">>");
 		*curr_pos += 2;
