@@ -1,35 +1,40 @@
-CMD_DIR = shell_commands
-PAR_DIR = shell_parser
-EXE_DIR = shell_executor
-LIBFT_DIR = libft
+CMD_DIR    = shell_commands
+PAR_DIR    = shell_parser
+EXE_DIR    = shell_executor
+LIBFT_DIR  = libft
 
-SRC = main.c free.c singal.c terminal.c $(CMD_DIR)/shell_cd.c $(CMD_DIR)/shell_commands.c \
-	$(PAR_DIR)/parser.c $(EXE_DIR)/executor.c $(CMD_DIR)/shell_echo.c \
-	shell_termcaps/termcaps.c history.c shell_env/env.c $(CMD_DIR)/shell_pwd.c \
-	$(CMD_DIR)/shell_export.c $(CMD_DIR)/shell_unset.c $(CMD_DIR)/shell_env.c\
-	custom_implements.c
+SRC = main.c free.c singal.c terminal.c \
+      $(CMD_DIR)/shell_cd.c $(CMD_DIR)/shell_commands.c \
+      $(PAR_DIR)/parser.c $(EXE_DIR)/executor.c $(CMD_DIR)/shell_echo.c \
+      shell_termcaps/termcaps.c history.c shell_env/env.c \
+      $(CMD_DIR)/shell_pwd.c $(CMD_DIR)/shell_export.c \
+      $(CMD_DIR)/shell_unset.c $(CMD_DIR)/shell_env.c custom_implements.c
 
-NAME = minishell
+OBJ = $(SRC:.c=.o)
 
-CC = cc
-CFLAGS = -g3 -fsanitize=address
+NAME    = minishell
+HEADERS = minishell.h
+
+CC      = cc
 # CFLAGS = -Wall -Werror -Wextra
-LIBFT = $(LIBFT_DIR)/libft.a
+CFLAGS  = -g3 -fsanitize=address 
+
+LIBFT   = $(LIBFT_DIR)/libft.a
 
 all: libft $(NAME)
 
 libft:
 	$(MAKE) -C $(LIBFT_DIR)
 
-$(NAME): $(SRC) $(LIBFT)
-	$(CC) $(CFLAGS) $(SRC) -o $(NAME) -lreadline -ltermcap -L$(LIBFT_DIR) -lft
+$(NAME): $(OBJ) $(LIBFT)
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -lreadline -ltermcap -L$(LIBFT_DIR) -lft
 
-run: all
-	./$(NAME)
+%.o: %.c $(HEADERS)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	$(MAKE) -C $(LIBFT_DIR) clean
-	rm -f *.o
+	rm -f $(OBJ)
 
 fclean: clean
 	$(MAKE) -C $(LIBFT_DIR) fclean
@@ -37,4 +42,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all libft clean fclean re run
+.PHONY: all libft clean fclean re
