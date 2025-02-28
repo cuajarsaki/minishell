@@ -6,11 +6,11 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 19:57:16 by pchung            #+#    #+#             */
-/*   Updated: 2025/02/26 00:05:54 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/28 12:08:55 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "shell.h"
+#include "../shell.h"
 
 volatile sig_atomic_t g_signal_received = 0;
 

@@ -6,11 +6,11 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/14 17:21:32 by pchung            #+#    #+#             */
-/*   Updated: 2025/02/26 00:18:34 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/28 12:08:51 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "shell.h"
+#include "../shell.h"
 
 
 void reset_terminal_settings(const struct termios *old_termios)
