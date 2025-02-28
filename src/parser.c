@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/02/26 15:04:02 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/01 03:28:03 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,6 +207,11 @@ t_redir	*get_redir(const char *input, int *curr_pos)
 	if (ft_strncmp(&input[*curr_pos], ">>", 2) == 0)
 	{
 		strcpy(redir->type, ">>");
+		*curr_pos += 2;
+	}
+	if (ft_strncmp(&input[*curr_pos], "<<", 2) == 0)
+	{
+		strcpy(redir->type, "<<");
 		*curr_pos += 2;
 	}
 	else
