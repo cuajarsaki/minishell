@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/01 03:12:46 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/01 03:31:43 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -345,8 +345,10 @@ int execute_heredoc(const char *delimiter)
     while (1)
     {
         line = readline("> ");
-        if (!line) 
+        if (!line){
+            free(line);
             break;
+        }
         
         if (ft_strcmp(line, delimiter) == 0)
         {

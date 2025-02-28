@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/01 03:28:03 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/01 03:35:44 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -400,8 +400,9 @@ t_cmd	*get_cmd(const char *input, int *curr_pos, t_env *env_list)
 		if (input[*curr_pos] == '>' || input[*curr_pos] == '<')
 		{
 			new_node = ft_lstnew((void *)get_redir(input, curr_pos));
-			if (!new_node)
+			if (!new_node){
 				return (NULL);
+			}
 			ft_lstadd_back(&cmd->redirs, new_node);
 		}
 		else
