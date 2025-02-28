@@ -6,11 +6,11 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 22:01:00 by pchung            #+#    #+#             */
-/*   Updated: 2025/02/12 00:16:40 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/28 12:09:01 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "shell.h"
+#include "../shell.h"
 
 static void do_nothing(void *__ptr)
 {

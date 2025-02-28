@@ -6,11 +6,11 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 23:57:54 by pchung            #+#    #+#             */
-/*   Updated: 2025/02/26 23:58:28 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/28 12:33:41 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "shell.h"
+#include "../shell.h"
 
 /*********
  * DEBUG *
@@ -135,13 +135,14 @@ void run_shell(t_env *env_list)
         ft_memset(buf, 0, sizeof(buf));
         len = 0;
         handle_input(buf, &len, sizeof(buf));
-
         g_signal_received = 0;
+        
         if (ft_strcmp(buf, "exit") == 0)
         {
             running = 0;
             continue;
         }
+        
         if (len > 0)
         {
             current_AST = get_ast(buf, env_list);

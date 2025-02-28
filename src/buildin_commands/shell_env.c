@@ -1,4 +1,4 @@
-#include "../shell.h"
+#include "../../shell.h"
 
 void shell_env(t_env *env_list)
 {

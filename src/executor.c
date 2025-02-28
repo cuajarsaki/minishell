@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/02/26 15:15:16 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/28 12:43:14 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -344,8 +344,8 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
 
     set_filedirectories(cmd, &fd_in, &fd_out);
 
-    printf("fd_in: %d\n", fd_in);
-    printf("fd_out: %d\n", fd_out);
+    // printf("fd_in: %d\n", fd_in);
+    // printf("fd_out: %d\n", fd_out);
 
     save_fds(&saved_stdin, &saved_stdout);
     apply_redirections(fd_in, fd_out);

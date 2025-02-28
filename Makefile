@@ -1,14 +1,21 @@
-CMD_DIR    = shell_commands
-PAR_DIR    = shell_parser
-EXE_DIR    = shell_executor
+SRC_DIR    = src
+CMD_DIR    = buildin_commands
 LIBFT_DIR  = libft
 
-SRC = main.c free.c singal.c terminal.c \
-      $(CMD_DIR)/shell_cd.c $(CMD_DIR)/shell_commands.c \
-      $(PAR_DIR)/parser.c $(EXE_DIR)/executor.c $(CMD_DIR)/shell_echo.c \
-      shell_termcaps/termcaps.c shell_env/env.c \
-      $(CMD_DIR)/shell_pwd.c $(CMD_DIR)/shell_export.c \
-      $(CMD_DIR)/shell_unset.c $(CMD_DIR)/shell_env.c custom_implements.c
+SRC = $(SRC_DIR)/$(CMD_DIR)/shell_cd.c \
+      $(SRC_DIR)/$(CMD_DIR)/shell_echo.c \
+      $(SRC_DIR)/$(CMD_DIR)/shell_env.c \
+      $(SRC_DIR)/$(CMD_DIR)/shell_export.c \
+      $(SRC_DIR)/$(CMD_DIR)/shell_pwd.c \
+      $(SRC_DIR)/$(CMD_DIR)/shell_unset.c \
+      $(SRC_DIR)/main.c \
+      $(SRC_DIR)/env.c \
+      $(SRC_DIR)/executor.c \
+      $(SRC_DIR)/parser.c \
+      $(SRC_DIR)/termcaps.c \
+      $(SRC_DIR)/singal.c \
+      $(SRC_DIR)/terminal.c \
+      $(SRC_DIR)/free.c \
 
 OBJ = $(SRC:.c=.o)
 
