@@ -1,0 +1,23 @@
+name: Make Build Check
+
+on:
+  push:
+    branches:
+      - main 
+  pull_request:
+    branches:
+      - main 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: sudo apt update && sudo apt install -y make gcc libreadline-dev
+
+      - name: Run make
+        run: make
