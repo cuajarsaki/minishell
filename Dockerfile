@@ -4,7 +4,7 @@ FROM ubuntu:latest
 # Set non-interactive mode to avoid prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install required dependencies, including readline
+# Install required dependencies
 RUN apt update && apt install -y \
     gcc \
     make \
@@ -18,11 +18,5 @@ RUN apt update && apt install -y \
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy your shell source code into the container
-COPY . /app
-
-# Compile the shell
-RUN make
-
-# Set the default command to open a bash shell
+# Default command: Open a Bash shell
 CMD ["/bin/bash"]
