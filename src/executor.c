@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/02/28 12:43:14 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/01 12:01:39 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 /*                          FUNCTION DECLARATIONS                             */
 /* ************************************************************************** */
 
-void exec_ast(t_ast *ast, t_env *env_list);
-void exec_command_group(t_command_group *command_group, t_env *env_list);
+void exec_ast(t_ast *ast, t_env *env_list, unsigned char *exit_status);
+void exec_command_group(t_command_group *command_group, t_env *env_list, unsigned char *exit_status);
 void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list);
 void exec_cmd_builtin(t_cmd *cmd, t_env *env_list);
 void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list);
@@ -29,8 +29,9 @@ char **convert_list_to_arr(t_list *lst);
 /*                  🏆 EXECUTE THE ENTIRE AST (MAIN EXECUTION)                */
 /* ************************************************************************** */
 
-void exec_ast(t_ast *ast, t_env *env_list)
+void exec_ast(t_ast *ast, t_env *env_list, unsigned char *exit_status)
 {
+	*exit_status = 0;
     t_list *command_group_node;
     t_command_group *command_group;
     char *seperator;
@@ -42,7 +43,7 @@ void exec_ast(t_ast *ast, t_env *env_list)
         command_group = (t_command_group *)command_group_node->content;
         command_group->pids = NULL;
         /* Pass env_list down to the next function */
-        exec_command_group(command_group, env_list);
+        exec_command_group(command_group, env_list, exit_status);
 
         seperator = command_group->seperator;
         free_command_group(command_group);
@@ -51,51 +52,47 @@ void exec_ast(t_ast *ast, t_env *env_list)
     }
 }
 
+
+// unsigned char exec_ast(t_ast *ast, t_env *env_list)
+// {
+//     t_list *command_group_node;
+//     t_command_group *command_group;
+//     char *seperator;
+//     (void)seperator;
+
+//     command_group_node = ast->command_groups;
+//     while (command_group_node)
+//     {
+//         command_group = (t_command_group *)command_group_node->content;
+//         command_group->pids = NULL;
+//         /* Pass env_list down to the next function */
+//         exec_command_group(command_group, env_list);
+
+//         seperator = command_group->seperator;
+//         free_command_group(command_group);
+//         // (Ignoring logical operators for now)
+//         command_group_node = command_group_node->next;
+//     }
+// }
+
 /* ************************************************************************** */
 /*                 🏆 EXECUTE A SINGLE COMMAND TABLE                          */
 /* ************************************************************************** */
 
-// void exec_command_group(t_command_group *command_group, t_env *env_list)
-// {
-//     t_list *cmds;
-//     int i;
-
-//     cmds = command_group->cmds;
-//     command_group->cmd_amount = ft_lstsize(cmds);
-//     i = 0;
-
-// 	if (command_group->cmd_amount > 1)
-// 	{
-// 		printf("Pipe Execution\n");
-// 	}
-
-//     while (cmds)
-//     {
-//         /* Pass env_list into exec_cmd */
-//         exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
-//         cmds = cmds->next;
-//         i++;
-//     }
-
-//     exec_parent(&command_group->pids); // Wait for processes
-// }
-
-void exec_command_group(t_command_group *command_group, t_env *env_list)
+void exec_command_group(t_command_group *command_group, t_env *env_list, unsigned char *exit_status)
 {
     t_list *cmds = command_group->cmds;
     int cmd_count = ft_lstsize(cmds);
     int i = 0;
     int pipe_fd[2];
     int prev_pipe_fd = -1; // Previous command's output
+    pid_t last_pid = -1;   // Store the last command's PID
 
     if (cmd_count == 0)
         return;
 
-    if (cmd_count == 1)
+    else if (cmd_count == 1)
     {
-        // !!!
-        // Separate fork handling for cases with and without pipes (Plz notice me if you want to change approach)
-        // !!
         pid_t pid = fork();
         if (pid < 0)
         {
@@ -103,16 +100,25 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
             exit(EXIT_FAILURE);
         }
         else if (pid == 0)
-        {
-            // CHILD PROCESS
-            exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
-            exit(EXIT_SUCCESS); // Exit the child process
-        }
+		{
+			// CHILD PROCESS
+			exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
+			exit(EXIT_SUCCESS); // ✅ Exit with 0 if exec_cmd completes successfully
+		}
         else
         {
             // PARENT PROCESS
+            int status;
             ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
-            exec_parent(&command_group->pids); // Wait for the child process to complete
+
+            // Wait for the child process to finish and retrieve exit status
+            waitpid(pid, &status, 0);
+
+            // Extract actual exit status
+            if (WIFEXITED(status))
+                *exit_status = WEXITSTATUS(status);
+            else if (WIFSIGNALED(status))
+                *exit_status = 128 + WTERMSIG(status); // Handle signals like bash (128 + signal number)
         }
     }
     else if (cmd_count > 1)
@@ -180,13 +186,139 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
 
                 cmds = cmds->next;
                 i++;
+                last_pid = pid; // Store the last command's PID
             }
         }
 
-        // Parent waits for all child processes to complete
-        exec_parent(&command_group->pids);
+        // Parent waits for all child processes to complete, but only stores the last command's exit status
+        int status;
+        if (last_pid != -1)
+        {
+            waitpid(last_pid, &status, 0);
+            if (WIFEXITED(status))
+                *exit_status = WEXITSTATUS(status);
+            else if (WIFSIGNALED(status))
+                *exit_status = 128 + WTERMSIG(status);
+        }
     }
 }
+
+
+// void exec_command_group(t_command_group *command_group, t_env *env_list, unsigned char *exit_status)
+// {
+
+
+//     t_list *cmds = command_group->cmds;
+//     int cmd_count = ft_lstsize(cmds);
+//     int i = 0;
+//     int pipe_fd[2];
+//     int prev_pipe_fd = -1; // Previous command's output
+
+//     if (cmd_count == 0)
+//         return;
+// 	else if (cmd_count == 1)
+// 	{
+// 		pid_t pid = fork();
+// 		if (pid < 0)
+// 		{
+// 			perror("fork");
+// 			exit(EXIT_FAILURE);
+// 		}
+// 		else if (pid == 0)
+// 		{
+// 			// CHILD PROCESS
+// 			exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
+// 			exit(EXIT_FAILURE); // If exec_cmd fails, exit with an error
+// 		}
+// 		else
+// 		{
+// 			// PARENT PROCESS
+// 			int status;
+// 			ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
+	
+// 			// Wait for the child process to finish and retrieve exit status
+// 			waitpid(pid, &status, 0);
+	
+// 			// Extract actual exit status
+// 			if (WIFEXITED(status)) {
+// 				*exit_status = WEXITSTATUS(status);
+// 			} else if (WIFSIGNALED(status)) {
+// 				*exit_status = 128 + WTERMSIG(status); // Handle signals like bash (128 + signal number)
+// 			}
+// 		}
+// 	}
+//     else if (cmd_count > 1)
+//     {
+//         while (cmds)
+//         {
+//             // Create a pipe only if there’s another command after this one
+//             if (i < cmd_count - 1)
+//             {
+//                 if (pipe(pipe_fd) < 0)
+//                 {
+//                     perror("pipe");
+//                     exit(EXIT_FAILURE);
+//                 }
+//             }
+
+//             pid_t pid = fork();
+//             if (pid < 0)
+//             {
+//                 perror("fork");
+//                 if (i < cmd_count - 1)
+//                 {
+//                     close(pipe_fd[0]);
+//                     close(pipe_fd[1]);
+//                 }
+//                 exit(EXIT_FAILURE);
+//             }
+//             else if (pid == 0)
+//             {
+//                 // CHILD PROCESS
+
+//                 // If there's a previous pipe, read from it
+//                 if (prev_pipe_fd != -1)
+//                 {
+//                     dup2(prev_pipe_fd, STDIN_FILENO);
+//                     close(prev_pipe_fd);
+//                 }
+
+//                 // If there's a next command, write output to the pipe
+//                 if (i < cmd_count - 1)
+//                 {
+//                     dup2(pipe_fd[1], STDOUT_FILENO);
+//                     close(pipe_fd[1]);
+//                     close(pipe_fd[0]); // Close unused read-end
+//                 }
+
+//                 exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
+//                 exit(EXIT_FAILURE);
+//             }
+//             else
+//             {
+//                 // PARENT PROCESS
+//                 ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
+
+//                 // Close previous read-end, since it's no longer needed
+//                 if (prev_pipe_fd != -1)
+//                     close(prev_pipe_fd);
+
+//                 // Store the new read-end for the next command
+//                 if (i < cmd_count - 1)
+//                 {
+//                     close(pipe_fd[1]);         // Close write-end in parent
+//                     prev_pipe_fd = pipe_fd[0]; // Keep read-end for next iteration
+//                 }
+
+//                 cmds = cmds->next;
+//                 i++;
+//             }
+//         }
+
+//         // Parent waits for all child processes to complete
+//         exec_parent(&command_group->pids);
+//     }
+// }
 
 /* ************************************************************************** */
 /*                  🏆 EXECUTE A SINGLE COMMAND                               */

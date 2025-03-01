@@ -6,6 +6,7 @@
 		"libft.h": "c",
 		"stddef.h": "c",
 		"unistd.h": "c",
-		"stdlib.h": "c"
+		"stdlib.h": "c",
+		"termios.h": "c"
 	}
 }

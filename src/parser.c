@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/02/26 15:04:02 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/01 11:56:06 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ char *ft_realloc_str(char *ptr, size_t new_size)
 }
 
 
-char	*expand_env_token(const char *token, t_env *env_list)
+char	*expand_env_token(const char *token, t_env *env_list, unsigned char *exit_status)
 {
 	char	*result;
 	char	*var_value;
@@ -89,14 +89,29 @@ char	*expand_env_token(const char *token, t_env *env_list)
 	int		len = ft_strlen(token);
 
 	// Allocate result buffer (initially empty)
-	result = ft_calloc(1, sizeof(char));
+	result = ft_calloc(1, sizeof(char));	
 	if (!result)
 		return (NULL);
 
 	while (i < len)
 	{
 		// If we find a '$' and it's not inside single quotes
-		if (token[i] == '$' && token[i + 1] && (isalnum(token[i + 1]) || token[i + 1] == '_'))
+		if (token[i] == '$' && token[i + 1] == '?')
+		{
+			char fixed_value[12]; // Buffer to hold the exit_status as a string
+			snprintf(fixed_value, sizeof(fixed_value), "%d", *exit_status); // Convert exit_status to string
+
+			printf("Found $?\n");
+
+			// Allocate space for result
+			result = ft_realloc_str(result, ft_strlen(result) + ft_strlen(fixed_value) + 1);
+
+			// Append the fixed number
+			strcat(result, fixed_value);
+
+			i += 2; // Move past "$?"
+		}	
+		else if (token[i] == '$' && token[i + 1] && (isalnum(token[i + 1]) || token[i + 1] == '_'))
 		{
 			j = i + 1;
 			// Find the end of the variable name (alphanumeric + '_')
@@ -377,7 +392,7 @@ t_token	*get_token(const char *input, int *curr_pos)
 // 	return (strndup(&input[start], *curr_pos - start));
 // }
 
-t_cmd	*get_cmd(const char *input, int *curr_pos, t_env *env_list)
+t_cmd	*get_cmd(const char *input, int *curr_pos, t_env *env_list, unsigned char *exit_status)
 {
 	t_cmd	*cmd;
 	t_list	*new_node;
@@ -414,7 +429,7 @@ t_cmd	*get_cmd(const char *input, int *curr_pos, t_env *env_list)
 				}
 				else
 				{
-					final_token = expand_env_token(token_struct->value, env_list);
+					final_token = expand_env_token(token_struct->value, env_list, exit_status);
 				}
 
 				free(token_struct->value);
@@ -434,7 +449,7 @@ t_cmd	*get_cmd(const char *input, int *curr_pos, t_env *env_list)
 	return (cmd);
 }
 
-t_command_group	*get_command_group(const char *input, int *curr_pos, t_env *env_list)
+t_command_group	*get_command_group(const char *input, int *curr_pos, t_env *env_list, unsigned char *exit_status)
 {
 	t_command_group	*command_group;
 	t_list		*cmd;
@@ -450,7 +465,7 @@ t_command_group	*get_command_group(const char *input, int *curr_pos, t_env *env_
 		ft_skip_spaces(input, curr_pos);
 
 		// Parse commands inside this table
-		cmd = ft_lstnew((void *)get_cmd(input, curr_pos, env_list));
+		cmd = ft_lstnew((void *)get_cmd(input, curr_pos, env_list, exit_status));
 		if (!cmd)
 		{
 			ft_lstclear(&command_group->cmds, (void (*)(void *))free_cmd);
@@ -470,7 +485,7 @@ t_command_group	*get_command_group(const char *input, int *curr_pos, t_env *env_
 	return (command_group);
 }
 
-t_ast	*get_ast(const char *input, t_env *env_list)
+t_ast	*get_ast(const char *input, t_env *env_list, unsigned char *exit_status)
 {
 	t_ast	*ast;
 	t_list	*command_group;
@@ -485,7 +500,7 @@ t_ast	*get_ast(const char *input, t_env *env_list)
 	while (input[curr_pos])
 	{
 		ft_skip_spaces(input, &curr_pos);
-		command_group = ft_lstnew((void *)get_command_group(input, &curr_pos, env_list));
+		command_group = ft_lstnew((void *)get_command_group(input, &curr_pos, env_list, exit_status));
 		if (!command_group)
 		{
 			free(ast);
