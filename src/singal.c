@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 19:57:16 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/01 23:01:01 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/02 00:17:33 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,15 +60,7 @@ void set_signal(int signum, void (*handler)(int), int flags)
 
 void setup_signals(void)
 {
-    struct sigaction sa;
-
-    sa.sa_handler = handle_sigint;
-    sa.sa_flags = 0;
-    sigemptyset(&sa.sa_mask);
-    if (sigaction(SIGINT, &sa, NULL) == -1) {
-        perror("sigaction");
-        exit(EXIT_FAILURE);
-    }
-    signal(SIGQUIT, SIG_IGN);
-    signal(SIGTSTP, SIG_IGN);
+    set_signal(SIGINT, handle_sigint, 0);
+    set_signal(SIGQUIT, SIG_IGN, 0); 
+    set_signal(SIGTSTP, SIG_IGN, 0); 
 }
