@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 23:57:54 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/01 11:51:23 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/01 12:16:47 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ void print_command_groups(t_list *command_groups, int depth)
         print_cmds(command_group->cmds, depth + 1);
 
         print_indent(depth);
-        printf(COLOR_MAGENTA "|  | seperator: \"%s\"\n" COLOR_RESET, command_group->seperator);
+        //printf(COLOR_MAGENTA "|  | seperator: \"%s\"\n" COLOR_RESET, command_group->seperator);
 
         print_indent(depth);
         printf(COLOR_BLUE "|  +--------------------------------+\n" COLOR_RESET);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/01 12:01:39 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/01 12:16:30 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,18 +24,17 @@ void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_i
 int is_builtin(t_cmd *cmd);
 void exec_parent(t_list **pids);
 char **convert_list_to_arr(t_list *lst);
+int execute_heredoc(const char *delimiter);
 
-/* ************************************************************************** */
-/*                  🏆 EXECUTE THE ENTIRE AST (MAIN EXECUTION)                */
-/* ************************************************************************** */
+    /* ************************************************************************** */
+    /*                  🏆 EXECUTE THE ENTIRE AST (MAIN EXECUTION)                */
+    /* ************************************************************************** */
 
 void exec_ast(t_ast *ast, t_env *env_list, unsigned char *exit_status)
 {
 	*exit_status = 0;
     t_list *command_group_node;
     t_command_group *command_group;
-    char *seperator;
-    (void)seperator;
 
     command_group_node = ast->command_groups;
     while (command_group_node)
@@ -44,8 +43,6 @@ void exec_ast(t_ast *ast, t_env *env_list, unsigned char *exit_status)
         command_group->pids = NULL;
         /* Pass env_list down to the next function */
         exec_command_group(command_group, env_list, exit_status);
-
-        seperator = command_group->seperator;
         free_command_group(command_group);
         // (Ignoring logical operators for now)
         command_group_node = command_group_node->next;
@@ -420,6 +417,17 @@ void set_filedirectories(t_cmd *cmd, int *fd_in, int *fd_out)
                 return;
             }
         }
+        else if (ft_strncmp(redir->type, "<<", 2) == 0) 
+        {
+            if (*fd_in != -1)
+                close(*fd_in);
+            *fd_in = execute_heredoc(redir->direction);
+            if (*fd_in == -1)
+            {
+                perror("heredoc");
+                return;
+            }
+        }
         else if (ft_strncmp(redir->type, ">", 1) == 0) // Overwrite output
         {
             if (*fd_out != -1) // Close previous output redirection
@@ -447,6 +455,49 @@ void set_filedirectories(t_cmd *cmd, int *fd_in, int *fd_out)
 
         redirs = redirs->next;
     }
+}
+
+int execute_heredoc(const char *delimiter)
+{
+    const char *filename = "/tmp/minishell_heredoc";
+    int fd;
+
+    fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, 0600);
+    if (fd < 0)
+    {
+        perror("open heredoc for writing");
+        return -1;
+    }
+
+    char *line = NULL;
+    while (1)
+    {
+        line = readline("> ");
+        if (!line){
+            free(line);
+            break;
+        }
+        
+        if (ft_strcmp(line, delimiter) == 0)
+        {
+            free(line);
+            break;
+        }
+        write(fd, line, ft_strlen(line));
+        write(fd, "\n", 1);
+        free(line);
+    }
+    close(fd);
+
+    fd = open(filename, O_RDONLY);
+    if (fd < 0)
+    {
+        perror("open heredoc for reading");
+        return -1;
+    }
+    
+    unlink(filename);
+    return fd;
 }
 
 void save_fds(int *saved_stdin, int *saved_stdout)

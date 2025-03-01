@@ -33,8 +33,7 @@ libft:
 	$(MAKE) -C $(LIBFT_DIR)
 
 $(NAME): $(OBJ) $(LIBFT)
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -lreadline -ltermcap -L$(LIBFT_DIR) -lft
-	rm -f $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -lreadline -ltermcap -L$(LIBFT_DIR) -lft	
 
 %.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
