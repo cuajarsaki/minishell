@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/01 09:53:26 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/01 22:39:26 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,12 +102,14 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
         else if (pid == 0)
         {
             // CHILD PROCESS
+            init_signal(SIG_DFL, SIG_DFL);
             exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
             exit(EXIT_SUCCESS); // Exit the child process
         }
         else
         {
             // PARENT PROCESS
+            init_signal(SIG_IGN, SIG_IGN);
             ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
             exec_parent(&command_group->pids); // Wait for the child process to complete
         }
@@ -140,7 +142,7 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
             else if (pid == 0)
             {
                 // CHILD PROCESS
-
+                init_signal(SIG_DFL, SIG_DFL);
                 // If there's a previous pipe, read from it
                 if (prev_pipe_fd != -1)
                 {
@@ -161,6 +163,7 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
             }
             else
             {
+                init_signal(SIG_IGN, SIG_IGN);
                 // PARENT PROCESS
                 ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
 

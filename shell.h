@@ -96,5 +96,8 @@ void handle_input(char *buf, size_t *len, size_t max_len);
 void init_readline_for_signal(void);
 void setup_signals(void);
 void handle_sigint(int sig);
+void set_signal(int signum, void (*handler)(int), int flags);
+void init_signal(void (*handler_for_sigint)(int),
+				 void (*handler_for_sigquit)(int));
 
 #endif

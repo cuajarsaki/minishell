@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 23:57:54 by pchung            #+#    #+#             */
-/*   Updated: 2025/02/28 22:36:12 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/01 23:00:01 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,7 @@ void run_shell(t_env *env_list)
     while (running)
     {
         init_readline_for_signal();
+        setup_signals();
         ft_memset(buf, 0, sizeof(buf));
         len = 0;
         handle_input(buf, &len, sizeof(buf));
@@ -161,7 +162,6 @@ int main(void)
 
     struct termios orig_termios;
     setup_terminal(&orig_termios);
-    setup_signals();
     run_shell(env_list);     // Pass env_list
     free_env_list(env_list); // Free environment variables before exit
     reset_terminal_settings(&orig_termios);
