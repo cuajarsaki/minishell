@@ -31,7 +31,6 @@ typedef struct s_command_group
 {
 	t_list	*cmds;
 	int		cmd_amount;
-	char	*seperator;
 	int		**pipes;
 	t_list	*pids;
 	int		return_value;

@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/01 03:35:44 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/01 09:54:28 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,36 +21,6 @@ void	ft_skip_spaces(const char *input, int *curr_pos)
 {
 	while (input[*curr_pos] && isspace(input[*curr_pos]))
 		(*curr_pos)++;
-}
-
-int		is_cmd_seperator(char c)
-{
-	return (c == ';' || c == '&');
-}
-
-int		is_command_group_seperator(const char *str)
-{
-	return (ft_strncmp(str, "||", 2) == 0 || ft_strncmp(str, "&&", 2) == 0 || *str == ';');
-}
-
-char	*get_command_group_seperator(const char *input, int *curr_pos)
-{
-	if (input[*curr_pos] == ';')
-	{
-		(*curr_pos)++;
-		return (ft_strdup(";"));
-	}
-	else if (ft_strncmp(&input[*curr_pos], "||", 2) == 0)
-	{
-		*curr_pos += 2;
-		return (ft_strdup("||"));
-	}
-	else if (ft_strncmp(&input[*curr_pos], "&&", 2) == 0)
-	{
-		*curr_pos += 2;
-		return (ft_strdup("&&"));
-	}
-	return (ft_strdup(""));
 }
 
 
@@ -224,7 +194,7 @@ t_redir	*get_redir(const char *input, int *curr_pos)
 
 	// Extract redirection target (filename)
 	int start = *curr_pos;
-	while (input[*curr_pos] && !isspace(input[*curr_pos]) && !is_cmd_seperator(input[*curr_pos]) && input[*curr_pos] != '|')
+	while (input[*curr_pos] && !isspace(input[*curr_pos]) && input[*curr_pos] != '|')
 		(*curr_pos)++;
 
 	redir->direction = strndup(&input[start], *curr_pos - start);
@@ -304,7 +274,7 @@ t_token	*get_token(const char *input, int *curr_pos)
 	}
 
 	// Read token, handling quotes and escape sequences
-	while (input[i] && !isspace(input[i]) && !is_cmd_seperator(input[i]) && input[i] != '|' && input[i] != '>' && input[i] != '<')
+	while (input[i] && !isspace(input[i]) && input[i] != '|' && input[i] != '>' && input[i] != '<')
 	{
 		if (input[i] == '\'' || input[i] == '\"')
 		{
@@ -393,7 +363,7 @@ t_cmd	*get_cmd(const char *input, int *curr_pos, t_env *env_list)
 	cmd->tokens = NULL;
 	cmd->redirs = NULL;
 
-	while (input[*curr_pos] && !is_cmd_seperator(input[*curr_pos]) && input[*curr_pos] != '|')
+	while (input[*curr_pos] && input[*curr_pos] != '|')
 	{
 		ft_skip_spaces(input, curr_pos);
 
@@ -449,9 +419,8 @@ t_command_group	*get_command_group(const char *input, int *curr_pos, t_env *env_
 	if (!command_group)
 		return (NULL);
 	command_group->cmds = NULL;
-	command_group->seperator = NULL;
 
-	while (input[*curr_pos] && !is_command_group_seperator(&input[*curr_pos]))
+	while (input[*curr_pos])
 	{
 		ft_skip_spaces(input, curr_pos);
 
@@ -471,8 +440,6 @@ t_command_group	*get_command_group(const char *input, int *curr_pos, t_env *env_
 			continue; // Stay inside the same `t_command_group`
 		}
 	}
-
-	command_group->seperator = get_command_group_seperator(input, curr_pos);
 	return (command_group);
 }
 

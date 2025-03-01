@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/01 03:31:43 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/01 09:53:26 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@ int execute_heredoc(const char *delimiter);
 {
     t_list *command_group_node;
     t_command_group *command_group;
-    char *seperator;
-    (void)seperator;
 
     command_group_node = ast->command_groups;
     while (command_group_node)
@@ -44,8 +42,6 @@ int execute_heredoc(const char *delimiter);
         command_group->pids = NULL;
         /* Pass env_list down to the next function */
         exec_command_group(command_group, env_list);
-
-        seperator = command_group->seperator;
         free_command_group(command_group);
         // (Ignoring logical operators for now)
         command_group_node = command_group_node->next;

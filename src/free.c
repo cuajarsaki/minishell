@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 22:01:00 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/01 03:50:48 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/01 09:54:14 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,5 @@ void free_command_group(t_command_group *command_group)
     {
         ft_lstclear(&command_group->cmds, (void (*)(void *))free_cmd);
         ft_lstclear(&command_group->pids, do_nothing);
-        free(command_group->seperator);
     }
 }
