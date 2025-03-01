@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/02/28 12:43:14 by pchung           ###   ########.fr       */
+/*   Updated: 2025/02/28 22:34:53 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,6 @@ void exec_ast(t_ast *ast, t_env *env_list)
 {
     t_list *command_group_node;
     t_command_group *command_group;
-    char *seperator;
-    (void)seperator;
 
     command_group_node = ast->command_groups;
     while (command_group_node)
@@ -43,8 +41,6 @@ void exec_ast(t_ast *ast, t_env *env_list)
         command_group->pids = NULL;
         /* Pass env_list down to the next function */
         exec_command_group(command_group, env_list);
-
-        seperator = command_group->seperator;
         free_command_group(command_group);
         // (Ignoring logical operators for now)
         command_group_node = command_group_node->next;
