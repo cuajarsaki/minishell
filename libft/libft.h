@@ -6,7 +6,7 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 16:50:27 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/02 15:30:54 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/02 15:34:30 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@
 # include <unistd.h>
 
 
-char *ft_strcat(char *dest, const char *src);
+char				*ft_strncat(char *dest, const char *src, size_t n);
+char				*ft_strcat(char *dest, const char *src);
 int					ft_atoi(const char *str);
 void				ft_bzero(void *s, size_t n);
 void				*ft_calloc(size_t nelem, size_t elsize);

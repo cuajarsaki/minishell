@@ -6,7 +6,7 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/02 15:31:17 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/02 15:35:18 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ char	*expand_env_token(const char *token, t_env *env_list)
 			// Append non-variable characters
 			size_t new_len = ft_strlen(result) + 2;
 			result = ft_realloc_str(result, new_len);
-			strncat(result, &token[i], 1);
+			ft_strncat(result, &token[i], 1);
 			i++;
 		}
 	}
@@ -294,7 +294,7 @@ t_token	*get_token(const char *input, int *curr_pos)
 				// Append the character (escaped or not) to the buffer
 				size_t new_len = ft_strlen(buffer) + 2;
 				buffer = ft_realloc_str(buffer, new_len);
-				strncat(buffer, &input[i], 1);
+				ft_strncat(buffer, &input[i], 1);
 				i++;
 			}
 
@@ -308,7 +308,7 @@ t_token	*get_token(const char *input, int *curr_pos)
 			// Append only the escaped character
 			size_t new_len = ft_strlen(buffer) + 2;
 			buffer = ft_realloc_str(buffer, new_len);
-			strncat(buffer, &input[i], 1);
+			ft_strncat(buffer, &input[i], 1);
 			i++;
 		}
 		else
@@ -316,7 +316,7 @@ t_token	*get_token(const char *input, int *curr_pos)
 			// Append normal character to buffer
 			size_t new_len = ft_strlen(buffer) + 2;
 			buffer = ft_realloc_str(buffer, new_len);
-			strncat(buffer, &input[i], 1);
+			ft_strncat(buffer, &input[i], 1);
 			i++;
 		}
 	}
