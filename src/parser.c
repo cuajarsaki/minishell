@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/01 09:54:28 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/02 15:56:30 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ char	*expand_env_token(const char *token, t_env *env_list)
 				j++;
 
 			// Extract variable name
-			var_name = strndup(&token[i + 1], j - i - 1);
+			var_name = ft_strndup(&token[i + 1], j - i - 1);
 			var_value = get_env_value(env_list, var_name);
 			free(var_name);
 
@@ -84,7 +84,7 @@ char	*expand_env_token(const char *token, t_env *env_list)
 			else
 				result = ft_realloc_str(result, ft_strlen(result) + 1);
 
-			strcat(result, var_value ? var_value : "");
+			ft_strcat(result, var_value ? var_value : "");
 
 			i = j; // Move past variable
 		}
@@ -93,7 +93,7 @@ char	*expand_env_token(const char *token, t_env *env_list)
 			// Append non-variable characters
 			size_t new_len = ft_strlen(result) + 2;
 			result = ft_realloc_str(result, new_len);
-			strncat(result, &token[i], 1);
+			ft_strncat(result, &token[i], 1);
 			i++;
 		}
 	}
@@ -149,7 +149,7 @@ char	*remove_quotes(const char *token)
 	{
 		quote = token[0];
 		// ✅ Remove only the first and last quotes, keep everything else
-		new_token = strndup(token + 1, len - 2);
+		new_token = ft_strndup(token + 1, len - 2);
 	}
 	else
 	{
@@ -197,7 +197,7 @@ t_redir	*get_redir(const char *input, int *curr_pos)
 	while (input[*curr_pos] && !isspace(input[*curr_pos]) && input[*curr_pos] != '|')
 		(*curr_pos)++;
 
-	redir->direction = strndup(&input[start], *curr_pos - start);
+	redir->direction = ft_strndup(&input[start], *curr_pos - start);
 	return (redir);
 }
 
@@ -294,7 +294,7 @@ t_token	*get_token(const char *input, int *curr_pos)
 				// Append the character (escaped or not) to the buffer
 				size_t new_len = ft_strlen(buffer) + 2;
 				buffer = ft_realloc_str(buffer, new_len);
-				strncat(buffer, &input[i], 1);
+				ft_strncat(buffer, &input[i], 1);
 				i++;
 			}
 
@@ -308,7 +308,7 @@ t_token	*get_token(const char *input, int *curr_pos)
 			// Append only the escaped character
 			size_t new_len = ft_strlen(buffer) + 2;
 			buffer = ft_realloc_str(buffer, new_len);
-			strncat(buffer, &input[i], 1);
+			ft_strncat(buffer, &input[i], 1);
 			i++;
 		}
 		else
@@ -316,7 +316,7 @@ t_token	*get_token(const char *input, int *curr_pos)
 			// Append normal character to buffer
 			size_t new_len = ft_strlen(buffer) + 2;
 			buffer = ft_realloc_str(buffer, new_len);
-			strncat(buffer, &input[i], 1);
+			ft_strncat(buffer, &input[i], 1);
 			i++;
 		}
 	}

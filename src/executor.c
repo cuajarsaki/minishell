@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/01 22:39:26 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/02 15:51:24 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,7 +225,16 @@ char *find_executable_in_path(const char *cmd)
     {
         char full_path[1024];
         snprintf(full_path, sizeof(full_path), "%s/%s", dir, cmd);
-        if (access(full_path, X_OK) == 0)
+
+		size_t dir_len = strlen(dir);
+		size_t cmd_len = strlen(cmd);
+
+		memcpy(full_path, dir, dir_len);        // Copy `dir`
+		full_path[dir_len] = '/';               // Insert '/'
+		memcpy(full_path + dir_len + 1, cmd, cmd_len); // Copy `cmd`
+		full_path[dir_len + cmd_len + 1] = '\0'; // Null-terminate
+		
+		if (access(full_path, X_OK) == 0)
         {
             free(paths);
             return ft_strdup(full_path); // Return a valid command path
@@ -421,8 +430,15 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
             if (ft_strchr(cmd_path, '/') != NULL)
             {
                 if (access(cmd_path, X_OK) == -1)
-                {
-                    fprintf(stderr, "b2ffshell ❤: command not found: %s\n", cmd_path);
+                {;
+
+					write(STDERR_FILENO, "minishell ❤", 13);
+					write(STDERR_FILENO, ": ", 2);	
+					write(STDERR_FILENO, cmd_path, ft_strlen(cmd_path));
+					write(STDERR_FILENO, ": command not found", 19);
+					write(STDERR_FILENO, "\n", 1);	
+						
+
                     restore_fds(saved_stdin, saved_stdout);
                     cleanup_fds(fd_in, fd_out);
                     free(tokens);
@@ -435,7 +451,14 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
                 char *resolved_path = find_executable_in_path(cmd_path);
                 if (!resolved_path)
                 {
-                    fprintf(stderr, "b2ffshell ❤: command not found: %s\n", cmd_path);
+
+					write(STDERR_FILENO, "minishell ❤", 13);
+					write(STDERR_FILENO, ": ", 2);	
+					write(STDERR_FILENO, cmd_path, ft_strlen(cmd_path));
+					write(STDERR_FILENO, ": command not found", 19);
+					write(STDERR_FILENO, "\n", 1);
+						
+
                     restore_fds(saved_stdin, saved_stdout);
                     cleanup_fds(fd_in, fd_out);
                     free(tokens);

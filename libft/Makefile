@@ -12,7 +12,9 @@ OBJ			= ft_isalnum.o ft_itoa.o ft_memset.o ft_split.o ft_strlcat.o ft_strnstr.o 
 			  get_next_line.o get_next_line_utils.o ft_parse_width.o ft_print_padding.o \
 			  ft_print_char.o ft_print_string.o ft_print_pointer.o ft_print_int.o \
 			  ft_print_unsigned.o ft_print_hexa.o ft_print_percent.o ft_printf.o \
-			  ft_strtok.o ft_strcmp.o ft_strncpy.o ft_realloc.o
+			  ft_strtok.o ft_strcmp.o ft_strncpy.o ft_realloc.o ft_strcat.o ft_strncat.o \
+			  ft_strndup.o 
+			  
 HEADERS		= libft.h
 
 all: $(NAME)
