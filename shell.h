@@ -83,6 +83,7 @@ void shell_clear(void);
 void shell_cd(char *path);
 void shell_pwd(void);
 void shell_echo(char **args);
+int shell_exit(char **argv);
 
 // TERMINAL SETTINGS
 void reset_terminal_settings(const struct termios *old_termios);
@@ -99,5 +100,8 @@ void handle_sigint(int sig);
 void set_signal(int signum, void (*handler)(int), int flags);
 void init_signal(void (*handler_for_sigint)(int),
 				 void (*handler_for_sigquit)(int));
+
+// PARSER FUNCTIONS
+char	**token_list_to_argv(t_cmd *cmd);
 
 #endif

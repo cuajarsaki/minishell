@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/02 15:51:24 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/02 19:58:27 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -479,8 +479,9 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
 void exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
 {
     char *program = (char *)cmd->tokens->content;
-    char **args = convert_list_to_arr(cmd->tokens->next);
-
+    char **args = token_list_to_argv(cmd);
+    int returnvaule = 0;
+    
     if (ft_strcmp(program, "echo") == 0)
         shell_echo(args);
     else if (ft_strcmp(program, "cd") == 0)
@@ -489,6 +490,9 @@ void exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
             shell_cd((char *)cmd->tokens->next->content);
         else
             shell_cd(NULL);
+    }
+    else if (ft_strcmp(program, "exit") == 0){
+        returnvaule=shell_exit(args);
     }
     else if (ft_strcmp(program, "pwd") == 0)
         shell_pwd();

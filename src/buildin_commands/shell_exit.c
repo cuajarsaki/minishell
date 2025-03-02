@@ -6,13 +6,13 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/02 16:13:52 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/02 17:46:33 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/02 19:53:39 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../shell.h"
 
-bool	is_strnum(char *str)
+static bool	is_strnum(char *str)
 {
 	if (*str == '-' || *str == '+')
 		str++;

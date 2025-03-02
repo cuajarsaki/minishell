@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 23:57:54 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/01 23:00:01 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/02 17:52:41 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,11 +138,11 @@ void run_shell(t_env *env_list)
         handle_input(buf, &len, sizeof(buf));
         g_signal_received = 0;
         
-        if (ft_strcmp(buf, "exit") == 0)
-        {
-            running = 0;
-            continue;
-        }
+        // if (ft_strcmp(buf, "exit") == 0)
+        // {
+        //     running = 0;
+        //     continue;
+        // }
         
         if (len > 0)
         {
