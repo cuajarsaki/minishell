@@ -13,6 +13,7 @@ OBJ			= ft_isalnum.o ft_itoa.o ft_memset.o ft_split.o ft_strlcat.o ft_strnstr.o 
 			  ft_print_char.o ft_print_string.o ft_print_pointer.o ft_print_int.o \
 			  ft_print_unsigned.o ft_print_hexa.o ft_print_percent.o ft_printf.o \
 			  ft_strtok.o ft_strcmp.o ft_strncpy.o ft_realloc.o ft_strcat.o ft_strncat.o \
+			  ft_strndup.c 
 			  
 HEADERS		= libft.h
 

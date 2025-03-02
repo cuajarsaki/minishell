@@ -6,7 +6,7 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/02 15:35:18 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/02 15:53:45 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ char	*expand_env_token(const char *token, t_env *env_list)
 				j++;
 
 			// Extract variable name
-			var_name = strndup(&token[i + 1], j - i - 1);
+			var_name = ft_ft_strndup(&token[i + 1], j - i - 1);
 			var_value = get_env_value(env_list, var_name);
 			free(var_name);
 
@@ -149,7 +149,7 @@ char	*remove_quotes(const char *token)
 	{
 		quote = token[0];
 		// ✅ Remove only the first and last quotes, keep everything else
-		new_token = strndup(token + 1, len - 2);
+		new_token = ft_strndup(token + 1, len - 2);
 	}
 	else
 	{
@@ -197,7 +197,7 @@ t_redir	*get_redir(const char *input, int *curr_pos)
 	while (input[*curr_pos] && !isspace(input[*curr_pos]) && input[*curr_pos] != '|')
 		(*curr_pos)++;
 
-	redir->direction = strndup(&input[start], *curr_pos - start);
+	redir->direction = ft_strndup(&input[start], *curr_pos - start);
 	return (redir);
 }
 
