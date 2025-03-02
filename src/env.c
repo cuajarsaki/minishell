@@ -6,7 +6,7 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 12:14:25 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/02 15:18:27 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/02 15:28:17 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,16 +158,7 @@ char **convert_env_list_to_array(t_env *env_list)
         envp[i] = malloc(len);
         if (!envp[i])
             return NULL;
-
-		size_t key_len = ft_strlen(temp->key);
-		size_t value_len = ft_strlen(temp->value);
-
-		ft_memcpy(envp[i], temp->key, key_len);
-		envp[i][key_len] = '=';  // Insert '=' manually
-		ft_memcpy(envp[i] + key_len + 1, temp->value, value_len);
-		envp[i][key_len + value_len + 1] = '\0';  // Null-terminate
-
-
+        snprintf(envp[i], len, "%s=%s", temp->key, temp->value);
         temp = temp->next;
     }
     envp[count] = NULL;
