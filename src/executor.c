@@ -6,7 +6,7 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/02 15:51:24 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/02 16:18:10 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ int is_builtin(t_cmd *cmd);
 void exec_parent(t_list **pids);
 char **convert_list_to_arr(t_list *lst);
 int execute_heredoc(const char *delimiter);
+
+extern char **environ;
+
 
     /* ************************************************************************** */
     /*                  🏆 EXECUTE THE ENTIRE AST (MAIN EXECUTION)                */
@@ -516,56 +519,99 @@ int has_slash(const char *str)
     return (0);
 }
 
-int ft_execvp(const char *file, char *const argv[])
-{
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <sys/stat.h>
+
+/* Helper function to check if a command contains a '/' */
+
+char *ft_strjoin2(const char *path, const char *cmd) {
+    size_t len1 = strlen(path);
+    size_t len2 = strlen(cmd);
+    char *full_path = malloc(len1 + len2 + 2); // +2 for '/' and '\0'
+
+    if (!full_path)
+        return NULL;
+
+    strcpy(full_path, path);
+
+    // Ensure there is a '/' between path and command
+    full_path[len1] = '/';
+
+    strcpy(full_path + len1 + 1, cmd);
+    full_path[len1 + len2 + 1] = '\0'; // Null-terminate
+
+    return full_path;
+}
+
+
+/* Custom execvp using only execve */
+int ft_execvp(const char *file, char *const argv[]) {
     char *path_env = getenv("PATH");
     char **paths = NULL;
     char *cmd_path;
     int i = 0;
 
-    if (!file || !*file)
-    {
+    if (!file || !*file) {
         errno = ENOENT;
-        return (-1);
+        return -1;
     }
-    if (has_slash(file))                   // Instead of strchr(file, '/')
-        return (execve(file, argv, NULL)); // Execute directly if it's an absolute/relative path
+
+    /* Print PATH for debugging */
+    printf("PATH: %s\n", path_env);
+
+    /* If command contains '/' execute it directly */
+    if (has_slash(file)) {
+        printf("Executing directly: %s\n", file);
+        return execve(file, argv, environ);
+    }
+
+    /* Split PATH environment variable */
     if (path_env)
         paths = ft_split(path_env, ':');
-    while (paths && paths[i])
-    {
-        cmd_path = ft_strjoin(paths[i], file);
-        if (access(cmd_path, X_OK) == 0)
-        {
-            execve(cmd_path, argv, NULL);
+
+    while (paths && paths[i]) {
+        cmd_path = ft_strjoin2(paths[i], file);
+        printf("Checking: %s\n", cmd_path);  // Debugging output
+        if (cmd_path && access(cmd_path, X_OK) == 0) {
+            execve(cmd_path, argv, environ);
             free(cmd_path);
             break;
         }
         free(cmd_path);
         i++;
     }
+
+    /* Cleanup */
+    for (i = 0; paths && paths[i]; i++)
+        free(paths[i]);
     free(paths);
+
     errno = ENOENT;
-    return (-1);
+    return -1;
 }
 
-void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
-{
-    /* Convert tokens to a NULL-terminated array for execvp */
+void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list) {
     char **tokens = convert_list_to_arr(cmd->tokens);
-
-    /* If you do not need env_list here, you can safely ignore it or remove. */
     (void)env_list;
     (void)command_group;
     (void)process_index;
 
-    if (execvp(tokens[0], tokens) == -1)
-    {
-        perror("execvp");
-        free(tokens);       // Free the allocated memory
-        exit(EXIT_FAILURE); // Exit the child process if execvp fails
-    }
+    ft_execvp(tokens[0], tokens);
+
+    /* Print error and free tokens */
+    perror("ft_execvp failed");
+    for (int i = 0; tokens[i]; i++)
+        free(tokens[i]);
+    free(tokens);
+
+    exit(EXIT_FAILURE);
 }
+
+
 
 /* ************************************************************************** */
 /*              🏆 WAIT FOR ALL CHILD PROCESSES TO FINISH                     */
