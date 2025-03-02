@@ -6,7 +6,7 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/02 15:53:45 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/02 15:56:30 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ char	*expand_env_token(const char *token, t_env *env_list)
 				j++;
 
 			// Extract variable name
-			var_name = ft_ft_strndup(&token[i + 1], j - i - 1);
+			var_name = ft_strndup(&token[i + 1], j - i - 1);
 			var_value = get_env_value(env_list, var_name);
 			free(var_name);
 
