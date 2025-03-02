@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/01 09:54:28 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/02 15:31:17 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ char	*expand_env_token(const char *token, t_env *env_list)
 			else
 				result = ft_realloc_str(result, ft_strlen(result) + 1);
 
-			strcat(result, var_value ? var_value : "");
+			ft_strcat(result, var_value ? var_value : "");
 
 			i = j; // Move past variable
 		}
