@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/01 22:39:26 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/02 15:10:39 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -421,8 +421,15 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
             if (ft_strchr(cmd_path, '/') != NULL)
             {
                 if (access(cmd_path, X_OK) == -1)
-                {
-                    fprintf(stderr, "b2ffshell ❤: command not found: %s\n", cmd_path);
+                {;
+
+					write(STDERR_FILENO, "minishell ❤", 13);
+					write(STDERR_FILENO, ": ", 2);	
+					write(STDERR_FILENO, cmd_path, ft_strlen(cmd_path));
+					write(STDERR_FILENO, ": command not found", 19);
+					write(STDERR_FILENO, "\n", 1);	
+						
+
                     restore_fds(saved_stdin, saved_stdout);
                     cleanup_fds(fd_in, fd_out);
                     free(tokens);
@@ -435,7 +442,14 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
                 char *resolved_path = find_executable_in_path(cmd_path);
                 if (!resolved_path)
                 {
-                    fprintf(stderr, "b2ffshell ❤: command not found: %s\n", cmd_path);
+
+					write(STDERR_FILENO, "minishell ❤", 13);
+					write(STDERR_FILENO, ": ", 2);	
+					write(STDERR_FILENO, cmd_path, ft_strlen(cmd_path));
+					write(STDERR_FILENO, ": command not found", 19);
+					write(STDERR_FILENO, "\n", 1);
+						
+
                     restore_fds(saved_stdin, saved_stdout);
                     cleanup_fds(fd_in, fd_out);
                     free(tokens);
