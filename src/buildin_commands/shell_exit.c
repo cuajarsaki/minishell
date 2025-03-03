@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/02 16:13:52 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/03 23:57:09 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/04 00:47:07 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,9 @@ int shell_exit(char **argv)
 	{
 		res = ft_strtol(argv[1]);
 			printf("exit\n");
-			printf("need to exit last_status,wait for issure #5\n");
-			// need to exit last_status
-			// wait for issure #5
-			exit((int)res);
+			// This is debugs
+			// printf("%ld", res& 0xFF); 
+			exit((int)(res & 0xFF));
 	}
     // when the argument is not a number
 	perror("exit: numeric argument required");
