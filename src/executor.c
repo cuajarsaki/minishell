@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/04 00:36:54 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/04 01:06:41 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -438,6 +438,7 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
 /*              🏆 EXECUTE BUILT-IN COMMANDS (NO FORKING REQUIRED)            */
 /* ************************************************************************** */
 
+// todo:this is for debug only ,remove it later
 void debug_args(char **args)
 {
     if (!args)
@@ -458,32 +459,36 @@ void exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
 {
     char *program = (char *)cmd->tokens->content;
     char **args = token_list_to_argv(cmd);
-    int returnvaule;
-    (void)returnvaule;
+    int return_vaule;
+    // todo:(void)only for temp,need to remove after #5
+    (void)return_vaule;
 
-    debug_args(args);
+    //debug_args(args);
 
     if (ft_strcmp(program, "echo") == 0)
-        shell_echo(args);
+        return_vaule = shell_echo(args);
     else if (ft_strcmp(program, "cd") == 0)
     {
         if (cmd->tokens->next && cmd->tokens->next->content)
-            shell_cd((char *)cmd->tokens->next->content);
+            return_vaule = shell_cd((char *)cmd->tokens->next->content);
         else
-            shell_cd(NULL);
+            return_vaule = shell_cd(NULL);
     }
     else if (ft_strcmp(program, "exit") == 0){
-        returnvaule=shell_exit(args);
+        return_vaule = shell_exit(args);
     }
     else if (ft_strcmp(program, "pwd") == 0)
-        shell_pwd();
+        return_vaule = shell_pwd();
     else if (ft_strcmp(program, "export") == 0)
-        shell_export(args, env_list);
+        return_vaule = shell_export(args, env_list);
     else if (ft_strcmp(program, "unset") == 0)
-        shell_unset(args, env_list);
+        return_vaule = shell_unset(args, env_list);
     else if (ft_strcmp(program, "env") == 0)
-        shell_env(env_list);
+        return_vaule = shell_env(env_list);
     free_argv(args);
+
+    // todo: return_vaule for exit status]
+    // printf("%d\n", return_vaule); //debugs
 }
 
 /* ************************************************************************** */

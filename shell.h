@@ -77,13 +77,13 @@ void free_redir(void *ptr);
 void free_argv(char **argv);
 
 // BUILD-IN FUNCTIONS
-void shell_env(t_env *env_list);
-void shell_export(char **args, t_env *env_list);
-void shell_unset(char **args, t_env *env_list);
-void shell_clear(void);
-void shell_cd(char *path);
-void shell_pwd(void);
-void shell_echo(char **args);
+int shell_env(t_env *env_list);
+int shell_export(char **args, t_env *env_list);
+int shell_unset(char **args, t_env *env_list);
+int shell_clear(void);
+int shell_cd(char *path);
+int shell_pwd(void);
+int shell_echo(char **args);
 int shell_exit(char **argv);
 
 // TERMINAL SETTINGS
