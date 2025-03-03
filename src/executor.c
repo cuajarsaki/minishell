@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/04 01:06:41 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/04 02:02:00 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,31 +66,32 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
     if (cmd_count == 1)
     {
         t_cmd *cmd = (t_cmd *)cmds->content;
-        if (cmd->tokens && strcmp(cmd->tokens->content, "exit") == 0)
-        {
+        if (is_builtin(cmd)){
             exec_cmd_builtin(cmd, env_list);
-        }else{
+        }
+        else
+        {
 
-            pid_t pid = fork();
-            if (pid < 0)
-            {
-                perror("fork");
-                exit(EXIT_FAILURE);
-            }
-            else if (pid == 0)
-            {
-                // CHILD PROCESS
-                init_signal(SIG_DFL, SIG_DFL);
-                exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
-                exit(EXIT_SUCCESS); // Exit the child process
-            }
-            else
-            {
-                // PARENT PROCESS
-                init_signal(SIG_IGN, SIG_IGN);
-                ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
-                exec_parent(&command_group->pids); // Wait for the child process to complete
-            }
+                pid_t pid = fork();
+                if (pid < 0)
+                {
+                    perror("fork");
+                    exit(EXIT_FAILURE);
+                }
+                else if (pid == 0)
+                {
+                    // CHILD PROCESS
+                    init_signal(SIG_DFL, SIG_DFL);
+                    exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
+                    exit(EXIT_SUCCESS); // Exit the child process
+                }
+                else
+                {
+                    // PARENT PROCESS
+                    init_signal(SIG_IGN, SIG_IGN);
+                    ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
+                    exec_parent(&command_group->pids); // Wait for the child process to complete
+                }
         }
     
     }
@@ -468,15 +469,9 @@ void exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
     if (ft_strcmp(program, "echo") == 0)
         return_vaule = shell_echo(args);
     else if (ft_strcmp(program, "cd") == 0)
-    {
-        if (cmd->tokens->next && cmd->tokens->next->content)
-            return_vaule = shell_cd((char *)cmd->tokens->next->content);
-        else
-            return_vaule = shell_cd(NULL);
-    }
-    else if (ft_strcmp(program, "exit") == 0){
+        return_vaule = shell_cd(args);
+    else if (ft_strcmp(program, "exit") == 0)
         return_vaule = shell_exit(args);
-    }
     else if (ft_strcmp(program, "pwd") == 0)
         return_vaule = shell_pwd();
     else if (ft_strcmp(program, "export") == 0)
@@ -484,7 +479,7 @@ void exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
     else if (ft_strcmp(program, "unset") == 0)
         return_vaule = shell_unset(args, env_list);
     else if (ft_strcmp(program, "env") == 0)
-        return_vaule = shell_env(env_list);
+        return_vaule = shell_env(env_list); 
     free_argv(args);
 
     // todo: return_vaule for exit status]
