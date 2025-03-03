@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/02 16:13:52 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/04 00:47:07 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/04 02:03:17 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ int shell_exit(char **argv)
 	}
 	else if (argv[2])
 	{
-        // when the argument is too many
 		printf("exit: too many arguments\n");
 		return (1);
 	}

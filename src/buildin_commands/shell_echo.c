@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/09 15:41:50 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/04 00:55:46 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/04 02:19:04 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int  shell_echo(char **args)
 	// compile error occurs if dont comment out this line?
 	// need to be double check ��
 	// bool newline = true;
-	int i = 0;
+	int i = 1;
 	
 	if (args[i] && ft_strcmp(args[i], "-n") == 0)
 	{
