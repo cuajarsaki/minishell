@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/02 19:58:27 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/04 00:00:32 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,31 +51,6 @@ int execute_heredoc(const char *delimiter);
 /* ************************************************************************** */
 /*                 🏆 EXECUTE A SINGLE COMMAND TABLE                          */
 /* ************************************************************************** */
-
-// void exec_command_group(t_command_group *command_group, t_env *env_list)
-// {
-//     t_list *cmds;
-//     int i;
-
-//     cmds = command_group->cmds;
-//     command_group->cmd_amount = ft_lstsize(cmds);
-//     i = 0;
-
-// 	if (command_group->cmd_amount > 1)
-// 	{
-// 		printf("Pipe Execution\n");
-// 	}
-
-//     while (cmds)
-//     {
-//         /* Pass env_list into exec_cmd */
-//         exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
-//         cmds = cmds->next;
-//         i++;
-//     }
-
-//     exec_parent(&command_group->pids); // Wait for processes
-// }
 
 void exec_command_group(t_command_group *command_group, t_env *env_list)
 {
@@ -191,24 +166,6 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
 /* ************************************************************************** */
 /*                  🏆 EXECUTE A SINGLE COMMAND                               */
 /* ************************************************************************** */
-
-// void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
-// {
-//     if (cmd->tokens != NULL)
-//     {
-//         /* Check if built-in */
-//         if (is_builtin(cmd)){
-// 			printf("Exectuing BuildIN\n");
-//             exec_cmd_builtin(cmd, env_list);
-
-// 		}
-//         else
-// 		{
-// 			printf("Exectuing External\n");
-//             exec_cmd_external(cmd, command_group, process_index, env_list);
-// 		}
-//     }
-// }
 
 char *find_executable_in_path(const char *cmd)
 {
@@ -476,12 +433,31 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
 /*              🏆 EXECUTE BUILT-IN COMMANDS (NO FORKING REQUIRED)            */
 /* ************************************************************************** */
 
+void debug_args(char **args)
+{
+    if (!args)
+    {
+        printf("debug_args: args is NULL\n");
+        return;
+    }
+
+    printf("=== Debugging args ===\n");
+    for (int i = 0; args[i] != NULL; i++)
+    {
+        printf("args[%d] = \"%s\"\n", i, args[i]);
+    }
+    printf("======================\n");
+}
+
 void exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
 {
     char *program = (char *)cmd->tokens->content;
     char **args = token_list_to_argv(cmd);
-    int returnvaule = 0;
-    
+    int returnvaule;
+    (void)returnvaule;
+
+    debug_args(args);
+
     if (ft_strcmp(program, "echo") == 0)
         shell_echo(args);
     else if (ft_strcmp(program, "cd") == 0)
@@ -502,7 +478,7 @@ void exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
         shell_unset(args, env_list);
     else if (ft_strcmp(program, "env") == 0)
         shell_env(env_list);
-    free(args);
+    free_argv(args);
 }
 
 /* ************************************************************************** */
