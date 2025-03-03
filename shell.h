@@ -64,7 +64,7 @@ char *get_env_value(t_env *env_list, const char *key);
 void set_env_value(t_env **env_list, const char *key, const char *value);
 void unset_env_value(t_env **env_list, const char *key);
 void free_env_list(t_env *env_list);
-void exec_ast(t_ast *ast, t_env *env_list);
+void exec_ast(t_ast *ast, t_env *env_list, int *exit_status);
 char **convert_env_list_to_array(t_env *env_list);
 void free_env_array(char **envp);;
 void shell_unknown_command(char *cmd);

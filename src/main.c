@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 23:57:54 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/01 23:00:01 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/03 20:47:50 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,7 @@ void run_shell(t_env *env_list)
     int running = 1;
     char buf[8192];
     size_t len;
+	int exit_status = 0;
 
     t_ast *current_AST;
 
@@ -148,7 +149,9 @@ void run_shell(t_env *env_list)
         {
             current_AST = get_ast(buf, env_list);
             debug_ast(current_AST);
-            exec_ast(current_AST, env_list);
+            exec_ast(current_AST, env_list, &exit_status);
+			printf("exit_status from main: %d\n", exit_status);
+
             free_ast(current_AST);
             ft_memset(buf, 0, sizeof(buf));
             len = 0;

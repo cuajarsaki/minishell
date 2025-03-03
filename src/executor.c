@@ -18,11 +18,12 @@
 
 void exec_ast(t_ast *ast, t_env *env_list, int *exit_status);
 void exec_command_group(t_command_group *command_group, t_env *env_list, int *exit_status);
-void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list);
+
+void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list, int *exit_status);
 void exec_cmd_builtin(t_cmd *cmd, t_env *env_list);
-void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list);
+int exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list);
 int is_builtin(t_cmd *cmd);
-void exec_parent(t_list **pids);
+int exec_parent(t_list **pids);
 char **convert_list_to_arr(t_list *lst);
 int execute_heredoc(const char *delimiter);
 
@@ -55,30 +56,6 @@ void exec_ast(t_ast *ast, t_env *env_list, int *exit_status)
 /*                 🏆 EXECUTE A SINGLE COMMAND TABLE                          */
 /* ************************************************************************** */
 
-// void exec_command_group(t_command_group *command_group, t_env *env_list)
-// {
-//     t_list *cmds;
-//     int i;
-
-//     cmds = command_group->cmds;
-//     command_group->cmd_amount = ft_lstsize(cmds);
-//     i = 0;
-
-// 	if (command_group->cmd_amount > 1)
-// 	{
-// 		printf("Pipe Execution\n");
-// 	}
-
-//     while (cmds)
-//     {
-//         /* Pass env_list into exec_cmd */
-//         exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
-//         cmds = cmds->next;
-//         i++;
-//     }
-
-//     exec_parent(&command_group->pids); // Wait for processes
-// }
 
 void exec_command_group(t_command_group *command_group, t_env *env_list, int *exit_status)
 {
@@ -86,132 +63,60 @@ void exec_command_group(t_command_group *command_group, t_env *env_list, int *ex
     int cmd_count = ft_lstsize(cmds);
     int i = 0;
     int pipe_fd[2];
-    int prev_pipe_fd = -1; // Previous command's output
+    int prev_pipe_fd = -1;
 
     if (cmd_count == 0)
         return;
 
-    if (cmd_count == 1)
+    while (cmds)
     {
-        // !!!
-        // Separate fork handling for cases with and without pipes (Plz notice me if you want to change approach)
-        // !!
+        if (i < cmd_count - 1 && pipe(pipe_fd) < 0) {
+            perror("pipe");
+            exit(EXIT_FAILURE);
+        }
+
         pid_t pid = fork();
-        if (pid < 0)
-        {
+        if (pid < 0) {
             perror("fork");
             exit(EXIT_FAILURE);
         }
-        else if (pid == 0)
-        {
-            // CHILD PROCESS
+        else if (pid == 0) {
             init_signal(SIG_DFL, SIG_DFL);
-            *exit_status = exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
-            exit(EXIT_SUCCESS); // Exit the child process
+            if (prev_pipe_fd != -1) {
+                dup2(prev_pipe_fd, STDIN_FILENO);
+                close(prev_pipe_fd);
+            }
+            if (i < cmd_count - 1) {
+                dup2(pipe_fd[1], STDOUT_FILENO);
+                close(pipe_fd[1]);
+                close(pipe_fd[0]);
+            }
+
+            exec_cmd((t_cmd *)cmds->content, command_group, i, env_list, exit_status);
+            exit(*exit_status);
         }
-        else
-        {
-            // PARENT PROCESS
+        else {
             init_signal(SIG_IGN, SIG_IGN);
             ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
-            exec_parent(&command_group->pids); // Wait for the child process to complete
+            if (prev_pipe_fd != -1)
+                close(prev_pipe_fd);
+            if (i < cmd_count - 1) {
+                close(pipe_fd[1]);
+                prev_pipe_fd = pipe_fd[0];
+            }
+            cmds = cmds->next;
+            i++;
         }
     }
-    else if (cmd_count > 1)
-    {
-        while (cmds)
-        {
-            // Create a pipe only if there’s another command after this one
-            if (i < cmd_count - 1)
-            {
-                if (pipe(pipe_fd) < 0)
-                {
-                    perror("pipe");
-                    exit(EXIT_FAILURE);
-                }
-            }
 
-            pid_t pid = fork();
-            if (pid < 0)
-            {
-                perror("fork");
-                if (i < cmd_count - 1)
-                {
-                    close(pipe_fd[0]);
-                    close(pipe_fd[1]);
-                }
-                exit(EXIT_FAILURE);
-            }
-            else if (pid == 0)
-            {
-                // CHILD PROCESS
-                init_signal(SIG_DFL, SIG_DFL);
-                // If there's a previous pipe, read from it
-                if (prev_pipe_fd != -1)
-                {
-                    dup2(prev_pipe_fd, STDIN_FILENO);
-                    close(prev_pipe_fd);
-                }
-
-                // If there's a next command, write output to the pipe
-                if (i < cmd_count - 1)
-                {
-                    dup2(pipe_fd[1], STDOUT_FILENO);
-                    close(pipe_fd[1]);
-                    close(pipe_fd[0]); // Close unused read-end
-                }
-
-                exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
-                exit(EXIT_FAILURE);
-            }
-            else
-            {
-                init_signal(SIG_IGN, SIG_IGN);
-                // PARENT PROCESS
-                ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
-
-                // Close previous read-end, since it's no longer needed
-                if (prev_pipe_fd != -1)
-                    close(prev_pipe_fd);
-
-                // Store the new read-end for the next command
-                if (i < cmd_count - 1)
-                {
-                    close(pipe_fd[1]);         // Close write-end in parent
-                    prev_pipe_fd = pipe_fd[0]; // Keep read-end for next iteration
-                }
-
-                cmds = cmds->next;
-                i++;
-            }
-        }
-
-        // Parent waits for all child processes to complete
-        exec_parent(&command_group->pids);
-    }
+    *exit_status = exec_parent(&command_group->pids);
 }
+
 
 /* ************************************************************************** */
 /*                  🏆 EXECUTE A SINGLE COMMAND                               */
 /* ************************************************************************** */
 
-// void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
-// {
-//     if (cmd->tokens != NULL)
-//     {
-//         /* Check if built-in */
-//         if (is_builtin(cmd)){
-// 			printf("Exectuing BuildIN\n");
-//             exec_cmd_builtin(cmd, env_list);
-
-// 		}
-//         else
-// 		{
-// 			printf("Exectuing External\n");
-//             exec_cmd_external(cmd, command_group, process_index, env_list);
-// 		}
-//     }
-// }
 
 char *find_executable_in_path(const char *cmd)
 {
@@ -402,79 +307,27 @@ void restore_fds(int saved_stdin, int saved_stdout)
     close(saved_stdout);
 }
 
-int exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
+
+void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list, int *exit_status)
 {
-    int fd_in;
-    int fd_out;
-    int saved_stdin, saved_stdout;
+    int fd_in, fd_out, saved_stdin, saved_stdout;
 
     set_filedirectories(cmd, &fd_in, &fd_out);
-
-    // printf("fd_in: %d\n", fd_in);
-    // printf("fd_out: %d\n", fd_out);
-
     save_fds(&saved_stdin, &saved_stdout);
     apply_redirections(fd_in, fd_out);
 
-    if (cmd->tokens != NULL)
-    {
-        /* Check if built-in */
-        if (is_builtin(cmd))
-        {
+    if (cmd->tokens != NULL) {
+        if (is_builtin(cmd)) {
             exec_cmd_builtin(cmd, env_list);
-        }
-        else
-        {
-            // CHILD PROCESS
-            char **tokens = convert_list_to_arr(cmd->tokens);
-            char *cmd_path = tokens[0];
-
-            // If command has '/' (absolute or relative path), check existence
-            if (ft_strchr(cmd_path, '/') != NULL)
-            {
-                if (access(cmd_path, X_OK) == -1)
-                {;
-
-					write(STDERR_FILENO, "minishell ❤", 13);
-					write(STDERR_FILENO, ": ", 2);	
-					write(STDERR_FILENO, cmd_path, ft_strlen(cmd_path));
-					write(STDERR_FILENO, ": command not found", 19);
-					write(STDERR_FILENO, "\n", 1);	
-						
-
-                    restore_fds(saved_stdin, saved_stdout);
-                    cleanup_fds(fd_in, fd_out);
-                    free(tokens);
-                    return; // Return to parent process
-                }
-            }
-            else
-            {
-                // Search for the command in PATH
-                char *resolved_path = find_executable_in_path(cmd_path);
-                if (!resolved_path)
-                {
-
-					write(STDERR_FILENO, "minishell ❤", 13);
-					write(STDERR_FILENO, ": ", 2);	
-					write(STDERR_FILENO, cmd_path, ft_strlen(cmd_path));
-					write(STDERR_FILENO, ": command not found", 19);
-					write(STDERR_FILENO, "\n", 1);
-						
-
-                    restore_fds(saved_stdin, saved_stdout);
-                    cleanup_fds(fd_in, fd_out);
-                    free(tokens);
-                    return; // Return to parent process
-                }
-                free(resolved_path);
-            }
-            free(tokens);
-			// i need the return value of this function and need to save it 
-            exec_cmd_external(cmd, command_group, process_index, env_list);
+            *exit_status = 0;  // Builtins usually succeed unless they explicitly return an error
+        } else {
+            *exit_status = exec_cmd_external(cmd, command_group, process_index, env_list);
         }
     }
+
+    restore_fds(saved_stdin, saved_stdout);
 }
+
 
 /* ************************************************************************** */
 /*              🏆 EXECUTE BUILT-IN COMMANDS (NO FORKING REQUIRED)            */
@@ -594,28 +447,12 @@ int ft_execvp(const char *file, char *const argv[]) {
     return -1;
 }
 
-// void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list) {
-//     char **tokens = convert_list_to_arr(cmd->tokens);
-//     (void)env_list;
-//     (void)command_group;
-//     (void)process_index;
-
-//     ft_execvp(tokens[0], tokens);
-
-//     /* Print error and free tokens */
-//     perror("ft_execvp failed");
-//     for (int i = 0; tokens[i]; i++)
-//         free(tokens[i]);
-//     free(tokens);
-
-//     exit(EXIT_FAILURE);
-// }
-
 
 #include <sys/types.h>
 #include <sys/wait.h>
 
-void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list) {
+int exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
+{
     char **tokens = convert_list_to_arr(cmd->tokens);
     pid_t pid;
     int status;
@@ -624,82 +461,70 @@ void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_i
     (void)command_group;
     (void)process_index;
 
-    printf("[DEBUG] Forking process...\n");
     pid = fork();
 
     if (pid == 0) { // Child process
-        printf("[DEBUG] Child process started (PID: %d)\n", getpid());
-
         ft_execvp(tokens[0], tokens);
         
         // If execvp fails, print debugging information
-        fprintf(stderr, "[DEBUG] ft_execvp failed: %s (errno: %d)\n", tokens[0], errno);
-        perror("[DEBUG] Execvp error");
-
+        perror("Execvp failed");
+        
         for (int i = 0; tokens[i]; i++)
             free(tokens[i]);
         free(tokens);
 
-        exit(127); // Using 127 to indicate command not found or exec failure
+        exit(127); // 127 is commonly used for command not found
     } 
     else if (pid < 0) { // Fork failed
-        perror("[DEBUG] Fork failed");
-        for (int i = 0; tokens[i]; i++)
-            free(tokens[i]);
-        free(tokens);
+        perror("Fork failed");
         exit(EXIT_FAILURE);
     }
 
-    // Parent process waits for child
-    printf("[DEBUG] Parent waiting for PID: %d\n", pid);
+    // Parent process waits for the child and retrieves its exit status
     if (waitpid(pid, &status, 0) == -1) {
-        perror("[DEBUG] waitpid failed");
+        perror("waitpid failed");
         exit(EXIT_FAILURE);
     }
-
-    // Debugging raw status value
-    printf("[DEBUG] Raw waitpid status: %d\n", status);
 
     // Free tokens after execution
     for (int i = 0; tokens[i]; i++)
         free(tokens[i]);
     free(tokens);
 
-    // Retrieve exit status
+    // Return the exit status
     if (WIFEXITED(status)) {
-        int exit_status = WEXITSTATUS(status);
-        printf("[DEBUG] Process exited normally with status: %d\n", exit_status);
+        return WEXITSTATUS(status);
     } 
     else if (WIFSIGNALED(status)) {
-        int signal_number = WTERMSIG(status);
-        printf("[DEBUG] Process terminated by signal: %d (%s)\n", signal_number, strsignal(signal_number));
+        return 128 + WTERMSIG(status); // Signal exit codes start from 128
     } 
-    else if (WIFSTOPPED(status)) {
-        printf("[DEBUG] Process stopped by signal: %d\n", WSTOPSIG(status));
-    } 
-    else {
-        printf("[DEBUG] Process did not exit normally.\n");
-    }
-
-	// return STOPSIG(status);
+    return 1; // Default error
 }
+
 
 /* ************************************************************************** */
 /*              🏆 WAIT FOR ALL CHILD PROCESSES TO FINISH                     */
 /* ************************************************************************** */
 
-void exec_parent(t_list **pids)
+int exec_parent(t_list **pids)
 {
-    int status;
-    t_list *pids_now;
+    int status = 0;
+    t_list *pids_now = *pids;
 
-    pids_now = *pids;
     while (pids_now)
     {
-        waitpid(-1, &status, 0);
-        pids_now = (pids_now)->next;
+        if (!pids_now->next)
+            waitpid((pid_t)(intptr_t)pids_now->content, &status, 0);
+        else
+            waitpid((pid_t)(intptr_t)pids_now->content, NULL, 0);
+        pids_now = pids_now->next;
     }
+
+    if (WIFEXITED(status))
+        return WEXITSTATUS(status);
+    return 1; // Default error
 }
+
 
 /* ************************************************************************** */
 /*              🏆 HELPER FUNCTIONS FOR COMMAND EXECUTION                     */
