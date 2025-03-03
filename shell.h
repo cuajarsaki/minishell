@@ -74,6 +74,7 @@ void free_ast(t_ast *ast);
 void free_cmd(t_cmd *cmd);
 void free_command_group(t_command_group *command_group);
 void free_redir(void *ptr);
+void free_argv(char **argv);
 
 // BUILD-IN FUNCTIONS
 void shell_env(t_env *env_list);

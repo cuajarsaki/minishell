@@ -6,11 +6,22 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 22:01:00 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/01 09:54:14 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/03 23:57:49 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../shell.h"
+
+void free_argv(char **argv)
+{
+    size_t i = 0;
+    while (argv[i])
+    {
+        free(argv[i]);
+        i++;
+    }
+    free(argv);
+}
 
 static void do_nothing(void *__ptr)
 {
