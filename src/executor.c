@@ -6,7 +6,7 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/02 16:18:10 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/02 16:4 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 /*                          FUNCTION DECLARATIONS                             */
 /* ************************************************************************** */
 
-void exec_ast(t_ast *ast, t_env *env_list);
-void exec_command_group(t_command_group *command_group, t_env *env_list);
+void exec_ast(t_ast *ast, t_env *env_list, int *exit_status);
+void exec_command_group(t_command_group *command_group, t_env *env_list, int *exit_status);
 void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list);
 void exec_cmd_builtin(t_cmd *cmd, t_env *env_list);
 void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list);
@@ -33,7 +33,7 @@ extern char **environ;
     /*                  🏆 EXECUTE THE ENTIRE AST (MAIN EXECUTION)                */
     /* ************************************************************************** */
 
-    void exec_ast(t_ast *ast, t_env *env_list)
+void exec_ast(t_ast *ast, t_env *env_list, int *exit_status)
 {
     t_list *command_group_node;
     t_command_group *command_group;
@@ -44,7 +44,7 @@ extern char **environ;
         command_group = (t_command_group *)command_group_node->content;
         command_group->pids = NULL;
         /* Pass env_list down to the next function */
-        exec_command_group(command_group, env_list);
+        exec_command_group(command_group, env_list, exit_status);
         free_command_group(command_group);
         // (Ignoring logical operators for now)
         command_group_node = command_group_node->next;
@@ -80,7 +80,7 @@ extern char **environ;
 //     exec_parent(&command_group->pids); // Wait for processes
 // }
 
-void exec_command_group(t_command_group *command_group, t_env *env_list)
+void exec_command_group(t_command_group *command_group, t_env *env_list, int *exit_status)
 {
     t_list *cmds = command_group->cmds;
     int cmd_count = ft_lstsize(cmds);
@@ -106,7 +106,7 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
         {
             // CHILD PROCESS
             init_signal(SIG_DFL, SIG_DFL);
-            exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
+            *exit_status = exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
             exit(EXIT_SUCCESS); // Exit the child process
         }
         else
@@ -402,7 +402,7 @@ void restore_fds(int saved_stdin, int saved_stdout)
     close(saved_stdout);
 }
 
-void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
+int exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
 {
     int fd_in;
     int fd_out;
@@ -470,6 +470,7 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
                 free(resolved_path);
             }
             free(tokens);
+			// i need the return value of this function and need to save it 
             exec_cmd_external(cmd, command_group, process_index, env_list);
         }
     }
@@ -523,7 +524,6 @@ int has_slash(const char *str)
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <errno.h>
 #include <sys/stat.h>
 
 /* Helper function to check if a command contains a '/' */
@@ -556,8 +556,8 @@ int ft_execvp(const char *file, char *const argv[]) {
     int i = 0;
 
     if (!file || !*file) {
-        errno = ENOENT;
-        return -1;
+		//return global error
+		return -1;
     }
 
     /* Print PATH for debugging */
@@ -590,28 +590,99 @@ int ft_execvp(const char *file, char *const argv[]) {
         free(paths[i]);
     free(paths);
 
-    errno = ENOENT;
+
     return -1;
 }
 
+// void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list) {
+//     char **tokens = convert_list_to_arr(cmd->tokens);
+//     (void)env_list;
+//     (void)command_group;
+//     (void)process_index;
+
+//     ft_execvp(tokens[0], tokens);
+
+//     /* Print error and free tokens */
+//     perror("ft_execvp failed");
+//     for (int i = 0; tokens[i]; i++)
+//         free(tokens[i]);
+//     free(tokens);
+
+//     exit(EXIT_FAILURE);
+// }
+
+
+#include <sys/types.h>
+#include <sys/wait.h>
+
 void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list) {
     char **tokens = convert_list_to_arr(cmd->tokens);
+    pid_t pid;
+    int status;
+
     (void)env_list;
     (void)command_group;
     (void)process_index;
 
-    ft_execvp(tokens[0], tokens);
+    printf("[DEBUG] Forking process...\n");
+    pid = fork();
 
-    /* Print error and free tokens */
-    perror("ft_execvp failed");
+    if (pid == 0) { // Child process
+        printf("[DEBUG] Child process started (PID: %d)\n", getpid());
+
+        ft_execvp(tokens[0], tokens);
+        
+        // If execvp fails, print debugging information
+        fprintf(stderr, "[DEBUG] ft_execvp failed: %s (errno: %d)\n", tokens[0], errno);
+        perror("[DEBUG] Execvp error");
+
+        for (int i = 0; tokens[i]; i++)
+            free(tokens[i]);
+        free(tokens);
+
+        exit(127); // Using 127 to indicate command not found or exec failure
+    } 
+    else if (pid < 0) { // Fork failed
+        perror("[DEBUG] Fork failed");
+        for (int i = 0; tokens[i]; i++)
+            free(tokens[i]);
+        free(tokens);
+        exit(EXIT_FAILURE);
+    }
+
+    // Parent process waits for child
+    printf("[DEBUG] Parent waiting for PID: %d\n", pid);
+    if (waitpid(pid, &status, 0) == -1) {
+        perror("[DEBUG] waitpid failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // Debugging raw status value
+    printf("[DEBUG] Raw waitpid status: %d\n", status);
+
+    // Free tokens after execution
     for (int i = 0; tokens[i]; i++)
         free(tokens[i]);
     free(tokens);
 
-    exit(EXIT_FAILURE);
+    // Retrieve exit status
+    if (WIFEXITED(status)) {
+        int exit_status = WEXITSTATUS(status);
+        printf("[DEBUG] Process exited normally with status: %d\n", exit_status);
+    } 
+    else if (WIFSIGNALED(status)) {
+        int signal_number = WTERMSIG(status);
+        printf("[DEBUG] Process terminated by signal: %d (%s)\n", signal_number, strsignal(signal_number));
+    } 
+    else if (WIFSTOPPED(status)) {
+        printf("[DEBUG] Process stopped by signal: %d\n", WSTOPSIG(status));
+    } 
+    else {
+        printf("[DEBUG] Process did not exit normally.\n");
+    }
+
+	// return STOPSIG(status);
 }
-
-
 
 /* ************************************************************************** */
 /*              🏆 WAIT FOR ALL CHILD PROCESSES TO FINISH                     */
