@@ -6,19 +6,19 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/09 15:41:50 by jidler            #+#    #+#             */
-/*   Updated: 2025/02/28 12:06:01 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/04 01:03:34 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../shell.h"
 
-void shell_export(char **args, t_env *env_list)
+int shell_export(char **args, t_env *env_list)
 {
     int i = 0;
 
     // If "export" was called with no args, do nothing or show usage
     if (!args || !args[0])
-        return;
+        return 1;
 
     // Process each argument in form "KEY=VALUE"
     while (args[i])
@@ -41,4 +41,5 @@ void shell_export(char **args, t_env *env_list)
         }
         i++;
     }
+    return 0;
 }
