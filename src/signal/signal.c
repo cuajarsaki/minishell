@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   singal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 19:57:16 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/02 00:17:33 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/04 16:15:07 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../shell.h"
+#include "../../shell.h"
 
 volatile sig_atomic_t g_signal_received = 0;
 

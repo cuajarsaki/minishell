@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 22:01:00 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/03 23:57:49 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/04 16:15:13 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../shell.h"
+#include "../../shell.h"
 
 void free_argv(char **argv)
 {

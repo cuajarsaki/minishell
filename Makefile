@@ -10,18 +10,17 @@ SRC = $(SRC_DIR)/$(CMD_DIR)/shell_cd.c \
       $(SRC_DIR)/$(CMD_DIR)/shell_unset.c \
       $(SRC_DIR)/$(CMD_DIR)/shell_exit.c \
       $(SRC_DIR)/main.c \
-      $(SRC_DIR)/env.c \
-      $(SRC_DIR)/executor.c \
-      $(SRC_DIR)/termcaps.c \
-      $(SRC_DIR)/singal.c \
-      $(SRC_DIR)/terminal.c \
-      $(SRC_DIR)/free.c \
-      $(SRC_DIR)/cmd_tokenizer.c \
+      $(SRC_DIR)/env/env.c \
+      $(SRC_DIR)/executor/executor.c \
+      $(SRC_DIR)/termcaps/termcaps.c \
+      $(SRC_DIR)/signal/signal.c \
+      $(SRC_DIR)/terminal/terminal.c \
+      $(SRC_DIR)/free/free.c \
+      $(SRC_DIR)/cmd_tokenizer/cmd_tokenizer.c \
 	  $(SRC_DIR)/parser/parser_ast.c \
 	  $(SRC_DIR)/parser/parser_cmd.c \
 	  $(SRC_DIR)/parser/parser_env.c \
 	  $(SRC_DIR)/parser/parser_group.c \
-	  $(SRC_DIR)/parser/parser_quotes.c \
 	  $(SRC_DIR)/parser/parser_redir.c \
 	  $(SRC_DIR)/parser/parser_token_utils.c \
 	  $(SRC_DIR)/parser/parser_token.c \

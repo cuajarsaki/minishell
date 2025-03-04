@@ -1,5 +1,16 @@
-#include "parser.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser_ast.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/04 16:09:23 by jidler            #+#    #+#             */
+/*   Updated: 2025/03/04 16:10:44 by jidler           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "parser.h"
 
 t_ast	*get_ast(const char *input, t_env *env_list, int *exit_status)
 {
@@ -11,7 +22,6 @@ t_ast	*get_ast(const char *input, t_env *env_list, int *exit_status)
 	if (!ast)
 		return (NULL);
 	ast->command_groups = NULL;
-
 	curr_pos = 0;
 	while (input[curr_pos])
 	{
