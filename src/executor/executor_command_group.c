@@ -15,12 +15,14 @@ int exec_command_group(t_command_group *command_group, t_env *env_list, char **e
     if (cmd_count == 1)
     {
         t_cmd *cmd = (t_cmd *)cmds->content;
-        if (is_builtin(cmd)){
-            exit_status = exec_cmd_builtin(cmd, env_list);
-        }
+        if ((cmd->tokens) && (cmd->tokens->content) &&(ft_strcmp((char *)cmd->tokens->content, "exit") == 0 ||
+     ft_strcmp((char *)cmd->tokens->content, "cd") == 0))
+{
+    exit_status = exec_cmd_builtin(cmd, env_list);
+}
+
         else
         {
-
                 pid_t pid = fork();
                 if (pid < 0)
                 {

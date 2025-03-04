@@ -7,7 +7,11 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
     int saved_stdin, saved_stdout;
     int exit_status;
 
-    set_filedirectories(cmd, &fd_in, &fd_out);
+    exit_status = set_filedirectories(cmd, &fd_in, &fd_out);
+    
+    if(exit_status!=0){
+        exit(exit_status);  
+    }
 
     // printf("fd_in: %d\n", fd_in);
     // printf("fd_out: %d\n", fd_out);
@@ -90,9 +94,7 @@ int exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
 {
     char *program = (char *)cmd->tokens->content;
     char **args = token_list_to_argv(cmd);
-    int exit_status;
-    // todo:(void)only for temp,need to remove after #5
-    (void)exit_status;
+    int exit_status = 0;
 
     //debug_args(args);
 

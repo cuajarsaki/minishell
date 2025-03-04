@@ -2,6 +2,8 @@
 
 int is_builtin(t_cmd *cmd)
 {
+        if  (!cmd || !cmd->tokens || !cmd->tokens->content)  
+        return (0);
     char *program = (char *)cmd->tokens->content;
 
     /*

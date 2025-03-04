@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 16:30:00 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/04 17:55:06 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/04 18:57:56 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void	save_fds(int *saved_stdin, int *saved_stdout);
 void	restore_fds(int saved_stdin, int saved_stdout);
 void	cleanup_fds(int fd_in, int fd_out);
 void	apply_redirections(int fd_in, int fd_out);
-void	set_filedirectories(t_cmd *cmd, int *fd_in, int *fd_out);
+int 	set_filedirectories(t_cmd *cmd, int *fd_in, int *fd_out);
 
 /* Path Resolution */
 char	*find_executable_in_path(const char *cmd);
