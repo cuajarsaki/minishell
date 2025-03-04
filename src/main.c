@@ -6,7 +6,7 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 23:57:54 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/04 17:29:22 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/04 17:50:55 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ void debug_ast(t_ast *ast)
  * ACTUAL MAIN *
  ***************/
 
-void run_shell(t_env *env_list)
+void run_shell(t_env *env_list, char **envp)
 {
     int running = 1;
     char buf[8192];
@@ -145,7 +145,7 @@ void run_shell(t_env *env_list)
         {
             current_AST = get_ast(buf, env_list, &exit_stauts);
             debug_ast(current_AST);
-            exit_stauts=exec_ast(current_AST, env_list);
+            exit_stauts=exec_ast(current_AST, env_list, envp);
             free_ast(current_AST);
             ft_memset(buf, 0, sizeof(buf));
             len = 0;
@@ -165,7 +165,7 @@ int	main(int argc, char **argv, char **envp)
 
     struct termios orig_termios;
     setup_terminal(&orig_termios);
-    run_shell(env_list);     // Pass env_list
+    run_shell(env_list, envp);     // Pass env_list
     free_env_list(env_list); // Free environment variables before exit
     reset_terminal_settings(&orig_termios);
     return 0;

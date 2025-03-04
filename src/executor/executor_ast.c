@@ -1,6 +1,6 @@
 #include "executor.h"
 
-int  exec_ast(t_ast *ast, t_env *env_list)
+int  exec_ast(t_ast *ast, t_env *env_list, char **envp)
 {
     t_list *command_group_node;
     t_command_group *command_group;
@@ -12,7 +12,7 @@ int  exec_ast(t_ast *ast, t_env *env_list)
         command_group = (t_command_group *)command_group_node->content;
         command_group->pids = NULL;
         /* Pass env_list down to the next function */
-        exit_stauts = exec_command_group(command_group, env_list);
+        exit_stauts = exec_command_group(command_group, env_list, envp);
         free_command_group(command_group);
         // (Ignoring logical operators for now)
         command_group_node = command_group_node->next;
