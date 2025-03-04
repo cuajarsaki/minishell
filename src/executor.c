@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/04 02:02:00 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/04 14:46:53 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,13 @@
 /*                          FUNCTION DECLARATIONS                             */
 /* ************************************************************************** */
 
-void exec_ast(t_ast *ast, t_env *env_list);
-void exec_command_group(t_command_group *command_group, t_env *env_list);
+int exec_ast(t_ast *ast, t_env *env_list);
+int exec_command_group(t_command_group *command_group, t_env *env_list);
 void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list);
-void exec_cmd_builtin(t_cmd *cmd, t_env *env_list);
+int exec_cmd_builtin(t_cmd *cmd, t_env *env_list);
 void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list);
 int is_builtin(t_cmd *cmd);
-void exec_parent(t_list **pids);
+int exec_parent(t_list **pids);
 char **convert_list_to_arr(t_list *lst);
 int execute_heredoc(const char *delimiter);
 
@@ -30,10 +30,11 @@ int execute_heredoc(const char *delimiter);
     /*                  🏆 EXECUTE THE ENTIRE AST (MAIN EXECUTION)                */
     /* ************************************************************************** */
 
-    void exec_ast(t_ast *ast, t_env *env_list)
+int  exec_ast(t_ast *ast, t_env *env_list)
 {
     t_list *command_group_node;
     t_command_group *command_group;
+    int exit_stauts=0;
 
     command_group_node = ast->command_groups;
     while (command_group_node)
@@ -41,33 +42,35 @@ int execute_heredoc(const char *delimiter);
         command_group = (t_command_group *)command_group_node->content;
         command_group->pids = NULL;
         /* Pass env_list down to the next function */
-        exec_command_group(command_group, env_list);
+        exit_stauts = exec_command_group(command_group, env_list);
         free_command_group(command_group);
         // (Ignoring logical operators for now)
         command_group_node = command_group_node->next;
     }
+    return(exit_stauts);
 }
 
 /* ************************************************************************** */
 /*                 🏆 EXECUTE A SINGLE COMMAND TABLE                          */
 /* ************************************************************************** */
 
-void exec_command_group(t_command_group *command_group, t_env *env_list)
+int exec_command_group(t_command_group *command_group, t_env *env_list)
 {
     t_list *cmds = command_group->cmds;
     int cmd_count = ft_lstsize(cmds);
     int i = 0;
     int pipe_fd[2];
     int prev_pipe_fd = -1; // Previous command's output
+    int exit_status=0;
 
     if (cmd_count == 0)
-        return;
+        return(0);
 
     if (cmd_count == 1)
     {
         t_cmd *cmd = (t_cmd *)cmds->content;
         if (is_builtin(cmd)){
-            exec_cmd_builtin(cmd, env_list);
+            exit_status = exec_cmd_builtin(cmd, env_list);
         }
         else
         {
@@ -90,7 +93,7 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
                     // PARENT PROCESS
                     init_signal(SIG_IGN, SIG_IGN);
                     ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
-                    exec_parent(&command_group->pids); // Wait for the child process to complete
+                    exit_status = exec_parent(&command_group->pids); // Wait for the child process to complete
                 }
         }
     
@@ -165,8 +168,10 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
         }
 
         // Parent waits for all child processes to complete
-        exec_parent(&command_group->pids);
+        exit_status=exec_parent(&command_group->pids);
     }
+
+    return (exit_status);
 }
 
 /* ************************************************************************** */
@@ -367,6 +372,7 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
     int fd_in;
     int fd_out;
     int saved_stdin, saved_stdout;
+    int exit_status;
 
     set_filedirectories(cmd, &fd_in, &fd_out);
 
@@ -393,19 +399,29 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
             if (ft_strchr(cmd_path, '/') != NULL)
             {
                 if (access(cmd_path, X_OK) == -1)
-                {;
-
-					write(STDERR_FILENO, "minishell ❤", 13);
-					write(STDERR_FILENO, ": ", 2);	
-					write(STDERR_FILENO, cmd_path, ft_strlen(cmd_path));
-					write(STDERR_FILENO, ": command not found", 19);
-					write(STDERR_FILENO, "\n", 1);	
-						
-
+                {
+                    if (access(cmd_path, F_OK) == 0)
+                    {
+                        exit_status = 126;
+                        write(STDERR_FILENO, "minishell ❤", 13);
+                        write(STDERR_FILENO, ": ", 2);
+                        write(STDERR_FILENO, cmd_path, ft_strlen(cmd_path));
+                        write(STDERR_FILENO, ": Permission denied", 20);
+                        write(STDERR_FILENO, "\n", 1);
+                    }
+                    else
+                    {
+                        exit_status = 127;
+                            write(STDERR_FILENO, "minishell ❤", 13);
+                        write(STDERR_FILENO, ": ", 2);
+                        write(STDERR_FILENO, cmd_path, ft_strlen(cmd_path));
+                        write(STDERR_FILENO, ": command not found", 19);
+                        write(STDERR_FILENO, "\n", 1);
+                    }
                     restore_fds(saved_stdin, saved_stdout);
                     cleanup_fds(fd_in, fd_out);
                     free(tokens);
-                    return; // Return to parent process
+                    exit(exit_status);
                 }
             }
             else
@@ -425,7 +441,7 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
                     restore_fds(saved_stdin, saved_stdout);
                     cleanup_fds(fd_in, fd_out);
                     free(tokens);
-                    return; // Return to parent process
+                    exit(127); // Return to parent process
                 }
                 free(resolved_path);
             }
@@ -456,34 +472,35 @@ void debug_args(char **args)
     printf("======================\n");
 }
 
-void exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
+int exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
 {
     char *program = (char *)cmd->tokens->content;
     char **args = token_list_to_argv(cmd);
-    int return_vaule;
+    int exit_status;
     // todo:(void)only for temp,need to remove after #5
-    (void)return_vaule;
+    (void)exit_status;
 
     //debug_args(args);
 
     if (ft_strcmp(program, "echo") == 0)
-        return_vaule = shell_echo(args);
+        exit_status = shell_echo(args);
     else if (ft_strcmp(program, "cd") == 0)
-        return_vaule = shell_cd(args);
+        exit_status = shell_cd(args);
     else if (ft_strcmp(program, "exit") == 0)
-        return_vaule = shell_exit(args);
+        exit_status = shell_exit(args);
     else if (ft_strcmp(program, "pwd") == 0)
-        return_vaule = shell_pwd();
+        exit_status = shell_pwd();
     else if (ft_strcmp(program, "export") == 0)
-        return_vaule = shell_export(args, env_list);
+        exit_status = shell_export(args, env_list);
     else if (ft_strcmp(program, "unset") == 0)
-        return_vaule = shell_unset(args, env_list);
+        exit_status = shell_unset(args, env_list);
     else if (ft_strcmp(program, "env") == 0)
-        return_vaule = shell_env(env_list); 
+        exit_status = shell_env(env_list); 
     free_argv(args);
 
-    // todo: return_vaule for exit status]
-    // printf("%d\n", return_vaule); //debugs
+    // todo: exit_status for exit status]
+    // printf("%d\n", exit_status); //debugs
+    return (exit_status);
 }
 
 /* ************************************************************************** */
@@ -556,7 +573,8 @@ void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_i
 /*              🏆 WAIT FOR ALL CHILD PROCESSES TO FINISH                     */
 /* ************************************************************************** */
 
-void exec_parent(t_list **pids)
+
+int exec_parent(t_list **pids)
 {
     int status;
     t_list *pids_now;
@@ -564,9 +582,20 @@ void exec_parent(t_list **pids)
     pids_now = *pids;
     while (pids_now)
     {
-        waitpid(-1, &status, 0);
-        pids_now = (pids_now)->next;
+        pid_t pid = (pid_t)(intptr_t)pids_now->content;
+        waitpid(pid, &status, 0);
+        pids_now = pids_now->next;
+        
     }
+    // debugs
+    printf("debugs:(in exec_parent)\n");
+    // debugs
+    printf("debugs:Exit status before WIFEXITED: %d\n", status);
+    if (WIFEXITED(status))
+        // debugs
+        printf("debugs:Exit status: %d\n", WEXITSTATUS(status));
+
+    return (WEXITSTATUS(status));
 }
 
 /* ************************************************************************** */

@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 23:57:54 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/04 00:38:28 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/04 14:45:44 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,7 @@ void run_shell(t_env *env_list)
     int running = 1;
     char buf[8192];
     size_t len;
+    int exit_stauts=0;
 
     t_ast *current_AST;
 
@@ -137,16 +138,18 @@ void run_shell(t_env *env_list)
         len = 0;
         handle_input(buf, &len, sizeof(buf));
         g_signal_received = 0;
-        
+        printf("start running\n");
         if (len > 0)
         {
             current_AST = get_ast(buf, env_list);
             debug_ast(current_AST);
-            exec_ast(current_AST, env_list);
+            exit_stauts=exec_ast(current_AST, env_list);
             free_ast(current_AST);
             ft_memset(buf, 0, sizeof(buf));
             len = 0;
         }
+        printf("debugs:exit_stauts in run_shell :");
+        printf("%d\n", exit_stauts);
     }
 }
 
