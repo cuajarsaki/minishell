@@ -8,6 +8,7 @@ SRC = $(SRC_DIR)/$(CMD_DIR)/shell_cd.c \
       $(SRC_DIR)/$(CMD_DIR)/shell_export.c \
       $(SRC_DIR)/$(CMD_DIR)/shell_pwd.c \
       $(SRC_DIR)/$(CMD_DIR)/shell_unset.c \
+      $(SRC_DIR)/$(CMD_DIR)/shell_exit.c \
       $(SRC_DIR)/main.c \
       $(SRC_DIR)/env.c \
       $(SRC_DIR)/executor.c \
@@ -16,6 +17,7 @@ SRC = $(SRC_DIR)/$(CMD_DIR)/shell_cd.c \
       $(SRC_DIR)/singal.c \
       $(SRC_DIR)/terminal.c \
       $(SRC_DIR)/free.c \
+      $(SRC_DIR)/cmd_tokenizer.c \
 
 OBJ = $(SRC:.c=.o)
 

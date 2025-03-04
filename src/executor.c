@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/02 15:51:24 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/04 02:02:00 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,31 +52,6 @@ int execute_heredoc(const char *delimiter);
 /*                 🏆 EXECUTE A SINGLE COMMAND TABLE                          */
 /* ************************************************************************** */
 
-// void exec_command_group(t_command_group *command_group, t_env *env_list)
-// {
-//     t_list *cmds;
-//     int i;
-
-//     cmds = command_group->cmds;
-//     command_group->cmd_amount = ft_lstsize(cmds);
-//     i = 0;
-
-// 	if (command_group->cmd_amount > 1)
-// 	{
-// 		printf("Pipe Execution\n");
-// 	}
-
-//     while (cmds)
-//     {
-//         /* Pass env_list into exec_cmd */
-//         exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
-//         cmds = cmds->next;
-//         i++;
-//     }
-
-//     exec_parent(&command_group->pids); // Wait for processes
-// }
-
 void exec_command_group(t_command_group *command_group, t_env *env_list)
 {
     t_list *cmds = command_group->cmds;
@@ -90,29 +65,35 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
 
     if (cmd_count == 1)
     {
-        // !!!
-        // Separate fork handling for cases with and without pipes (Plz notice me if you want to change approach)
-        // !!
-        pid_t pid = fork();
-        if (pid < 0)
-        {
-            perror("fork");
-            exit(EXIT_FAILURE);
-        }
-        else if (pid == 0)
-        {
-            // CHILD PROCESS
-            init_signal(SIG_DFL, SIG_DFL);
-            exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
-            exit(EXIT_SUCCESS); // Exit the child process
+        t_cmd *cmd = (t_cmd *)cmds->content;
+        if (is_builtin(cmd)){
+            exec_cmd_builtin(cmd, env_list);
         }
         else
         {
-            // PARENT PROCESS
-            init_signal(SIG_IGN, SIG_IGN);
-            ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
-            exec_parent(&command_group->pids); // Wait for the child process to complete
+
+                pid_t pid = fork();
+                if (pid < 0)
+                {
+                    perror("fork");
+                    exit(EXIT_FAILURE);
+                }
+                else if (pid == 0)
+                {
+                    // CHILD PROCESS
+                    init_signal(SIG_DFL, SIG_DFL);
+                    exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
+                    exit(EXIT_SUCCESS); // Exit the child process
+                }
+                else
+                {
+                    // PARENT PROCESS
+                    init_signal(SIG_IGN, SIG_IGN);
+                    ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
+                    exec_parent(&command_group->pids); // Wait for the child process to complete
+                }
         }
+    
     }
     else if (cmd_count > 1)
     {
@@ -191,24 +172,6 @@ void exec_command_group(t_command_group *command_group, t_env *env_list)
 /* ************************************************************************** */
 /*                  🏆 EXECUTE A SINGLE COMMAND                               */
 /* ************************************************************************** */
-
-// void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
-// {
-//     if (cmd->tokens != NULL)
-//     {
-//         /* Check if built-in */
-//         if (is_builtin(cmd)){
-// 			printf("Exectuing BuildIN\n");
-//             exec_cmd_builtin(cmd, env_list);
-
-// 		}
-//         else
-// 		{
-// 			printf("Exectuing External\n");
-//             exec_cmd_external(cmd, command_group, process_index, env_list);
-// 		}
-//     }
-// }
 
 char *find_executable_in_path(const char *cmd)
 {
@@ -476,29 +439,51 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
 /*              🏆 EXECUTE BUILT-IN COMMANDS (NO FORKING REQUIRED)            */
 /* ************************************************************************** */
 
+// todo:this is for debug only ,remove it later
+void debug_args(char **args)
+{
+    if (!args)
+    {
+        printf("debug_args: args is NULL\n");
+        return;
+    }
+
+    printf("=== Debugging args ===\n");
+    for (int i = 0; args[i] != NULL; i++)
+    {
+        printf("args[%d] = \"%s\"\n", i, args[i]);
+    }
+    printf("======================\n");
+}
+
 void exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
 {
     char *program = (char *)cmd->tokens->content;
-    char **args = convert_list_to_arr(cmd->tokens->next);
+    char **args = token_list_to_argv(cmd);
+    int return_vaule;
+    // todo:(void)only for temp,need to remove after #5
+    (void)return_vaule;
+
+    //debug_args(args);
 
     if (ft_strcmp(program, "echo") == 0)
-        shell_echo(args);
+        return_vaule = shell_echo(args);
     else if (ft_strcmp(program, "cd") == 0)
-    {
-        if (cmd->tokens->next && cmd->tokens->next->content)
-            shell_cd((char *)cmd->tokens->next->content);
-        else
-            shell_cd(NULL);
-    }
+        return_vaule = shell_cd(args);
+    else if (ft_strcmp(program, "exit") == 0)
+        return_vaule = shell_exit(args);
     else if (ft_strcmp(program, "pwd") == 0)
-        shell_pwd();
+        return_vaule = shell_pwd();
     else if (ft_strcmp(program, "export") == 0)
-        shell_export(args, env_list);
+        return_vaule = shell_export(args, env_list);
     else if (ft_strcmp(program, "unset") == 0)
-        shell_unset(args, env_list);
+        return_vaule = shell_unset(args, env_list);
     else if (ft_strcmp(program, "env") == 0)
-        shell_env(env_list);
-    free(args);
+        return_vaule = shell_env(env_list); 
+    free_argv(args);
+
+    // todo: return_vaule for exit status]
+    // printf("%d\n", return_vaule); //debugs
 }
 
 /* ************************************************************************** */

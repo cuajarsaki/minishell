@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 11:44:55 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/02 15:56:30 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/03 23:30:49 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,34 +102,6 @@ char	*expand_env_token(const char *token, t_env *env_list)
 }
 
 
-// static char *expand_env_token(const char *token, t_env *env_list)
-// {
-//     // 1) If token is NULL or empty, just return a copy
-//     if (!token || !*token)
-//         return (token ? ft_strdup(token) : NULL);
-
-//     // 2) If token does NOT start with '$', return a copy unchanged
-//     if (token[0] != '$')
-//         return ft_strdup(token);
-
-//     // 3) Extract the variable name (everything after '$')
-//     const char *var_name = token + 1;
-
-//     // Edge case: if the token is just "$", no var_name
-//     if (!*var_name)
-//         return ft_strdup("$"); // or return ft_strdup("") depending on your shell’s behavior
-
-//     // 4) Look up var_name in env_list
-//     char *val = get_env_value(env_list, var_name);
-
-//     // If not found, some shells use an empty string
-//     if (!val)
-//         val = "";
-
-//     // 5) Return a newly allocated copy of the expansion
-//     return ft_strdup(val);
-// }
-
 char	*remove_quotes(const char *token)
 {
 	int		len;
@@ -200,50 +172,6 @@ t_redir	*get_redir(const char *input, int *curr_pos)
 	redir->direction = ft_strndup(&input[start], *curr_pos - start);
 	return (redir);
 }
-
-
-// char	*get_token(const char *input, int *curr_pos)
-// {
-// 	ft_skip_spaces(input, curr_pos); // Skip leading spaces
-
-// 	int		start = *curr_pos;
-// 	int		i = *curr_pos;
-// 	char	quote = 0; // Variable to track open quote
-
-// 	// Check if the first character is a quote
-// 	if (input[i] == '\'' || input[i] == '\"')
-// 	{
-// 		quote = input[i]; // Store the type of quote used
-// 		i++; // Move past opening quote
-
-// 		// Find the closing quote
-// 		while (input[i] && input[i] != quote)
-// 			i++;
-
-// 		// If found, move past the closing quote
-// 		if (input[i] == quote)
-// 			i++;
-// 	}
-// 	else
-// 	{
-// 		// Read normally until a space, redirection, or separator
-// 		while (input[i] && !isspace(input[i]) && !is_cmd_seperator(input[i]) && input[i] != '|' && input[i] != '>' && input[i] != '<')
-// 			i++;
-// 	}
-
-// 	// No token found
-// 	if (i == start)
-// 		return (NULL);
-
-// 	// Extract the raw token
-// 	char *raw_token = strndup(&input[start], i - start);
-// 	*curr_pos = i; // Move position forward
-
-// 	// ✅ Remove quotes from the token before returning
-// 	char *clean_token = remove_quotes(raw_token);
-// 	free(raw_token);
-// 	return clean_token;
-// }
 
 typedef struct s_token
 {
@@ -335,22 +263,6 @@ t_token	*get_token(const char *input, int *curr_pos)
 
 	return token_struct;
 }
-
-// char	*get_token(const char *input, int *curr_pos)
-// {
-// 	ft_skip_spaces(input, curr_pos); // Skip leading spaces before reading a token
-// 	int start = *curr_pos;
-
-// 	// Extract token until space, command seperator, or redirection
-// 	while (input[*curr_pos] && !isspace(input[*curr_pos]) && !is_cmd_seperator(input[*curr_pos]) && input[*curr_pos] != '|' && input[*curr_pos] != '>' && input[*curr_pos] != '<')
-// 		(*curr_pos)++;
-
-// 	// Return NULL if no token found (prevents empty tokens from being added)
-// 	if (*curr_pos == start)
-// 		return (NULL);
-
-// 	return (strndup(&input[start], *curr_pos - start));
-// }
 
 t_cmd	*get_cmd(const char *input, int *curr_pos, t_env *env_list)
 {

@@ -6,24 +6,42 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/09 15:41:50 by jidler            #+#    #+#             */
-/*   Updated: 2025/02/28 12:06:08 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/04 02:47:09 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../shell.h"
 
-void shell_echo(char **args)
+static bool is_n_option(const char *arg)
 {
-	// compile error occurs if dont comment out this line?
-	// need to be double check Å´
-	// bool newline = true;
 	int i = 0;
+
+	if (!arg || arg[0] != '-')
+		return false;
 	
-	if (args[i] && ft_strcmp(args[i], "-n") == 0)
+	i = 1;
+	if (!arg[i])
+		return false;
+	while (arg[i])
 	{
-		newline = false;
+		if (arg[i] != 'n')
+			return false;
 		i++;
 	}
+	return true;
+}
+
+int shell_echo(char **args)
+{
+	bool _newline = true;
+	int i = 1;
+
+	while (args[i] && is_n_option(args[i]))
+	{
+		_newline = false;
+		i++;
+	}
+
 	while (args[i])
 	{
 		write(1, args[i], ft_strlen(args[i]));
@@ -31,6 +49,9 @@ void shell_echo(char **args)
 			write(1, " ", 1);
 		i++;
 	}
-	if (newline)
+
+	if (_newline)
 		write(1, "\n", 1);
+
+	return 0;
 }

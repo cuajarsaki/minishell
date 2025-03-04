@@ -6,39 +6,48 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/09 15:41:50 by jidler            #+#    #+#             */
-/*   Updated: 2025/02/28 12:06:01 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/04 02:17:38 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../shell.h"
 
-void shell_export(char **args, t_env *env_list)
+static void print_env_list(t_env *env_list)
 {
-    int i = 0;
+    while (env_list)
+    {
+        printf("declare -x %s", env_list->key);
+        if (env_list->value)
+            printf("=\"%s\"", env_list->value);
+        printf("\n");
+        env_list = env_list->next;
+    }
+}
 
-    // If "export" was called with no args, do nothing or show usage
-    if (!args || !args[0])
-        return;
+int shell_export(char **args, t_env *env_list)
+{
+    int i = 1;
 
-    // Process each argument in form "KEY=VALUE"
+    if (!args || !args[1])
+    {
+        print_env_list(env_list);
+        return 0;
+    }
+
     while (args[i])
     {
         char *eq = ft_strchr(args[i], '=');
-
         if (!eq)
         {
-            // No '=' means it's just "export KEY" with no value.
-            // Decide how you'd like to handle that. For now, skip it.
+            set_env_value(&env_list, args[i], NULL);
         }
         else
         {
-            // Temporarily split the string at '='
             *eq = '\0';
-            // eq+1 is everything after '=', e.g. "VALUE"
             set_env_value(&env_list, args[i], eq + 1);
-            // Restore the '=' so args[i] remains unchanged for debugging/logging
             *eq = '=';
         }
         i++;
     }
+    return 0;
 }

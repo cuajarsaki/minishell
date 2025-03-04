@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 16:50:27 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/02 15:53:11 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/02 17:04:42 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,8 @@ void				ft_lstclear(t_list **lst, void (*del)(void *));
 void				ft_lstiter(t_list *lst, void (*f)(void *));
 t_list				*ft_lstmap(t_list *lst, void *(*f)(void *),
 						void (*del)(void *));
-
+long	ft_strtol(const char *nptr);
+							
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 50
 # endif
