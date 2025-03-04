@@ -96,7 +96,7 @@ char **convert_env_list_to_array(t_env *env_list)
         envp[i] = malloc(len);
         if (!envp[i])
             return NULL;
-        snprintf(envp[i], len, "%s=%s", temp->key, temp->value);
+        ft_snprintf(envp[i], len, "%s=%s", temp->key, temp->value);
         temp = temp->next;
     }
     envp[count] = NULL;

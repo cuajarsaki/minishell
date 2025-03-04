@@ -14,7 +14,7 @@ char *find_executable_in_path(const char *cmd)
     while (dir)
     {
         char full_path[1024];
-        snprintf(full_path, sizeof(full_path), "%s/%s", dir, cmd);
+        ft_snprintf(full_path, sizeof(full_path), "%s/%s", dir, cmd);
 
 		size_t dir_len = strlen(dir);
 		size_t cmd_len = strlen(cmd);

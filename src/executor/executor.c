@@ -6,7 +6,7 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/04 16:39:58 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/04 18:55:46 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,7 +192,7 @@ char *find_executable_in_path(const char *cmd)
     while (dir)
     {
         char full_path[1024];
-        snprintf(full_path, sizeof(full_path), "%s/%s", dir, cmd);
+        ft_snprintf(full_path, sizeof(full_path), "%s/%s", dir, cmd);
 
 		size_t dir_len = strlen(dir);
 		size_t cmd_len = strlen(cmd);
