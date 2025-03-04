@@ -22,7 +22,6 @@ SRC = $(SRC_DIR)/$(CMD_DIR)/shell_cd.c \
 	  $(SRC_DIR)/parser/parser_ast.c \
 	  $(SRC_DIR)/parser/parser_cmd.c \
 	  $(SRC_DIR)/parser/parser_env.c \
-	  $(SRC_DIR)/parser/parser_group.c \
 	  $(SRC_DIR)/parser/parser_redir.c \
 	  $(SRC_DIR)/parser/parser_token_utils.c \
 	  $(SRC_DIR)/parser/parser_token.c \
