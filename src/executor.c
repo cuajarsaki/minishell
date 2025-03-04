@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/04 15:10:49 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/04 15:12:12 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -588,14 +588,15 @@ int exec_parent(t_list **pids)
         pids_now = pids_now->next;
         
     }
-    // debugs
-    printf("debugs:(in exec_parent)\n");
-    // debugs
-    printf("debugs:Exit status before WIFEXITED: %d\n", status);
-    if (WIFEXITED(status))
-        // debugs
-        printf("debugs:Exit status: %d\n", WEXITSTATUS(status));
+    // // debugs
+    // printf("debugs:(in exec_parent)\n");
+    // // debugs
+    // printf("debugs:Exit status before WIFEXITED: %d\n", status);
+    // if (WIFEXITED(status))
+    //     // debugs
+    //     printf("debugs:Exit status: %d\n", WEXITSTATUS(status));
 
+    // TODO:change WEXITSTATUS later!
     return (WEXITSTATUS(status));
 }
 
