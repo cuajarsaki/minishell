@@ -6,7 +6,7 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 16:09:32 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/04 16:09:34 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/04 18:55:46 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ char	*expand_env_token(const char *token, t_env *env_list, int *exit_status)
 		if (token[i] == '$' && token[i + 1] == '?')
 		{
 			char fixed_value[12];
-			snprintf(fixed_value, sizeof(fixed_value), "%d", *exit_status);
+			ft_snprintf(fixed_value, sizeof(fixed_value), "%d", *exit_status);
 			result = ft_realloc_str(result, ft_strlen(result) + ft_strlen(fixed_value) + 1);
 			strcat(result, fixed_value);
 			i += 2;

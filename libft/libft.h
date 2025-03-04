@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 16:50:27 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/02 17:04:42 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/04 18:55:05 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 
+int					ft_snprintf(char *str, size_t size, const char *format, ...);
 char				*ft_strndup(const char *src, size_t n);
 char				*ft_strncat(char *dest, const char *src, size_t n);
 char				*ft_strcat(char *dest, const char *src);
