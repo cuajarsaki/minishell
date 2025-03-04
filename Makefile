@@ -11,6 +11,7 @@ SRC = $(SRC_DIR)/$(CMD_DIR)/shell_cd.c \
       $(SRC_DIR)/$(CMD_DIR)/shell_exit.c \
       $(SRC_DIR)/main.c \
       $(SRC_DIR)/env/env.c \
+	  $(SRC_DIR)/env/env_2.c \
       $(SRC_DIR)/termcaps/termcaps.c \
       $(SRC_DIR)/signal/signal.c \
 	  $(SRC_DIR)/signal/signal_2.c \
