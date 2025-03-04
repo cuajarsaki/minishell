@@ -15,6 +15,7 @@ SRC = $(SRC_DIR)/$(CMD_DIR)/shell_cd.c \
       $(SRC_DIR)/signal/signal.c \
       $(SRC_DIR)/terminal/terminal.c \
       $(SRC_DIR)/free/free.c \
+	  $(SRC_DIR)/free/free_2.c \
       $(SRC_DIR)/cmd_tokenizer/cmd_tokenizer.c \
 	  $(SRC_DIR)/parser/parser_ast.c \
 	  $(SRC_DIR)/parser/parser_cmd.c \

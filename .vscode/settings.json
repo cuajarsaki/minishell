@@ -8,6 +8,7 @@
 		"unistd.h": "c",
 		"stdlib.h": "c",
 		"string.h": "c",
-		"executor.h": "c"
+		"executor.h": "c",
+		"env.h": "c"
 	}
 }

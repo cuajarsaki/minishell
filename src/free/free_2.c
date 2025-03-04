@@ -1,48 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free.c                                             :+:      :+:    :+:   */
+/*   free_2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/11 22:01:00 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/04 17:03:42 by jidler           ###   ########.fr       */
+/*   Created: 2025/03/04 17:01:57 by jidler            #+#    #+#             */
+/*   Updated: 2025/03/04 17:03:59 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../shell.h"
 
-void free_argv(char **argv)
+void free_ast(t_ast *ast)
 {
-    size_t i = 0;
-    while (argv[i])
+    if (ast)
     {
-        free(argv[i]);
-        i++;
-    }
-    free(argv);
-}
-
-
-
-void free_redir(void *ptr)
-{
-    t_redir *redir = (t_redir *)ptr;
-    if (redir)
-    {
-        if (redir->direction)
-            free(redir->direction);
-        free(redir);
+        ft_lstclear(&ast->command_groups, free);
+        free(ast);
     }
 }
 
-void free_cmd(t_cmd *cmd)
+static void do_nothing(void *__ptr)
 {
-    if (cmd)
+    (void)__ptr;
+    return;
+}
+
+void free_command_group(t_command_group *command_group)
+{
+    if (command_group)
     {
-        ft_lstclear(&cmd->tokens, free);
-        ft_lstclear(&cmd->redirs, free_redir); 
-        free(cmd);
+        ft_lstclear(&command_group->cmds, (void (*)(void *))free_cmd);
+        ft_lstclear(&command_group->pids, do_nothing);
     }
 }
 
