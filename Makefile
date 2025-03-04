@@ -11,7 +11,6 @@ SRC = $(SRC_DIR)/$(CMD_DIR)/shell_cd.c \
       $(SRC_DIR)/$(CMD_DIR)/shell_exit.c \
       $(SRC_DIR)/main.c \
       $(SRC_DIR)/env/env.c \
-      $(SRC_DIR)/executor/executor.c \
       $(SRC_DIR)/termcaps/termcaps.c \
       $(SRC_DIR)/signal/signal.c \
       $(SRC_DIR)/terminal/terminal.c \
@@ -25,6 +24,14 @@ SRC = $(SRC_DIR)/$(CMD_DIR)/shell_cd.c \
 	  $(SRC_DIR)/parser/parser_token_utils.c \
 	  $(SRC_DIR)/parser/parser_token.c \
 	  $(SRC_DIR)/parser/parser_utils.c \
+	  $(SRC_DIR)/executor/executor_ast.c \
+	  $(SRC_DIR)/executor/executor_builtin_check.c \
+	  $(SRC_DIR)/executor/executor_command_group.c \
+	  $(SRC_DIR)/executor/executor_command_execution.c \
+	  $(SRC_DIR)/executor/executor_file_desc.c \
+	  $(SRC_DIR)/executor/executor_parent.c \
+	  $(SRC_DIR)/executor/executor_path.c \
+	  $(SRC_DIR)/executor/executor_utility.c \
 
 OBJ = $(SRC:.c=.o)
 
