@@ -6,14 +6,14 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 12:14:25 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/02 15:28:17 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/04 16:15:26 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include "../shell.h"
+#include "../../shell.h"
 
 extern char **environ;
 

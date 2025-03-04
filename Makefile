@@ -10,14 +10,30 @@ SRC = $(SRC_DIR)/$(CMD_DIR)/shell_cd.c \
       $(SRC_DIR)/$(CMD_DIR)/shell_unset.c \
       $(SRC_DIR)/$(CMD_DIR)/shell_exit.c \
       $(SRC_DIR)/main.c \
-      $(SRC_DIR)/env.c \
-      $(SRC_DIR)/executor.c \
-      $(SRC_DIR)/parser.c \
-      $(SRC_DIR)/termcaps.c \
-      $(SRC_DIR)/singal.c \
-      $(SRC_DIR)/terminal.c \
-      $(SRC_DIR)/free.c \
-      $(SRC_DIR)/cmd_tokenizer.c \
+      $(SRC_DIR)/env/env.c \
+      $(SRC_DIR)/termcaps/termcaps.c \
+      $(SRC_DIR)/signal/signal.c \
+	  $(SRC_DIR)/signal/signal_2.c \
+      $(SRC_DIR)/terminal/terminal.c \
+      $(SRC_DIR)/free/free.c \
+	  $(SRC_DIR)/free/free_2.c \
+      $(SRC_DIR)/cmd_tokenizer/cmd_tokenizer.c \
+	  $(SRC_DIR)/parser/parser_ast.c \
+	  $(SRC_DIR)/parser/parser_cmd.c \
+	  $(SRC_DIR)/parser/parser_env.c \
+	  $(SRC_DIR)/parser/parser_group.c \
+	  $(SRC_DIR)/parser/parser_redir.c \
+	  $(SRC_DIR)/parser/parser_token_utils.c \
+	  $(SRC_DIR)/parser/parser_token.c \
+	  $(SRC_DIR)/parser/parser_utils.c \
+	  $(SRC_DIR)/executor/executor_ast.c \
+	  $(SRC_DIR)/executor/executor_builtin_check.c \
+	  $(SRC_DIR)/executor/executor_command_group.c \
+	  $(SRC_DIR)/executor/executor_command_execution.c \
+	  $(SRC_DIR)/executor/executor_file_desc.c \
+	  $(SRC_DIR)/executor/executor_parent.c \
+	  $(SRC_DIR)/executor/executor_path.c \
+	  $(SRC_DIR)/executor/executor_utility.c \
 
 OBJ = $(SRC:.c=.o)
 

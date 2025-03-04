@@ -55,7 +55,14 @@ typedef struct s_env
 	struct s_env *next;
 } t_env;
 
-t_ast	*get_ast(const char *input, t_env *env_list);
+typedef struct s_token
+{
+	char	*value;
+	int		is_single_quoted;
+}	t_token;
+
+
+t_ast	*get_ast(const char *input, t_env *env_list, int *exit_status);
 t_env *init_env_list(void);
 
 // Utility Functions
