@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:45:26 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/04 14:46:53 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/04 15:10:49 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -387,7 +387,8 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
         /* Check if built-in */
         if (is_builtin(cmd))
         {
-            exec_cmd_builtin(cmd, env_list);
+            exit_status = exec_cmd_builtin(cmd, env_list);
+            exit(exit_status);           
         }
         else
         {
