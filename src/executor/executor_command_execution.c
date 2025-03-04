@@ -80,7 +80,8 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
                 free(resolved_path);
             }
             free(tokens);
-            exec_cmd_external(cmd, command_group, process_index, env_list, envp);
+            exit_status = exec_cmd_external(cmd, command_group, process_index, env_list, envp);
+			exit(exit_status);
         }
     }
 }
@@ -115,25 +116,6 @@ int exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
     // printf("%d\n", exit_status); //debugs
     return (exit_status);
 }
-
-// void exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list)
-// {
-//     /* Convert tokens to a NULL-terminated array for execvp */
-//     char **tokens = convert_list_to_arr(cmd->tokens);
-
-//     /* If you do not need env_list here, you can safely ignore it or remove. */
-//     (void)env_list;
-//     (void)command_group;
-//     (void)process_index;
-
-//     if (execvp(tokens[0], tokens) == -1)
-//     {
-//         perror("execvp");
-//         free(tokens);       // Free the allocated memory
-//         exit(EXIT_FAILURE); // Exit the child process if execvp fails
-//     }
-// }
-
 
 int has_slash(const char *str)
 {
