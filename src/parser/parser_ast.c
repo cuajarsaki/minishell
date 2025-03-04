@@ -6,7 +6,7 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 16:09:23 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/04 16:10:44 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/04 19:08:10 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ t_ast	*get_ast(const char *input, t_env *env_list, int *exit_status)
 	t_ast	*ast;
 	t_list	*command_group;
 	int		curr_pos;
+	void	*cmd_grp;
 
 	ast = (t_ast *)malloc(sizeof(t_ast));
 	if (!ast)
@@ -26,7 +27,9 @@ t_ast	*get_ast(const char *input, t_env *env_list, int *exit_status)
 	while (input[curr_pos])
 	{
 		ft_skip_spaces(input, &curr_pos);
-		command_group = ft_lstnew((void *)get_command_group(input, &curr_pos, env_list, exit_status));
+		cmd_grp = (void *)get_command_group(input,
+				&curr_pos, env_list, exit_status);
+		command_group = ft_lstnew(cmd_grp);
 		if (!command_group)
 		{
 			free(ast);
