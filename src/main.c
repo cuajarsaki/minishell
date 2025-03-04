@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 23:57:54 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/04 15:14:21 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/04 15:48:05 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,15 +143,15 @@ void run_shell(t_env *env_list)
         // printf("start running\n"); //debugs
         if (len > 0)
         {
-            current_AST = get_ast(buf, env_list);
+            current_AST = get_ast(buf, env_list, &exit_stauts);
             debug_ast(current_AST);
             exit_stauts=exec_ast(current_AST, env_list);
             free_ast(current_AST);
             ft_memset(buf, 0, sizeof(buf));
             len = 0;
         }
-        // printf("debugs:exit_stauts in run_shell :");  //debugs
-        // printf("%d\n", exit_stauts);  //debugs
+        printf("debugs:exit_stauts in run_shell :");  //debugs
+        printf("%d\n", exit_stauts);  //debugs
     }
 }
 
