@@ -63,7 +63,7 @@ typedef struct s_token
 
 
 t_ast	*get_ast(const char *input, t_env *env_list, int *exit_status);
-t_env *init_env_list(void);
+t_env *init_env_list(char ** environ);
 
 // Utility Functions
 void run_shell(t_env *env_list);

@@ -6,7 +6,7 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 23:57:54 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/04 15:48:05 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/04 17:29:22 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,9 +155,13 @@ void run_shell(t_env *env_list)
     }
 }
 
-int main(void)
+int	main(int argc, char **argv, char **envp)
 {
-    t_env *env_list = init_env_list(); // Initialize environment variables
+
+	(void)argc;
+    (void)argv;
+
+    t_env *env_list = init_env_list(envp); // Initialize environment variables
 
     struct termios orig_termios;
     setup_terminal(&orig_termios);

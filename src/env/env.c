@@ -6,7 +6,7 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 12:14:25 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/04 16:15:26 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/04 17:28:47 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include <string.h>
 #include "../../shell.h"
 
-extern char **environ;
 
 // Function to create a new node
 t_env *new_env_node(char *key, char *value)
@@ -29,28 +28,56 @@ t_env *new_env_node(char *key, char *value)
     return new;
 }
 
-// Function to initialize environment list from environ
-t_env *init_env_list(void)
+t_env *init_env_list(char **envp) // Use envp instead of environ
 {
     t_env *head = NULL, *tail = NULL;
-    for (int i = 0; environ[i]; i++)
+
+    for (int i = 0; envp[i]; i++) // Iterate over envp
     {
-        char *eq = ft_strchr(environ[i], '=');
+        char *eq = ft_strchr(envp[i], '=');
         if (!eq)
             continue;
-        *eq = '\0';
-        t_env *new_node = new_env_node(environ[i], eq + 1);
-        *eq = '='; // Restore original string
+
+        *eq = '\0'; // Temporarily break into key and value
+        t_env *new_node = new_env_node(envp[i], eq + 1);
+        *eq = '=';  // Restore original format
+
         if (!new_node)
             return NULL;
+
         if (!head)
             head = new_node;
         else
             tail->next = new_node;
+
         tail = new_node;
     }
     return head;
 }
+
+
+// Function to initialize environment list from environ
+// t_env *init_env_list(char ** environ)
+// {
+//     t_env *head = NULL, *tail = NULL;
+//     for (int i = 0; environ[i]; i++)
+//     {
+//         char *eq = ft_strchr(environ[i], '=');
+//         if (!eq)
+//             continue;
+//         *eq = '\0';
+//         t_env *new_node = new_env_node(environ[i], eq + 1);
+//         *eq = '='; // Restore original string
+//         if (!new_node)
+//             return NULL;
+//         if (!head)
+//             head = new_node;
+//         else
+//             tail->next = new_node;
+//         tail = new_node;
+//     }
+//     return head;
+// }
 
 // Function to get value of an env variable
 char *get_env_value(t_env *env_list, const char *key)
@@ -171,3 +198,4 @@ void free_env_array(char **envp)
         free(envp[i]);
     free(envp);
 }
+
