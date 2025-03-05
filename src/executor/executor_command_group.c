@@ -16,10 +16,10 @@ int exec_command_group(t_command_group *command_group, t_env *env_list, char **e
     {
         t_cmd *cmd = (t_cmd *)cmds->content;
         if ((cmd->tokens) && (cmd->tokens->content) &&(ft_strcmp((char *)cmd->tokens->content, "exit") == 0 ||
-     ft_strcmp((char *)cmd->tokens->content, "cd") == 0))
-{
-    exit_status = exec_cmd_builtin(cmd, env_list);
-}
+     ft_strcmp((char *)cmd->tokens->content, "cd") == 0)) //unset//export
+     {
+        exit_status = exec_cmd_builtin(cmd, env_list);
+    }
 
         else
         {

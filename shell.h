@@ -19,6 +19,8 @@
 #include <termios.h>
 
 #define HISTORY_SIZE 10
+#define NOTSIG 1
+#define RSTSIG 0
 
 extern volatile sig_atomic_t g_signal_received;
 
@@ -102,7 +104,7 @@ void term_clear_screen();
 void handle_input(char *buf, size_t *len, size_t max_len);
 
 // SINGAL  FUNCTIONS
-void init_readline_for_signal(int *exit_stauts);
+void init_readline_for_signal(void);
 void setup_signals(void);
 void handle_sigint(int sig);
 void set_signal(int signum, void (*handler)(int), int flags);
