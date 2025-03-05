@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 23:57:54 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/05 09:35:07 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/05 13:47:27 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,7 @@ void run_shell(t_env *env_list, char **envp)
     term_clear_screen();
     while (running)
     {
-        init_readline_for_signal();
+        init_readline_for_signal(&exit_stauts);
         setup_signals();
         ft_memset(buf, 0, sizeof(buf));
         len = 0;
