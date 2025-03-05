@@ -237,13 +237,11 @@ int exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_in
         free(tokens[i]);
     free(tokens);
 
-    // Return the exit status
-    if (WIFEXITED(status)) {
-        return WEXITSTATUS(status);
-    } 
-    else if (WIFSIGNALED(status)) {
-        return 128 + WTERMSIG(status); // Signal exit codes start from 128
-    } 
-    return 1; // Default error
+    if ((status & 0x7F) == 0) {
+        return (status >> 8) & 0xFF;
+    } else if (status & 0x7F) {
+        return 128 + (status & 0x7F);
+    }
+    return 1;
 }
 

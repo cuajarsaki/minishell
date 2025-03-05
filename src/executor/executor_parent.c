@@ -13,14 +13,11 @@ int exec_parent(t_list **pids)
         pids_now = pids_now->next;
         
     }
-    // // debugs
-    // printf("debugs:(in exec_parent)\n");
-    // // debugs
-    // printf("debugs:Exit status before WIFEXITED: %d\n", status);
-    // if (WIFEXITED(status))
-    //     // debugs
-    //     printf("debugs:Exit status: %d\n", WEXITSTATUS(status));
 
-    // TODO:change WEXITSTATUS later!
-    return (WEXITSTATUS(status));
+    if ((status & 0x7F) == 0)
+        return (status >> 8) & 0xFF;
+    else if (status & 0x7F)
+        return 128 + (status & 0x7F);
+    
+    return 1;
 }
