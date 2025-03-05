@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/02 16:13:52 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/04 02:03:17 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/05 13:40:31 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,5 +51,5 @@ int shell_exit(char **argv)
 	}
     // when the argument is not a number
 	perror("exit: numeric argument required");
-	exit(255);
+	exit(2);
 }
