@@ -43,12 +43,13 @@ void apply_redirections(int fd_in, int fd_out)
     }
 }
 
-void set_filedirectories(t_cmd *cmd, int *fd_in, int *fd_out)
+int set_filedirectories(t_cmd *cmd, int *fd_in, int *fd_out)
 {
     t_list *redirs;
+    int exit_status=0;
 
     if (!cmd) // Handle NULL cmd
-        return;
+        return (1);
 
     redirs = cmd->redirs;
     *fd_in = -1; // Initialize file descriptors to -1 (unset)
@@ -60,6 +61,12 @@ void set_filedirectories(t_cmd *cmd, int *fd_in, int *fd_out)
 
         if (ft_strncmp(redir->type, ">>", 2) == 0) // Append output
         {
+            if (!redir->direction || *redir->direction == '\0')
+            {
+                write(STDERR_FILENO, "syntax error near unexpected token 'newline'\n", 46);
+                exit_status=2;
+                break;
+            }
             if (*fd_out != -1)
                 close(*fd_out);
 
@@ -67,34 +74,56 @@ void set_filedirectories(t_cmd *cmd, int *fd_in, int *fd_out)
             if (*fd_out == -1)
             {
                 perror("open");
-                return;
+                exit_status=1;
+                break;
             }
         }
         else if (ft_strncmp(redir->type, "<<", 2) == 0) 
         {
+            if (!redir->direction || *redir->direction == '\0')
+            {
+                write(STDERR_FILENO, "syntax error near unexpected token 'newline'\n", 46);
+                 exit_status=2;
+                break;
+            }
             if (*fd_in != -1)
                 close(*fd_in);
+
             *fd_in = execute_heredoc(redir->direction);
             if (*fd_in == -1)
             {
                 perror("heredoc");
-                return;
+                exit_status=1;
+                break;
             }
         }
         else if (ft_strncmp(redir->type, ">", 1) == 0) // Overwrite output
         {
-            if (*fd_out != -1) // Close previous output redirection
+            if (!redir->direction || *redir->direction == '\0')
+            {
+                write(STDERR_FILENO, "syntax error near unexpected token 'newline'\n", 46);
+                 exit_status=2;
+                break;
+            }
+            if (*fd_out != -1)
                 close(*fd_out);
 
             *fd_out = open(redir->direction, O_WRONLY | O_CREAT | O_TRUNC, 0644);
             if (*fd_out == -1)
             {
                 perror("open");
-                return;
+                exit_status=1;
+                break;
             }
         }
         else if (ft_strncmp(redir->type, "<", 1) == 0) // Input redirection
         {
+            if (!redir->direction || *redir->direction == '\0')
+            {
+                write(STDERR_FILENO, "syntax error near unexpected token 'newline'\n", 46);
+                exit_status=2;
+                break;
+            }
             if (*fd_in != -1)
                 close(*fd_in);
 
@@ -102,10 +131,13 @@ void set_filedirectories(t_cmd *cmd, int *fd_in, int *fd_out)
             if (*fd_in == -1)
             {
                 perror("open");
-                return;
+                exit_status=1;
+                break;
             }
         }
 
         redirs = redirs->next;
     }
+
+    return (exit_status);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal_2.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:07:04 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/04 17:07:06 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/05 22:59:19 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,7 @@
 void handle_sigint(int sig)
 {
     (void)sig;
-    g_signal_received = 1;
-    write(STDOUT_FILENO, "^C", 3);
+    g_signal_received = SIGINT;
 }
 
 void init_signal(void (*handler_for_sigint)(int),

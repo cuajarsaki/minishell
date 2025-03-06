@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   executor_utility.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/05 09:35:46 by pchung            #+#    #+#             */
+/*   Updated: 2025/03/05 09:35:47 by pchung           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "executor.h"
 
 char **convert_list_to_arr(t_list *lst)
@@ -29,14 +41,17 @@ int execute_heredoc(const char *delimiter)
     }
 
     char *line = NULL;
+    int line_number = 1;
     while (1)
     {
         line = readline("> ");
-        if (!line){
-            free(line);
+        if (!line)
+        {
+            printf("minishell: warning: here-document at line %d delimited by end-of-file (wanted `%s')\n", 
+                   line_number, delimiter);
             break;
         }
-        
+
         if (ft_strcmp(line, delimiter) == 0)
         {
             free(line);
@@ -45,6 +60,7 @@ int execute_heredoc(const char *delimiter)
         write(fd, line, ft_strlen(line));
         write(fd, "\n", 1);
         free(line);
+        line_number++;
     }
     close(fd);
 

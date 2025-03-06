@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/12 19:57:16 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/04 17:06:53 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/05 21:17:43 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void init_readline_for_signal(void)
 
 static int event_hook_readline(void)
 {
-    if (g_signal_received == 1)
+    if (g_signal_received == SIGINT)
     {
         rl_replace_line("", 0);
         rl_done = 1;

@@ -1,6 +1,6 @@
 #include "executor.h"
 
-int exec_command_group(t_command_group *command_group, t_env *env_list)
+int exec_command_group(t_command_group *command_group, t_env *env_list, char **envp)
 {
     t_list *cmds = command_group->cmds;
     int cmd_count = ft_lstsize(cmds);
@@ -15,12 +15,14 @@ int exec_command_group(t_command_group *command_group, t_env *env_list)
     if (cmd_count == 1)
     {
         t_cmd *cmd = (t_cmd *)cmds->content;
-        if (is_builtin(cmd)){
-            exit_status = exec_cmd_builtin(cmd, env_list);
-        }
+        if ((cmd->tokens) && (cmd->tokens->content) &&(ft_strcmp((char *)cmd->tokens->content, "exit") == 0 ||
+     ft_strcmp((char *)cmd->tokens->content, "cd") == 0)) //unset//export
+     {
+        exit_status = exec_cmd_builtin(cmd, env_list);
+    }
+
         else
         {
-
                 pid_t pid = fork();
                 if (pid < 0)
                 {
@@ -31,7 +33,7 @@ int exec_command_group(t_command_group *command_group, t_env *env_list)
                 {
                     // CHILD PROCESS
                     init_signal(SIG_DFL, SIG_DFL);
-                    exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
+                    exec_cmd((t_cmd *)cmds->content, command_group, i, env_list, envp);
                     exit(EXIT_SUCCESS); // Exit the child process
                 }
                 else
@@ -88,7 +90,7 @@ int exec_command_group(t_command_group *command_group, t_env *env_list)
                     close(pipe_fd[0]); // Close unused read-end
                 }
 
-                exec_cmd((t_cmd *)cmds->content, command_group, i, env_list);
+                exec_cmd((t_cmd *)cmds->content, command_group, i, env_list, envp);
                 exit(EXIT_FAILURE);
             }
             else
