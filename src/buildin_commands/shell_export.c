@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/09 15:41:50 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/04 02:17:38 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/06 10:24:16 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,16 +36,24 @@ int shell_export(char **args, t_env *env_list)
 
     while (args[i])
     {
-        char *eq = ft_strchr(args[i], '=');
-        if (!eq)
+        if (ft_strlen(args[i]) == 0 || args[i][0] == '=')
         {
-            set_env_value(&env_list, args[i], NULL);
+            printf("export: `%s': not a valid identifier\n", args[i]);
+            return 1;
         }
         else
         {
-            *eq = '\0';
-            set_env_value(&env_list, args[i], eq + 1);
-            *eq = '=';
+            char *eq = ft_strchr(args[i], '=');
+            if (eq)
+            {
+                *eq = '\0';
+                set_env_value(&env_list, args[i], eq + 1);
+                *eq = '=';
+            }
+            else
+            {
+                set_env_value(&env_list, args[i], NULL);
+            }
         }
         i++;
     }
