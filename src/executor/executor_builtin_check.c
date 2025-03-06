@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   executor_builtin_check.c                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/06 09:51:55 by pchung            #+#    #+#             */
+/*   Updated: 2025/03/06 09:51:56 by pchung           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "executor.h"
 
 int is_builtin(t_cmd *cmd)
@@ -22,4 +34,18 @@ int is_builtin(t_cmd *cmd)
         return 1; // <--- This effectively says "Not builtin" in your logic
     }
     return 0; // <--- Everything else also returns "Not builtin"
+}
+
+int is_parent_builtin(t_cmd *cmd)
+{
+    if (!cmd || !cmd->tokens || !cmd->tokens->content)
+        return (0);
+    
+    char *command = (char *)cmd->tokens->content;
+    return (
+        ft_strcmp(command, "exit") == 0 ||
+        ft_strcmp(command, "cd") == 0 ||
+        ft_strcmp(command, "unset") == 0 ||
+        ft_strcmp(command, "export") == 0
+    );
 }

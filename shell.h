@@ -77,6 +77,7 @@ int exec_ast(t_ast *ast, t_env *env_list, char **envp);
 char **convert_env_list_to_array(t_env *env_list);
 void free_env_array(char **envp);;
 void shell_unknown_command(char *cmd);
+int is_parent_builtin(t_cmd *cmd);
 
 // FREE FUNCTIONS
 void free_ast(t_ast *ast);

@@ -15,15 +15,11 @@ int exec_command_group(t_command_group *command_group, t_env *env_list, char **e
     if (cmd_count == 1)
     {
         t_cmd *cmd = (t_cmd *)cmds->content;
-        if ((cmd->tokens) && (cmd->tokens->content) &&(ft_strcmp((char *)cmd->tokens->content, "exit") == 0 ||
-     ft_strcmp((char *)cmd->tokens->content, "cd") == 0)) //unset//export
-     {
-        exit_status = exec_cmd_builtin(cmd, env_list);
-    }
-
-        else
+        if(is_parent_builtin(cmd)){
+            exit_status = exec_cmd_builtin(cmd, env_list);
+        }else
         {
-                pid_t pid = fork();
+            pid_t pid = fork();
                 if (pid < 0)
                 {
                     perror("fork");
@@ -42,7 +38,7 @@ int exec_command_group(t_command_group *command_group, t_env *env_list, char **e
                     init_signal(SIG_IGN, SIG_IGN);
                     ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
                     exit_status = exec_parent(&command_group->pids); // Wait for the child process to complete
-                }
+                }  
         }
     
     }
