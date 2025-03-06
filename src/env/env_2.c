@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 10:18:46 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/06 10:18:54 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/06 11:25:15 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,22 @@
 #include "../../shell.h"
 
 // Function to free environment list
-void free_env_list(t_env *env_list)
+void free_env_list(t_env **env_list)
 {
-    while (env_list)
+    t_env *current = *env_list;
+    t_env *next;
+
+    while (current)
     {
-        t_env *temp = env_list;
-        env_list = env_list->next;
-        free(temp->key);
-        free(temp->value);
-        free(temp);
+        next = current->next;
+        free(current->key);
+        free(current->value);
+        free(current);
+        current = next;
     }
+    *env_list = NULL;
 }
+
 
 void set_env_value(t_env **env_list, const char *key, const char *value)
 {

@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 23:57:54 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/05 23:06:54 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/06 11:27:06 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,7 @@ int	main(int argc, char **argv, char **envp)
     struct termios orig_termios;
     setup_terminal(&orig_termios);
     run_shell(env_list, envp);     // Pass env_list
-    free_env_list(env_list); // Free environment variables before exit
+    free_env_list(&env_list); // Free environment variables before exit
     reset_terminal_settings(&orig_termios);
     return 0;
 }
