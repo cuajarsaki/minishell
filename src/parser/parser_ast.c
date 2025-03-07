@@ -27,8 +27,8 @@ t_ast	*get_ast(const char *input, t_env *env_list, int *exit_status)
 	while (input[curr_pos])
 	{
 		ft_skip_spaces(input, &curr_pos);
-		cmd_grp = (void *)get_command_group(input,
-				&curr_pos, env_list, exit_status);
+		cmd_grp = (void *)get_command_group(input, &curr_pos, env_list,
+				exit_status);
 		command_group = ft_lstnew(cmd_grp);
 		if (!command_group)
 		{
