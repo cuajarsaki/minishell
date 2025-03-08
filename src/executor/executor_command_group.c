@@ -15,15 +15,11 @@ int exec_command_group(t_command_group *command_group, t_env *env_list, char **e
     if (cmd_count == 1)
     {
         t_cmd *cmd = (t_cmd *)cmds->content;
-        if ((cmd->tokens) && (cmd->tokens->content) &&(ft_strcmp((char *)cmd->tokens->content, "exit") == 0 ||
-     ft_strcmp((char *)cmd->tokens->content, "cd") == 0)) //unset//export
-     {
-        exit_status = exec_cmd_builtin(cmd, env_list);
-    }
-
-        else
+        if(is_parent_builtin(cmd)){
+            exit_status = exec_cmd_builtin(cmd, env_list);
+        }else
         {
-                pid_t pid = fork();
+            pid_t pid = fork();
                 if (pid < 0)
                 {
                     perror("fork");
@@ -33,7 +29,7 @@ int exec_command_group(t_command_group *command_group, t_env *env_list, char **e
                 {
                     // CHILD PROCESS
                     init_signal(SIG_DFL, SIG_DFL);
-                    exec_cmd((t_cmd *)cmds->content, command_group, i, env_list, envp);
+                    exec_cmd((t_cmd *)cmds->content, command_group, env_list, envp);
                     exit(EXIT_SUCCESS); // Exit the child process
                 }
                 else
@@ -42,7 +38,7 @@ int exec_command_group(t_command_group *command_group, t_env *env_list, char **e
                     init_signal(SIG_IGN, SIG_IGN);
                     ft_lstadd_back(&command_group->pids, ft_lstnew((void *)(intptr_t)pid));
                     exit_status = exec_parent(&command_group->pids); // Wait for the child process to complete
-                }
+                }  
         }
     
     }
@@ -90,7 +86,7 @@ int exec_command_group(t_command_group *command_group, t_env *env_list, char **e
                     close(pipe_fd[0]); // Close unused read-end
                 }
 
-                exec_cmd((t_cmd *)cmds->content, command_group, i, env_list, envp);
+                exec_cmd((t_cmd *)cmds->content, command_group, env_list, envp);
                 exit(EXIT_FAILURE);
             }
             else

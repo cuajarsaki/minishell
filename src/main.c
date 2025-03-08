@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 23:57:54 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/05 23:06:54 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/08 19:05:49 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,8 +155,8 @@ void run_shell(t_env *env_list, char **envp)
             ft_memset(buf, 0, sizeof(buf));
             len = 0;
         }
-        printf("debugs:exit_stauts in run_shell :");  //debugs
-        printf("%d\n", exit_stauts);  //debugs
+        // printf("debugs:exit_stauts in run_shell :");  //debugs
+        // printf("%d\n", exit_stauts);  //debugs
     }
 }
 
@@ -169,7 +169,7 @@ int	main(int argc, char **argv, char **envp)
     struct termios orig_termios;
     setup_terminal(&orig_termios);
     run_shell(env_list, envp);     // Pass env_list
-    free_env_list(env_list); // Free environment variables before exit
+    free_env_list(&env_list); // Free environment variables before exit
     reset_terminal_settings(&orig_termios);
     return 0;
 }

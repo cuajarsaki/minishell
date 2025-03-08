@@ -1,6 +1,6 @@
 #include "executor.h"
 
-void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list, char **envp)
+void exec_cmd(t_cmd *cmd, t_command_group *command_group, t_env *env_list, char **envp)
 {
     int fd_in;
     int fd_out;
@@ -8,7 +8,7 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
     int exit_status;
 
     exit_status = set_filedirectories(cmd, &fd_in, &fd_out);
-    
+
     if(exit_status!=0){
         exit(exit_status);  
     }
@@ -29,7 +29,6 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
         }
         else
         {
-            // CHILD PROCESS
             char **tokens = convert_list_to_arr(cmd->tokens);
             char *cmd_path = tokens[0];
 
@@ -65,7 +64,7 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
             else
             {
                 // Search for the command in PATH
-                char *resolved_path = find_executable_in_path(cmd_path);
+                char *resolved_path = find_executable_in_path(cmd_path,env_list);
                 if (!resolved_path)
                 {
 
@@ -84,7 +83,7 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
                 free(resolved_path);
             }
             free(tokens);
-            exit_status = exec_cmd_external(cmd, command_group, process_index, env_list, envp);
+            exit_status = exec_cmd_external(cmd, command_group, env_list, envp);
 			exit(exit_status);
         }
     }
@@ -101,7 +100,7 @@ int exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
     if (ft_strcmp(program, "echo") == 0)
         exit_status = shell_echo(args);
     else if (ft_strcmp(program, "cd") == 0)
-        exit_status = shell_cd(args);
+        exit_status = shell_cd(args, env_list);
     else if (ft_strcmp(program, "exit") == 0)
         exit_status = shell_exit(args);
     else if (ft_strcmp(program, "pwd") == 0)
@@ -152,8 +151,9 @@ char *ft_strjoin2(const char *path, const char *cmd) {
     return full_path;
 }
 
-int ft_execvp(const char *file, char *const argv[], char **envp) {
-    char *path_env = getenv("PATH");
+int ft_execvp(const char *file, char *const argv[], char **envp,t_env *env_list)
+{
+    char *path_env = get_env_value(env_list, "PATH");
     char **paths = NULL;
     char *cmd_path;
     int i = 0;
@@ -164,7 +164,8 @@ int ft_execvp(const char *file, char *const argv[], char **envp) {
     }
 
     /* Debugging: Print PATH */
-    printf("PATH: %s\n", path_env);
+    //printf("PATH: %s\n", path_env);
+    //printf("envp:%s\n", *envp);
 
     /* If command contains '/' execute it directly */
     if (has_slash(file)) {
@@ -178,7 +179,7 @@ int ft_execvp(const char *file, char *const argv[], char **envp) {
 
     while (paths && paths[i]) {
         cmd_path = ft_strjoin2(paths[i], file);
-        printf("Checking: %s\n", cmd_path);  // Debugging output
+        //printf("Checking: %s\n", cmd_path);  // Debugging output
         if (cmd_path && access(cmd_path, X_OK) == 0) {
             execve(cmd_path, argv, envp); // Use envp instead of environ
             free(cmd_path);
@@ -196,8 +197,7 @@ int ft_execvp(const char *file, char *const argv[], char **envp) {
     return -1;
 }
 
-
-int exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list, char **envp)
+int exec_cmd_external(t_cmd *cmd, t_command_group *command_group, t_env *env_list, char **envp)
 {
     char **tokens = convert_list_to_arr(cmd->tokens);
     pid_t pid;
@@ -205,13 +205,11 @@ int exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_in
 
     (void)env_list;
     (void)command_group;
-    (void)process_index;
-
     pid = fork();
 
     if (pid == 0) { // Child process
-        ft_execvp(tokens[0], tokens, envp);
-        
+        ft_execvp(tokens[0], tokens, envp, env_list);
+
         // If execvp fails, print debugging information
         perror("Execvp failed");
         

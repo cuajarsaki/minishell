@@ -72,11 +72,12 @@ void run_shell(t_env *env_list, char **envp);
 char *get_env_value(t_env *env_list, const char *key);
 void set_env_value(t_env **env_list, const char *key, const char *value);
 void unset_env_value(t_env **env_list, const char *key);
-void free_env_list(t_env *env_list);
+void free_env_list(t_env **env_list);
 int exec_ast(t_ast *ast, t_env *env_list, char **envp);
 char **convert_env_list_to_array(t_env *env_list);
 void free_env_array(char **envp);;
 void shell_unknown_command(char *cmd);
+int is_parent_builtin(t_cmd *cmd);
 
 // FREE FUNCTIONS
 void free_ast(t_ast *ast);
@@ -90,7 +91,7 @@ int shell_env(t_env *env_list);
 int shell_export(char **args, t_env *env_list);
 int shell_unset(char **args, t_env *env_list);
 int shell_clear(void);
-int shell_cd(char **argv);
+int shell_cd(char **argv, t_env *env_list);
 int shell_pwd(void);
 int shell_echo(char **args);
 int shell_exit(char **argv);

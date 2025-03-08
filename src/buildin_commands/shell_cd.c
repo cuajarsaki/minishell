@@ -6,52 +6,56 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/09 15:41:50 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/04 01:40:37 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/08 21:04:33 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../shell.h"
 
-int shell_cd(char **argv)
+void	print_cd_error(const char *msg)
 {
-	const char *path = argv[1];
+	perror(msg);
+}
 
-	if (path == NULL || ft_strcmp(path, "") == 0)
+void	print_cd_result(void)
+{
+	char	cwd[1024];
+
+	if (getcwd(cwd, sizeof(cwd)) != NULL)
 	{
-		char *home = getenv("HOME");
+		write(1, "Changed directory to: ", 22);
+		write(1, cwd, strlen(cwd));
+		write(1, "\n", 1);
+	}
+	else
+		print_cd_error("getcwd");
+}
+
+int	shell_cd(char **argv, t_env *env_list)
+{
+	const char	*path = argv[1];
+	char		*home;
+
+	if (path == NULL || strcmp(path, "") == 0)
+	{
+		home = get_env_value(env_list, "HOME");
 		if (home == NULL)
 		{
 			write(2, "cd: HOME not set\n", 17);
-			return 1;
+			return (1);
 		}
 		path = home;
 	}
 	else if (argv[2])
 	{
 		write(2, "cd: too many arguments\n", 24);
-		return 1;
+		return (1);
 	}
-
 	if (chdir(path) != 0)
 	{
-		perror("cd");
-		return 1;
+		print_cd_error("cd");
+		return (1);
 	}
-	else
-	{
-		char cwd[1024];
-		if (getcwd(cwd, sizeof(cwd)) != NULL)
-		{
-			write(1, "Changed directory to: ", 22);
-			write(1, cwd, ft_strlen(cwd));
-			write(1, "\n", 1);
-		}
-		else
-		{
-			perror("getcwd");
-			return 1;
-		}
-	}
-
-	return 0;
+	print_cd_result();
+	return (0);
 }
