@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:01:57 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/09 00:47:09 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/09 00:57:08 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,13 @@ void	free_command_group(t_command_group *command_group)
 	}
 }
 
-void free_paths(char **paths)
+void	free_paths(char **paths)
 {
-	int i = 0;
+	int	i;
+
+	i = 0;
 	if (!paths)
-		return;
+		return ;
 	while (paths[i])
 	{
 		free(paths[i]);
