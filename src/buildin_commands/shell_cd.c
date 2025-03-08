@@ -31,7 +31,7 @@ void	print_cd_result(void)
 		print_cd_error("getcwd");
 }
 
-int shell_cd(char **argv, t_env *env_list)
+int	shell_cd(char **argv, t_env *env_list)
 {
 	const char	*path = argv[1];
 	char		*home;
@@ -48,7 +48,7 @@ int shell_cd(char **argv, t_env *env_list)
 	}
 	else if (argv[2])
 	{
-		write(2, "cd: too many arguments\n", 24); 
+		write(2, "cd: too many arguments\n", 24);
 		return (1);
 	}
 	if (chdir(path) != 0)
