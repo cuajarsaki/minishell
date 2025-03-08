@@ -31,7 +31,8 @@ SRC = $(SRC_DIR)/$(CMD_DIR)/shell_cd.c \
 	  $(SRC_DIR)/executor/executor_ast.c \
 	  $(SRC_DIR)/executor/executor_builtin_check.c \
 	  $(SRC_DIR)/executor/executor_command_group.c \
-	  $(SRC_DIR)/executor/executor_command_execution.c \
+	  $(SRC_DIR)/executor/executor_command_execution1.c \
+	  $(SRC_DIR)/executor/executor_command_execution2.c \
 	  $(SRC_DIR)/executor/executor_file_desc.c \
 	  $(SRC_DIR)/executor/executor_parent.c \
 	  $(SRC_DIR)/executor/executor_path.c \
