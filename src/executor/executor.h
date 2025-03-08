@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 16:30:00 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/08 20:43:31 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/08 21:18:22 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ int 	set_filedirectories(t_cmd *cmd, int *fd_in, int *fd_out);
 /* Path Resolution */
 char *find_executable_in_path(const char *cmd, t_env *env_list);
 int		has_slash(const char *str);
-int		ft_execvp(const char *file, char *const argv[], char **envp);
+int ft_execvp(const char *file, char *const argv[], char **envp, t_env *env_list);
 
 /* Utility Functions */
 char	**convert_list_to_arr(t_list *lst);

@@ -151,8 +151,9 @@ char *ft_strjoin2(const char *path, const char *cmd) {
     return full_path;
 }
 
-int ft_execvp(const char *file, char *const argv[], char **envp) {
-    char *path_env = getenv("PATH");
+int ft_execvp(const char *file, char *const argv[], char **envp,t_env *env_list)
+{
+    char *path_env = get_env_value(env_list, "PATH");
     char **paths = NULL;
     char *cmd_path;
     int i = 0;
@@ -196,7 +197,6 @@ int ft_execvp(const char *file, char *const argv[], char **envp) {
     return -1;
 }
 
-
 int exec_cmd_external(t_cmd *cmd, t_command_group *command_group, t_env *env_list, char **envp)
 {
     char **tokens = convert_list_to_arr(cmd->tokens);
@@ -208,8 +208,8 @@ int exec_cmd_external(t_cmd *cmd, t_command_group *command_group, t_env *env_lis
     pid = fork();
 
     if (pid == 0) { // Child process
-        ft_execvp(tokens[0], tokens, envp);
-        
+        ft_execvp(tokens[0], tokens, envp, env_list);
+
         // If execvp fails, print debugging information
         perror("Execvp failed");
         
