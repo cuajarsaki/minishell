@@ -1,33 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signal.c                                           :+:      :+:    :+:   */
+/*   executor_command_child.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/12 19:57:16 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/09 03:49:40 by pchung           ###   ########.fr       */
+/*   Created: 2025/03/09 02:14:08 by pchung            #+#    #+#             */
+/*   Updated: 2025/03/09 02:15:01 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../shell.h"
+#include "executor.h"
 
-volatile sig_atomic_t	g_signal_received = 0;
-
-static int	event_hook_readline(void)
+void	exec_child_process(t_cmd *cmd, t_command_group *cg, t_env *env_list,
+		char **envp)
 {
-	if (g_signal_received == SIGINT)
-	{
-		rl_replace_line("", 0);
-		rl_done = 1;
-	}
-	return (0);
+	init_signal(SIG_DFL, SIG_DFL);
+	exec_cmd(cmd, cg, env_list, envp);
+	exit(EXIT_SUCCESS);
 }
 
-void	init_readline_for_signal(void)
+void	execute_child(t_pipe_data pd)
 {
-	rl_outstream = stderr;
-	rl_done = 0;
-	rl_catch_signals = 0;
-	rl_event_hook = event_hook_readline;
+	init_signal(SIG_DFL, SIG_DFL);
+	setup_child_pipe(pd);
+	exec_cmd(pd.cmd, pd.cg, pd.env_list, pd.envp);
+	exit(EXIT_FAILURE);
 }

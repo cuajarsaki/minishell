@@ -6,19 +6,19 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 23:57:54 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/09 01:03:07 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/09 03:54:19 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../shell.h"
 
-static int	update_exit_status_from_signal(void)
+static int	update_exit_status_from_signal(int *exit_stauts)
 {
 	if (g_signal_received == SIGINT)
 		return (130);
 	else if (g_signal_received == NOTSIG)
 		return (0);
-	return (0);
+	return (*exit_stauts);
 }
 
 void	run_shell(t_env *env_list, char **envp)
@@ -31,7 +31,7 @@ void	run_shell(t_env *env_list, char **envp)
 	exit_stauts = 0;
 	while (1)
 	{
-		exit_stauts = update_exit_status_from_signal();
+		exit_stauts = update_exit_status_from_signal(&exit_stauts);
 		init_readline_for_signal();
 		setup_signals();
 		ft_memset(buf, 0, sizeof(buf));
