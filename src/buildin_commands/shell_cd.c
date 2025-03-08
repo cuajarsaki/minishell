@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/09 15:41:50 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/08 21:04:33 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/09 04:42:38 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,7 @@ void	print_cd_result(void)
 {
 	char	cwd[1024];
 
-	if (getcwd(cwd, sizeof(cwd)) != NULL)
-	{
-		write(1, "Changed directory to: ", 22);
-		write(1, cwd, strlen(cwd));
-		write(1, "\n", 1);
-	}
-	else
+	if (getcwd(cwd, sizeof(cwd)) == NULL)
 		print_cd_error("getcwd");
 }
 

@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 00:41:03 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/09 03:00:50 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/09 04:30:51 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ int	ft_execvp(const char *file, char *const argv[], char **envp,
 		return (-1);
 	if (has_slash(file))
 	{
-		printf("Executing directly: %s\n", file);
 		return (execve(file, argv, envp));
 	}
 	if (path_env)
