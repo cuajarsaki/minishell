@@ -6,28 +6,32 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 23:57:54 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/09 00:30:15 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/09 01:03:07 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../shell.h"
 
+static int	update_exit_status_from_signal(void)
+{
+	if (g_signal_received == SIGINT)
+		return (130);
+	else if (g_signal_received == NOTSIG)
+		return (0);
+	return (0);
+}
+
 void	run_shell(t_env *env_list, char **envp)
 {
-	int		running;
 	char	buf[8192];
 	size_t	len;
 	int		exit_stauts;
-	t_ast	*current_AST;
+	t_ast	*current_ast;
 
-	running = 1;
 	exit_stauts = 0;
-	while (running)
+	while (1)
 	{
-		if (g_signal_received == SIGINT)
-			exit_stauts = 130;
-		else if (g_signal_received == NOTSIG)
-			exit_stauts = 0;
+		exit_stauts = update_exit_status_from_signal();
 		init_readline_for_signal();
 		setup_signals();
 		ft_memset(buf, 0, sizeof(buf));
@@ -36,9 +40,9 @@ void	run_shell(t_env *env_list, char **envp)
 		if (len > 0)
 		{
 			g_signal_received = RSTSIG;
-			current_AST = get_ast(buf, env_list, &exit_stauts);
-			exit_stauts = exec_ast(current_AST, env_list, envp);
-			free_ast(current_AST);
+			current_ast = get_ast(buf, env_list, &exit_stauts);
+			exit_stauts = exec_ast(current_ast, env_list, envp);
+			free_ast(current_ast);
 			ft_memset(buf, 0, sizeof(buf));
 			len = 0;
 		}
@@ -47,10 +51,12 @@ void	run_shell(t_env *env_list, char **envp)
 
 int	main(int argc, char **argv, char **envp)
 {
+	t_env			*env_list;
+	struct termios	orig_termios;
+
 	(void)argc;
 	(void)argv;
-	t_env *env_list = init_env_list(envp);
-	struct termios orig_termios;
+	env_list = init_env_list(envp);
 	setup_terminal(&orig_termios);
 	run_shell(env_list, envp);
 	free_env_list(&env_list);

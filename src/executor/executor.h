@@ -14,14 +14,14 @@
 # define EXECUTOR_H
 
 # include "../../shell.h"
-# include <stdlib.h>
-# include <string.h>
-# include <unistd.h>
-# include <sys/types.h>
-# include <sys/wait.h>
+# include <errno.h>
 # include <fcntl.h>
 # include <stdio.h>
-# include <errno.h>
+# include <stdlib.h>
+# include <string.h>
+# include <sys/types.h>
+# include <sys/wait.h>
+# include <unistd.h>
 
 /* ************************************************************************** */
 /*                          FUNCTION DECLARATIONS                             */
@@ -31,12 +31,15 @@
 int		exec_ast(t_ast *ast, t_env *env_list, char **envp);
 
 /* Command Group Execution */
-int		exec_command_group(t_command_group *command_group, t_env *env_list, char **envp);
+int		exec_command_group(t_command_group *command_group, t_env *env_list,
+			char **envp);
 
 /* Command Execution */
-void exec_cmd(t_cmd *cmd, t_command_group *command_group, t_env *env_list, char **envp);
+void	exec_cmd(t_cmd *cmd, t_command_group *command_group, t_env *env_list,
+			char **envp);
 int		exec_cmd_builtin(t_cmd *cmd, t_env *env_list);
-int exec_cmd_external(t_cmd *cmd, t_command_group *command_group, t_env *env_list, char **envp);
+int		exec_cmd_external(t_cmd *cmd, t_command_group *command_group,
+			t_env *env_list, char **envp);
 
 /* Parent Process Execution */
 int		exec_parent(t_list **pids);
@@ -49,12 +52,13 @@ void	save_fds(int *saved_stdin, int *saved_stdout);
 void	restore_fds(int saved_stdin, int saved_stdout);
 void	cleanup_fds(int fd_in, int fd_out);
 void	apply_redirections(int fd_in, int fd_out);
-int 	set_filedirectories(t_cmd *cmd, int *fd_in, int *fd_out);
+int		set_filedirectories(t_cmd *cmd, int *fd_in, int *fd_out);
 
-    /* Path Resolution */
-    char *find_executable_in_path(const char *cmd, t_env *env_list);
+/* Path Resolution */
+char	*find_executable_in_path(const char *cmd, t_env *env_list);
 int		has_slash(const char *str);
-int ft_execvp(const char *file, char *const argv[], char **envp, t_env *env_list);
+int		ft_execvp(const char *file, char *const argv[], char **envp,
+			t_env *env_list);
 
 /* Utility Functions */
 char	**convert_list_to_arr(t_list *lst);
