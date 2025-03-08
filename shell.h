@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 03:36:43 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/09 03:47:51 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/09 03:58:39 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@
 # define NOTSIG 1
 # define RSTSIG 0
 # define SHELL_BUF_SIZE 8192
-#define  SIGINT_ 42
+# define SIGINT_ 42
 
 extern volatile sig_atomic_t	g_signal_received;
 
@@ -101,7 +101,8 @@ int								is_parent_builtin(t_cmd *cmd);
 // FREE FUNCTIONS
 void							free_ast(t_ast *ast);
 void							free_cmd(t_cmd *cmd);
-void							free_command_group(t_command_group *command_group);
+void							free_command_group(
+									t_command_group *command_group);
 void							free_redir(void *ptr);
 void							free_argv(char **argv);
 void							free_paths(char **paths);
@@ -118,7 +119,8 @@ int								shell_echo(char **args);
 int								shell_exit(char **argv);
 
 // TERMINAL SETTINGS
-void							reset_terminal_settings(const struct termios *old_termios);
+void							reset_terminal_settings(
+									const struct termios *old_termios);
 void							setup_terminal(struct termios *old_termios);
 void							term_clear_screen(void);
 
