@@ -1,6 +1,6 @@
 #include "executor.h"
 
-void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list, char **envp)
+void exec_cmd(t_cmd *cmd, t_command_group *command_group, t_env *env_list, char **envp)
 {
     int fd_in;
     int fd_out;
@@ -8,7 +8,7 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
     int exit_status;
 
     exit_status = set_filedirectories(cmd, &fd_in, &fd_out);
-    
+
     if(exit_status!=0){
         exit(exit_status);  
     }
@@ -84,7 +84,7 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, int process_index, t_e
                 free(resolved_path);
             }
             free(tokens);
-            exit_status = exec_cmd_external(cmd, command_group, process_index, env_list, envp);
+            exit_status = exec_cmd_external(cmd, command_group, env_list, envp);
 			exit(exit_status);
         }
     }
@@ -164,7 +164,8 @@ int ft_execvp(const char *file, char *const argv[], char **envp) {
     }
 
     /* Debugging: Print PATH */
-    printf("PATH: %s\n", path_env);
+    //printf("PATH: %s\n", path_env);
+    //printf("envp:%s\n", *envp);
 
     /* If command contains '/' execute it directly */
     if (has_slash(file)) {
@@ -178,7 +179,7 @@ int ft_execvp(const char *file, char *const argv[], char **envp) {
 
     while (paths && paths[i]) {
         cmd_path = ft_strjoin2(paths[i], file);
-        printf("Checking: %s\n", cmd_path);  // Debugging output
+        //printf("Checking: %s\n", cmd_path);  // Debugging output
         if (cmd_path && access(cmd_path, X_OK) == 0) {
             execve(cmd_path, argv, envp); // Use envp instead of environ
             free(cmd_path);
@@ -197,7 +198,7 @@ int ft_execvp(const char *file, char *const argv[], char **envp) {
 }
 
 
-int exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_index, t_env *env_list, char **envp)
+int exec_cmd_external(t_cmd *cmd, t_command_group *command_group, t_env *env_list, char **envp)
 {
     char **tokens = convert_list_to_arr(cmd->tokens);
     pid_t pid;
@@ -205,8 +206,6 @@ int exec_cmd_external(t_cmd *cmd, t_command_group *command_group, int process_in
 
     (void)env_list;
     (void)command_group;
-    (void)process_index;
-
     pid = fork();
 
     if (pid == 0) { // Child process
