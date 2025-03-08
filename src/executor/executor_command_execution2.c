@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 00:41:03 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/09 00:42:15 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/09 00:44:32 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,49 +83,15 @@ int ft_execvp(const char *file, char *const argv[], char **envp, t_env *env_list
 
 int exec_cmd_external(t_cmd *cmd, t_command_group *command_group, t_env *env_list, char **envp)
 {
-    char **tokens = convert_list_to_arr(cmd->tokens);
-    pid_t pid;
-    int status;
-
-    (void)env_list;
     (void)command_group;
-    pid = fork();
 
-    if (pid == 0)
-    {
-        ft_execvp(tokens[0], tokens, envp, env_list);
+    char **tokens = convert_list_to_arr(cmd->tokens);
+    ft_execvp(tokens[0], tokens, envp, env_list);
 
-        perror("Execvp failed");
-
-        for (int i = 0; tokens[i]; i++)
-            free(tokens[i]);
-        free(tokens);
-
-        exit(127);
-    }
-    else if (pid < 0)
-    {
-        perror("Fork failed");
-        exit(EXIT_FAILURE);
-    }
-
-    if (waitpid(pid, &status, 0) == -1)
-    {
-        perror("waitpid failed");
-        exit(EXIT_FAILURE);
-    }
-
+    perror("ft_execvp failed");
     for (int i = 0; tokens[i]; i++)
         free(tokens[i]);
     free(tokens);
 
-    if ((status & 0x7F) == 0)
-    {
-        return (status >> 8) & 0xFF;
-    }
-    else if (status & 0x7F)
-    {
-        return 128 + (status & 0x7F);
-    }
-    return 1;
+    exit(127);
 }
