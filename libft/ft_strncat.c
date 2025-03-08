@@ -3,29 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strncat.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/02 15:33:36 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/02 15:33:42 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/09 04:11:28 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 
-char *ft_strncat(char *dest, const char *src, size_t n)
+char	*ft_strncat(char *dest, const char *src, size_t n)
 {
-	char *ptr = dest;
+	char	*ptr;
 
-	// Move ptr to the end of dest
+	ptr = dest;
 	while (*ptr)
 		ptr++;
-
-	// Append at most n characters from src
 	while (n-- && *src)
 		*ptr++ = *src++;
-
-	// Null-terminate the result
 	*ptr = '\0';
-
-	return dest;
+	return (dest);
 }

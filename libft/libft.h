@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 16:50:27 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/04 18:55:05 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/09 04:19:43 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 int					ft_snprintf(char *str, size_t size, const char *format, ...);
 char				*ft_strndup(const char *src, size_t n);
 char				*ft_strncat(char *dest, const char *src, size_t n);
-char				*ft_strcat(char *dest, const char *src);
 int					ft_atoi(const char *str);
 void				ft_bzero(void *s, size_t n);
 void				*ft_calloc(size_t nelem, size_t elsize);
@@ -57,7 +56,6 @@ int					ft_tolower(int c);
 int					ft_toupper(int c);
 int					ft_strcmp(const char *s1, const char *s2);
 
-char				*ft_strncpy(char *dest, const char *src, size_t n);
 char **ft_realloc(char **ptr, size_t old_size, size_t new_size);
 
 char *ft_strchr(const char *s, int c);
