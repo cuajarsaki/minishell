@@ -86,6 +86,7 @@ void free_cmd(t_cmd *cmd);
 void free_command_group(t_command_group *command_group);
 void free_redir(void *ptr);
 void free_argv(char **argv);
+void free_paths(char **paths);
 
 // BUILD-IN FUNCTIONS
 int shell_env(t_env *env_list);
