@@ -36,6 +36,7 @@ SRC = $(SRC_DIR)/$(CMD_DIR)/shell_cd.c \
 	  $(SRC_DIR)/executor/executor_parent.c \
 	  $(SRC_DIR)/executor/executor_path.c \
 	  $(SRC_DIR)/executor/executor_utility.c \
+	  $(SRC_DIR)/executor/executor_redirections.c \
 
 OBJ = $(SRC:.c=.o)
 

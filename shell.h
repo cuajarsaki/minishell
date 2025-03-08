@@ -21,6 +21,7 @@
 #define HISTORY_SIZE 10
 #define NOTSIG 1
 #define RSTSIG 0
+#define SHELL_BUF_SIZE 8192
 
 extern volatile sig_atomic_t g_signal_received;
 

@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 16:30:00 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/08 21:18:22 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/08 23:37:48 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,8 @@ void	cleanup_fds(int fd_in, int fd_out);
 void	apply_redirections(int fd_in, int fd_out);
 int 	set_filedirectories(t_cmd *cmd, int *fd_in, int *fd_out);
 
-/* Path Resolution */
-char *find_executable_in_path(const char *cmd, t_env *env_list);
+    /* Path Resolution */
+    char *find_executable_in_path(const char *cmd, t_env *env_list);
 int		has_slash(const char *str);
 int ft_execvp(const char *file, char *const argv[], char **envp, t_env *env_list);
 
