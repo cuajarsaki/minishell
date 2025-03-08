@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/30 12:14:25 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/08 23:18:21 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/09 01:16:41 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,25 @@ t_env	*new_env_node(char *key, char *value)
 	return (new);
 }
 
+static t_env	*process_env_line(char *line)
+{
+	char	*eq;
+	t_env	*node;
+
+	eq = ft_strchr(line, '=');
+	if (!eq)
+		return (NULL);
+	*eq = '\0';
+	node = new_env_node(line, eq + 1);
+	*eq = '=';
+	return (node);
+}
+
 t_env	*init_env_list(char **envp)
 {
 	t_env	*head;
 	t_env	*tail;
 	t_env	*new_node;
-	char	*eq;
 	int		i;
 
 	head = NULL;
@@ -38,21 +51,16 @@ t_env	*init_env_list(char **envp)
 	i = 0;
 	while (envp[i])
 	{
-		eq = ft_strchr(envp[i], '=');
-		if (!eq)
+		new_node = process_env_line(envp[i]);
+		if (!new_node)
 		{
 			i++;
 			continue ;
 		}
-		*eq = '\0';
-		new_node = new_env_node(envp[i], eq + 1);
-		*eq = '=';
-		if (!new_node)
-			return (NULL);
 		if (!head)
 			head = new_node;
 		else
-			*((t_env **)((char *)tail + 2 * sizeof(char *))) = new_node;
+			tail->next = new_node;
 		tail = new_node;
 		i++;
 	}
