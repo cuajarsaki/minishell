@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/09 15:41:50 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/06 12:04:26 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/08 21:04:33 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,14 @@ void	print_cd_result(void)
 		print_cd_error("getcwd");
 }
 
-int	shell_cd(char **argv)
+int	shell_cd(char **argv, t_env *env_list)
 {
 	const char	*path = argv[1];
 	char		*home;
 
 	if (path == NULL || strcmp(path, "") == 0)
 	{
-		home = getenv("HOME");
+		home = get_env_value(env_list, "HOME");
 		if (home == NULL)
 		{
 			write(2, "cd: HOME not set\n", 17);
