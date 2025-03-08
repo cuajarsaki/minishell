@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 22:01:00 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/06 21:32:30 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/09 03:36:06 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,4 +46,17 @@ void	free_cmd(t_cmd *cmd)
 		ft_lstclear(&cmd->redirs, free_redir);
 		free(cmd);
 	}
+}
+
+void	free_tokens(char **tokens)
+{
+	int	i;
+
+	i = 0;
+	while (tokens && tokens[i])
+	{
+		free(tokens[i]);
+		i++;
+	}
+	free(tokens);
 }

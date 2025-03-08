@@ -1,33 +1,43 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signal.c                                           :+:      :+:    :+:   */
+/*   free_3.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/12 19:57:16 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/09 03:49:40 by pchung           ###   ########.fr       */
+/*   Created: 2025/03/08 21:57:20 by pchung            #+#    #+#             */
+/*   Updated: 2025/03/08 21:57:21 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../shell.h"
 
-volatile sig_atomic_t	g_signal_received = 0;
-
-static int	event_hook_readline(void)
+void	free_env_array(char **envp)
 {
-	if (g_signal_received == SIGINT)
+	int	i;
+
+	i = 0;
+	while (envp[i])
 	{
-		rl_replace_line("", 0);
-		rl_done = 1;
+		free(envp[i]);
+		i++;
 	}
-	return (0);
+	free(envp);
 }
 
-void	init_readline_for_signal(void)
+void	free_env_list(t_env **env_list)
 {
-	rl_outstream = stderr;
-	rl_done = 0;
-	rl_catch_signals = 0;
-	rl_event_hook = event_hook_readline;
+	t_env	*current;
+	t_env	*next;
+
+	current = *env_list;
+	while (current)
+	{
+		next = current->next;
+		free(current->key);
+		free(current->value);
+		free(current);
+		current = next;
+	}
+	*env_list = NULL;
 }

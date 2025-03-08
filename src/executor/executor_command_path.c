@@ -1,33 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   executor_parent.c                                  :+:      :+:    :+:   */
+/*   executor_command_path.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/07 09:37:36 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/09 03:45:11 by pchung           ###   ########.fr       */
+/*   Created: 2025/03/09 02:22:50 by pchung            #+#    #+#             */
+/*   Updated: 2025/03/09 03:34:35 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "executor.h"
 
-int	exec_parent(t_list **pids)
+void	handle_cmd_with_path(char *cmd_path, t_exec_ctx *ctx, char **tokens)
 {
-	int		status;
-	t_list	*pids_now;
-	pid_t	pid;
+	if (access(cmd_path, X_OK) == -1)
+		check_executable_access(cmd_path, ctx, tokens);
+}
 
-	pids_now = *pids;
-	while (pids_now)
-	{
-		pid = (pid_t)(intptr_t)pids_now->content;
-		waitpid(pid, &status, 0);
-		pids_now = pids_now->next;
-	}
-	if ((status & 0x7F) == 0)
-		return ((status >> 8) & 0xFF);
-	else if (status & 0x7F)
-		return (128 + (status & 0x7F));
-	return (1);
+void	handle_cmd_without_path(char *cmd_path, t_exec_ctx *ctx, char **tokens)
+{
+	char	*resolved;
+
+	resolved = find_executable_in_path(cmd_path, ctx->env_list);
+	if (!resolved)
+		print_error_and_exit(cmd_path, 127, ctx, tokens);
+	free(resolved);
 }

@@ -12,12 +12,14 @@ SRC = $(SRC_DIR)/$(CMD_DIR)/shell_cd.c \
       $(SRC_DIR)/main.c \
       $(SRC_DIR)/env/env.c \
 	  $(SRC_DIR)/env/env_2.c \
+	  $(SRC_DIR)/env/env_3.c \
       $(SRC_DIR)/termcaps/termcaps.c \
       $(SRC_DIR)/signal/signal.c \
 	  $(SRC_DIR)/signal/signal_2.c \
       $(SRC_DIR)/terminal/terminal.c \
       $(SRC_DIR)/free/free.c \
 	  $(SRC_DIR)/free/free_2.c \
+	  $(SRC_DIR)/free/free_3.c \
       $(SRC_DIR)/cmd_tokenizer/cmd_tokenizer.c \
 	  $(SRC_DIR)/parser/parser_ast.c \
 	  $(SRC_DIR)/parser/parser_cmd.c \
@@ -29,11 +31,17 @@ SRC = $(SRC_DIR)/$(CMD_DIR)/shell_cd.c \
 	  $(SRC_DIR)/executor/executor_ast.c \
 	  $(SRC_DIR)/executor/executor_builtin_check.c \
 	  $(SRC_DIR)/executor/executor_command_group.c \
-	  $(SRC_DIR)/executor/executor_command_execution.c \
+	  $(SRC_DIR)/executor/executor_command_execution1.c \
+	  $(SRC_DIR)/executor/executor_command_execution2.c \
+	  $(SRC_DIR)/executor/executor_child.c \
+	  $(SRC_DIR)/executor/executor_command_path.c \
+	  $(SRC_DIR)/executor/executor_command_pipe.c \
+	  $(SRC_DIR)/executor/executor_command_buildin.c \
 	  $(SRC_DIR)/executor/executor_file_desc.c \
 	  $(SRC_DIR)/executor/executor_parent.c \
 	  $(SRC_DIR)/executor/executor_path.c \
 	  $(SRC_DIR)/executor/executor_utility.c \
+	  $(SRC_DIR)/executor/executor_redirections.c \
 
 OBJ = $(SRC:.c=.o)
 
