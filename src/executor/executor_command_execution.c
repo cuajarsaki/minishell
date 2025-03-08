@@ -29,7 +29,6 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, t_env *env_list, char 
         }
         else
         {
-            // CHILD PROCESS
             char **tokens = convert_list_to_arr(cmd->tokens);
             char *cmd_path = tokens[0];
 
@@ -65,7 +64,7 @@ void exec_cmd(t_cmd *cmd, t_command_group *command_group, t_env *env_list, char 
             else
             {
                 // Search for the command in PATH
-                char *resolved_path = find_executable_in_path(cmd_path);
+                char *resolved_path = find_executable_in_path(cmd_path,env_list);
                 if (!resolved_path)
                 {
 
@@ -101,7 +100,7 @@ int exec_cmd_builtin(t_cmd *cmd, t_env *env_list)
     if (ft_strcmp(program, "echo") == 0)
         exit_status = shell_echo(args);
     else if (ft_strcmp(program, "cd") == 0)
-        exit_status = shell_cd(args);
+        exit_status = shell_cd(args, env_list);
     else if (ft_strcmp(program, "exit") == 0)
         exit_status = shell_exit(args);
     else if (ft_strcmp(program, "pwd") == 0)
