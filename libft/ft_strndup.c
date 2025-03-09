@@ -1,26 +1,36 @@
-#include <stdlib.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strndup.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/09 04:15:22 by pchung            #+#    #+#             */
+/*   Updated: 2025/03/09 04:17:31 by pchung           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <stdio.h>
+#include <stdlib.h>
 
-char *ft_strndup(const char *src, size_t n)
+char	*ft_strndup(const char *src, size_t n)
 {
-	size_t i;
-	char *dup;
+	size_t	i;
+	size_t	j;
+	char	*dup;
 
-	// Find the length of the actual string to copy (max n)
-	for (i = 0; i < n && src[i]; i++)
-		;
-
-	// Allocate memory for the new string (+1 for null terminator)
+	i = 0;
+	while (i < n && src[i])
+		i++;
 	dup = (char *)malloc(i + 1);
 	if (!dup)
-		return NULL;
-
-	// Copy up to n characters
-	for (size_t j = 0; j < i; j++)
+		return (NULL);
+	j = 0;
+	while (j < i)
+	{
 		dup[j] = src[j];
-
-	// Null-terminate the new string
+		j++;
+	}
 	dup[i] = '\0';
-
-	return dup;
+	return (dup);
 }
