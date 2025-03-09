@@ -3,22 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   ft_snprintf.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
+/*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 10:34:37 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/09 10:45:25 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/09 14:06:22 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdarg.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <stdarg.h>
-#include <stddef.h>
-#include <stdio.h>
 
-int	handle_format(char specifier, va_list *args, char *buffer)
+int	handle_format(char specifier, va_list args, char *buffer,
+		size_t buffer_size)
 {
 	int			len;
 	const char	*s;
@@ -26,16 +25,16 @@ int	handle_format(char specifier, va_list *args, char *buffer)
 
 	len = 0;
 	if (specifier == 'd')
-		len = snprintf(buffer, 64, "%d", va_arg(*args, int));
+		len = snprintf(buffer, buffer_size, "%d", va_arg(args, int));
 	else if (specifier == 's')
 	{
-		s = va_arg(*args, const char *);
-		len = snprintf(buffer, 64, "%s", s);
+		s = va_arg(args, const char *);
+		len = snprintf(buffer, buffer_size, "%s", s);
 	}
 	else if (specifier == 'c')
 	{
-		c = (char)va_arg(*args, int);
-		len = snprintf(buffer, 64, "%c", c);
+		c = (char)va_arg(args, int);
+		len = snprintf(buffer, buffer_size, "%c", c);
 	}
 	else
 	{
@@ -59,8 +58,8 @@ void	append_buffer(char *str, size_t *j, size_t size, char *buffer)
 	}
 }
 
-size_t	process_format(const char *format, size_t *i,
-						va_list *args, char *buffer)
+size_t	process_format(const char *format, size_t *i, va_list args,
+		char *buffer, size_t buffer_size)
 {
 	int	len;
 
@@ -68,7 +67,7 @@ size_t	process_format(const char *format, size_t *i,
 	if (format[*i] == '%' && format[*i + 1])
 	{
 		(*i)++;
-		len = handle_format(format[*i], args, buffer);
+		len = handle_format(format[*i], args, buffer, buffer_size);
 	}
 	else
 	{
@@ -91,9 +90,10 @@ int	ft_vsnprintf(char *str, size_t size, const char *format, va_list args)
 	len = 0;
 	while (format[i])
 	{
-		len += process_format(format, &i, &args, buffer);
+		len += process_format(format, &i, args, buffer, sizeof(buffer));
 		append_buffer(str, &j, size, buffer);
-		i++;
+		if (format[i] != '%')
+			i++;
 	}
 	if (size > 0)
 		str[j] = '\0';
