@@ -6,7 +6,7 @@
 /*   By: jidler <jidler@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 16:50:27 by jidler            #+#    #+#             */
-/*   Updated: 2025/03/04 18:55:05 by jidler           ###   ########.fr       */
+/*   Updated: 2025/03/09 10:34:12 by jidler           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@
 # include <stdlib.h>
 # include <unistd.h>
 
-int					ft_snprintf(char *str, size_t size, const char *format, ...);
+int					ft_snprintf(char *str, size_t size,
+						const char *format, ...);
 char				*ft_strndup(const char *src, size_t n);
 char				*ft_strncat(char *dest, const char *src, size_t n);
 char				*ft_strcat(char *dest, const char *src);
@@ -40,7 +41,7 @@ void				ft_putendl_fd(char *s, int fd);
 void				ft_putnbr_fd(int n, int fd);
 void				ft_putstr_fd(char *s, int fd);
 char				**ft_split(char const *s, char c);
-char 				*ft_strdup(const char *src);
+char				*ft_strdup(const char *src);
 void				ft_striteri(char *s, void (*f)(unsigned int, char *));
 char				*ft_strjoin(char const *s1, char const *s2);
 size_t				ft_strlcat(char *dest, char *src, size_t size);
@@ -58,10 +59,10 @@ int					ft_toupper(int c);
 int					ft_strcmp(const char *s1, const char *s2);
 
 char				*ft_strncpy(char *dest, const char *src, size_t n);
-char **ft_realloc(char **ptr, size_t old_size, size_t new_size);
+char				**ft_realloc(char **ptr, size_t old_size, size_t new_size);
 
-char *ft_strchr(const char *s, int c);
-char *ft_strtok(char *str, const char *delim);
+char				*ft_strchr(const char *s, int c);
+char				*ft_strtok(char *str, const char *delim);
 
 typedef struct s_list
 {
@@ -79,16 +80,14 @@ void				ft_lstclear(t_list **lst, void (*del)(void *));
 void				ft_lstiter(t_list *lst, void (*f)(void *));
 t_list				*ft_lstmap(t_list *lst, void *(*f)(void *),
 						void (*del)(void *));
-long	ft_strtol(const char *nptr);
-							
+long				ft_strtol(const char *nptr);
+
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 50
 # endif
 
 int					get_nl_index(char *stash);
 char				*get_next_line(int fd);
-
-
 
 typedef struct s_flags
 {
