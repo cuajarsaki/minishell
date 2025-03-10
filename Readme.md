@@ -9,7 +9,7 @@ English | [日本語](./docs/Readme-ja.md) | [繁體中文](./docs/Readme-zh.md)
   <img src="https://github.com/cuajarsaki/minishell/actions/workflows/test.yml/badge.svg" alt="minishell">
 </p>
 <p align="center">
-  <img src="/home/pchung/work/minishell/docs/minishell_icon.png" alt="Minishell 42 project badge" style="width:10%;"/>
+  <img src="https://github.com/cuajarsaki/minishell/blob/a5fad336ac54386db5af09fb4ca2ee568a382864/docs/minishell_icon.png" alt="Minishell 42 project badge" style="width:10%;"/>
 </p>
 Minishell is a mini shell project written in C that mimics the basic functionalities of Bash.
 While learning about process management, file descriptors, and signal handling, We built our own command-line interface.
@@ -47,7 +47,7 @@ This project strictly adheres to the 42 School Norminette rules (v3.3.55). The N
 
 All code in this repository passes the official 42 Norminette validator without errors.
 
-><img src="/home/pchung/work/minishell/docs/norminette.png" alt="grade" style="width:40%;"/>
+><img src="https://github.com/cuajarsaki/minishell/blob/a5fad336ac54386db5af09fb4ca2ee568a382864/docs/norminette.png" alt="grade" style="width:40%;"/>
 
 ## Final grade
 <img src="https://github.com/user-attachments/assets/765ec3c2-7927-4a92-b718-ec39fc93c64d" alt="grade" style="width:20%;"/>

@@ -8,7 +8,7 @@
   <img src="https://github.com/cuajarsaki/minishell/actions/workflows/test.yml/badge.svg" alt="minishell">
 </p>
 <p align="center">
-  <img src="/home/pchung/work/minishell/docs/minishell_icon.png" alt="Minishell 42 project badge" style="width:10%;"/>
+  <img src="https://github.com/cuajarsaki/minishell/blob/a5fad336ac54386db5af09fb4ca2ee568a382864/docs/minishell_icon.png" alt="Minishell 42 project badge" style="width:10%;"/>
 </p>
 Minishellは、Bashの基本機能を模倣したCで書かれたミニシェルプロジェクトです。
 プロセス管理、ファイルディスクリプタ、シグナル処理について学びながら、独自のコマンドラインインターフェースを構築しました。

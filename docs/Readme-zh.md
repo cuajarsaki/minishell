@@ -8,7 +8,7 @@
   <img src="https://github.com/cuajarsaki/minishell/actions/workflows/test.yml/badge.svg" alt="minishell">
 </p>
 <p align="center">
-  <img src="/home/pchung/work/minishell/docs/minishell_icon.png" alt="Minishell 42 project badge" style="width:10%;"/>
+  <img src="https://github.com/cuajarsaki/minishell/blob/a5fad336ac54386db5af09fb4ca2ee568a382864/docs/minishell_icon.png" alt="Minishell 42 project badge" style="width:10%;"/>
 </p>
 
 Minishell 是一個用 C 語言編寫的迷你Shell專題，模仿 Bash 的基本功能。
