@@ -56,28 +56,6 @@ Mandatory part : 100/100
 
 Bonus : 0/15
 
-## Installation
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/yourusername/minishell.git
-   ```
-2. **Navigate to the project directory:**
-   ```bash
-   cd minishell
-   ```
-3. Compile the project:
-   ```bash
-    make
-   ```
-
-## Usage
-- Start the Shell:
-  ```bash
-  ./minishell
-  ```
-- Enter commands at the prompt.
-- Exit by typing exit or pressing Ctrl-D.
-
 ## Flowchart of Execution Part
 ```mermaid
 
@@ -217,3 +195,27 @@ graph TD
 
 
 ```
+
+## Installation
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/minishell.git
+   ```
+2. **Navigate to the project directory:**
+   ```bash
+   cd minishell
+   ```
+3. Compile the project:
+   ```bash
+    make
+   ```
+
+## Usage
+- Start the Shell:
+  ```bash
+  ./minishell
+  ```
+- Enter commands at the prompt.
+- Exit by typing exit or pressing Ctrl-D.
+
+
