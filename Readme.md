@@ -11,8 +11,9 @@ English | [日本語](./docs/README-ja.md) | [繁體中文](./docs/README-zh.md)
 <p align="center">
   <img src="https://github.com/cuajarsaki/minishell/blob/0d47fd9c2465b6c876cb29fc5545ce7b760c3296/minishell_icon.png" alt="Minishell 42 project badge" style="width:10%;"/>
 </p>
-Minishell is a mini shell project written in C that mimics the basic functionalities of Bash. 
+Minishell is a mini shell project written in C that mimics the basic functionalities of Bash.
 While learning about process management, file descriptors, and signal handling, We built our own command-line interface.
+We paid special attention to accurately replicating bash's behavior regarding exit status values and error messages, ensuring that our shell responds to errors in a consistent and familiar way for users accustomed to bash.
 
 ## Features
 - **Interactive Prompt:** Displays a prompt for user input.
