@@ -1,15 +1,15 @@
-English | [日本語](./docs/README-ja.md) | [繁體中文](./docs/README-zh.md)
+English | [日本語](./docs/Readme-ja.md) | [繁體中文](./docs/Readme-zh.md)
 
 
 # Minishell - As Beautiful as a Shell
 <p align="left">
   <img src="https://img.shields.io/badge/-C-213a70.svg?logo=C&style=flat">
   <img src="https://img.shields.io/badge/-Linux-ea5520.svg?logo=linux&style=flat">
-  <img src="https://img.shields.io/badge/Version-8.02-3E72BC.svg">
+  <img src="https://img.shields.io/badge/Subject_Version-8.02-3E72BC.svg">
   <img src="https://github.com/cuajarsaki/minishell/actions/workflows/test.yml/badge.svg" alt="minishell">
 </p>
 <p align="center">
-  <img src="https://github.com/cuajarsaki/minishell/blob/0d47fd9c2465b6c876cb29fc5545ce7b760c3296/minishell_icon.png" alt="Minishell 42 project badge" style="width:10%;"/>
+  <img src="/home/pchung/work/minishell/docs/minishell_icon.png" alt="Minishell 42 project badge" style="width:10%;"/>
 </p>
 Minishell is a mini shell project written in C that mimics the basic functionalities of Bash.
 While learning about process management, file descriptors, and signal handling, We built our own command-line interface.
@@ -46,6 +46,8 @@ This project strictly adheres to the 42 School Norminette rules (v3.3.55). The N
 - Required use of tabs for indentation
 
 All code in this repository passes the official 42 Norminette validator without errors.
+
+><img src="/home/pchung/work/minishell/docs/norminette.png" alt="grade" style="width:40%;"/>
 
 ## Final grade
 <img src="https://github.com/user-attachments/assets/765ec3c2-7927-4a92-b718-ec39fc93c64d" alt="grade" style="width:20%;"/>

@@ -1,14 +1,14 @@
-[English](../Readme.md) | [日本語](./README-ja.md) | 繁體中文
+[English](../Readme.md) | [日本語](./Readme-ja.md) | 繁體中文
 
 # Minishell - 如shell般美麗
 <p align="left">
   <img src="https://img.shields.io/badge/-C-213a70.svg?logo=C&style=flat">
   <img src="https://img.shields.io/badge/-Linux-ea5520.svg?logo=linux&style=flat">
-  <img src="https://img.shields.io/badge/Version-8.02-3E72BC.svg">
+  <img src="https://img.shields.io/badge/Subject_Version-8.02-3E72BC.svg">
   <img src="https://github.com/cuajarsaki/minishell/actions/workflows/test.yml/badge.svg" alt="minishell">
 </p>
 <p align="center">
-  <img src="https://github.com/cuajarsaki/minishell/blob/0d47fd9c2465b6c876cb29fc5545ce7b760c3296/minishell_icon.png" alt="Minishell 42 project badge" style="width:10%;"/>
+  <img src="/home/pchung/work/minishell/docs/minishell_icon.png" alt="Minishell 42 project badge" style="width:10%;"/>
 </p>
 
 Minishell 是一個用 C 語言編寫的迷你Shell專題，模仿 Bash 的基本功能。
@@ -47,6 +47,8 @@ Norminette 在所有 42 的 C 專題中強制執行一致的編碼風格，包�
 - 必須使用 tab 作為縮排
 
 本儲存庫中的所有程式碼都能通過官方 42 Norminette 驗證器而不產生錯誤。
+
+><img src="/home/pchung/work/minishell/docs/norminette.png" alt="grade" style="width:40%;"/>
 
 ## 最終成績
 <img src="https://github.com/user-attachments/assets/765ec3c2-7927-4a92-b718-ec39fc93c64d" alt="grade" style="width:20%;"/>

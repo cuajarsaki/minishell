@@ -1,14 +1,14 @@
-[English](../Readme.md) | 日本語 | [繁體中文](./README-zh.md)
+[English](../Readme.md) | 日本語 | [繁體中文](./Readme-zh.md)
 
 # Minishell - 美しいシェル
 <p align="left">
   <img src="https://img.shields.io/badge/-C-213a70.svg?logo=C&style=flat">
   <img src="https://img.shields.io/badge/-Linux-ea5520.svg?logo=linux&style=flat">
-  <img src="https://img.shields.io/badge/Version-8.02-3E72BC.svg">
+  <img src="https://img.shields.io/badge/Subject_Version-8.02-3E72BC.svg">
   <img src="https://github.com/cuajarsaki/minishell/actions/workflows/test.yml/badge.svg" alt="minishell">
 </p>
 <p align="center">
-  <img src="https://github.com/cuajarsaki/minishell/blob/0d47fd9c2465b6c876cb29fc5545ce7b760c3296/minishell_icon.png" alt="Minishell 42 project badge" style="width:10%;"/>
+  <img src="/home/pchung/work/minishell/docs/minishell_icon.png" alt="Minishell 42 project badge" style="width:10%;"/>
 </p>
 Minishellは、Bashの基本機能を模倣したCで書かれたミニシェルプロジェクトです。
 プロセス管理、ファイルディスクリプタ、シグナル処理について学びながら、独自のコマンドラインインターフェースを構築しました。
@@ -45,6 +45,8 @@ Minishellは、Bashの基本機能を模倣したCで書かれたミニシェル
 - インデントにタブの使用が必須
 
 このリポジトリのすべてのコードは、公式の42 Norminette検証ツールでエラーなく合格しています。
+
+><img src="/home/pchung/work/minishell/docs/norminette.png" alt="grade" style="width:40%;"/>
 
 ## 最終評価
 <img src="https://github.com/user-attachments/assets/765ec3c2-7927-4a92-b718-ec39fc93c64d" alt="grade" style="width:20%;"/>
