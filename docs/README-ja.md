@@ -1,4 +1,4 @@
-[English](./docs/README.md) | [日本語](./docs/README-ja.md) | 繁體中文[日本語](./docs/README-zh.md)
+[English](minishell/README.md) | [日本語](./docs/README-ja.md) | [日本語](./README-zh.md)
 
 # Minishell - 美しいシェル
 <p align="left">
