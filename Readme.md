@@ -56,9 +56,22 @@ Mandatory part : 100/100
 
 Bonus : 0/15
 
+
+## Flowchart of Main
+
+```mermaid
+  
+flowchart LR
+    A[Start main] --> B[Init env_list] --> C[Setup terminal] --> D[run_shell] --> E[Cleanup] --> F[Exit]
+    
+    D --> G[run_shell loop]
+    G --> H[Handle signals] --> I[Get input] --> J{any Input?}
+    J -->|No| G
+    J -->|Yes| K[parse_ast] --> L[exec_ast] --> M[free_ast] --> G
+```
+
 ## Flowchart of Execution Part
 ```mermaid
-
 
 graph TD
     A[exec_ast] --> B[exec_command_group]
