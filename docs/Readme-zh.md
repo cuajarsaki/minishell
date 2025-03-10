@@ -48,7 +48,7 @@ Norminette 在所有 42 的 C 專題中強制執行一致的編碼風格，包�
 
 本儲存庫中的所有程式碼都能通過官方 42 Norminette 驗證器而不產生錯誤。
 
-><img src="/home/pchung/work/minishell/docs/norminette.png" alt="grade" style="width:40%;"/>
+><img src="https://github.com/cuajarsaki/minishell/blob/a5fad336ac54386db5af09fb4ca2ee568a382864/docs/norminette.png" alt="grade" style="width:40%;"/>
 
 ## 最終成績
 <img src="https://github.com/user-attachments/assets/765ec3c2-7927-4a92-b718-ec39fc93c64d" alt="grade" style="width:20%;"/>

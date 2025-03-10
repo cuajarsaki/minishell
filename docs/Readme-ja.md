@@ -46,7 +46,7 @@ Minishellは、Bashの基本機能を模倣したCで書かれたミニシェル
 
 このリポジトリのすべてのコードは、公式の42 Norminette検証ツールでエラーなく合格しています。
 
-><img src="/home/pchung/work/minishell/docs/norminette.png" alt="grade" style="width:40%;"/>
+><img src="https://github.com/cuajarsaki/minishell/blob/a5fad336ac54386db5af09fb4ca2ee568a382864/docs/norminette.png" alt="grade" style="width:40%;"/>
 
 ## 最終評価
 <img src="https://github.com/user-attachments/assets/765ec3c2-7927-4a92-b718-ec39fc93c64d" alt="grade" style="width:20%;"/>
