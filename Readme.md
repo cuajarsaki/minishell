@@ -78,3 +78,142 @@ Bonus : 0/15
 - Enter commands at the prompt.
 - Exit by typing exit or pressing Ctrl-D.
 
+## Flowchart of Execution Part
+```mermaid
+
+
+graph TD
+    A[exec_ast] --> B[exec_command_group]
+    B --> C{is no command?}
+    C -->|Yes| D[return 0]
+    C -->|No| E{is single command?}
+    E -->|Yes| F{is exit/cd/unset/export?}
+    F -->|Yes| G[exec_cmd_builtin]
+    F -->|No| H[fork]
+    H -->|Child| I[exec_child_process]
+    H -->|Parent| J[exec_parent]
+    E -->|No| K[process_command]
+    K --> L[setup_pipe_and_fork]
+    L --> M[fork]
+    M -->|Child| N[execute_child]
+    M -->|Parent| O[setup_parent_pipe]
+    K --> P[exec_parent]
+    B --> Q[free_command_group]
+    A --> R[return exit_status]
+    I --> S[exec_cmd]
+    N --> S
+    S --> T[set_filedirectories]
+    T --> U[handle_append_output]
+    T --> V[handle_heredoc]
+    T --> W[handle_overwrite_output]
+    T --> X[handle_input_redir]
+    S --> Y[save_fds]
+    S --> Z[apply_redirections]
+    S --> AA[process_command]
+    AA --> AB{is builtin?}
+    AB -->|Yes| AC[process_builtin]
+    AB -->|No| AD[exec_non_builtin]
+    AC --> AE[exec_cmd_builtin]
+    AD --> AF[handle_cmd_with_path]
+    AD --> AG[handle_cmd_without_path]
+    AF --> AH[check_executable_access]
+    AG --> AI[find_executable_in_path]
+    AI --> AJ[search_executable_in_paths]
+    AD --> AK[exec_cmd_external]
+    AK --> AL[ft_execvp]
+    AL --> AM[try_execve_in_paths]
+    AL --> AN[execve]
+    AK --> AO[perror]
+    AE --> AP[shell_echo]
+    AE --> AQ[shell_cd]
+    AE --> AR[shell_exit]
+    AE --> AS[shell_pwd]
+    AE --> AT[shell_export]
+    AE --> AU[shell_unset]
+    AE --> AV[shell_env]
+    V --> AW[execute_heredoc]
+    AW --> AX[heredoc_loop]
+    U --> AY[open]
+    W --> AZ[open]
+    X --> BA[open]
+    Z --> BB[dup2]
+    Y --> BC[dup]
+    BB --> BD[close]
+    BC --> BE[close]
+    J --> BF[waitpid]
+    O --> BG[close]
+    L --> BH[pipe]
+    BH --> BI[perror]
+    BI --> BJ[exit]
+
+    subgraph "Initialization and Execution"
+        A[exec_ast]
+        B[exec_command_group]
+        C{is no command?}
+        D[return 0]
+        E{is single command?}
+        F{is exit/cd/unset/export?}
+        G[exec_cmd_builtin]
+        H[fork]
+        I[exec_child_process]
+        J[exec_parent]
+        Q[free_command_group]
+        R[return exit_status]
+    end
+
+    subgraph "Command Execution"
+        K[process_command]
+        L[setup_pipe_and_fork]
+        M[fork]
+        N[execute_child]
+        O[setup_parent_pipe]
+        P[exec_parent]
+        S[exec_cmd]
+        T[set_filedirectories]
+        U[handle_append_output]
+        V[handle_heredoc]
+        W[handle_overwrite_output]
+        X[handle_input_redir]
+        Y[save_fds]
+        Z[apply_redirections]
+        AA[process_command]
+        AB{is builtin?}
+        AC[process_builtin]
+        AD[exec_non_builtin]
+        AE[exec_cmd_builtin]
+        AF[handle_cmd_with_path]
+        AG[handle_cmd_without_path]
+        AH[check_executable_access]
+        AI[find_executable_in_path]
+        AJ[search_executable_in_paths]
+        AK[exec_cmd_external]
+        AL[ft_execvp]
+        AM[try_execve_in_paths]
+        AN[execve]
+        AO[perror]
+        AP[shell_echo]
+        AQ[shell_cd]
+        AR[shell_exit]
+        AS[shell_pwd]
+        AT[shell_export]
+        AU[shell_unset]
+        AV[shell_env]
+        AW[execute_heredoc]
+        AX[heredoc_loop]
+        AY[open]
+        AZ[open]
+        BA[open]
+        BB[dup2]
+        BC[dup]
+        BD[close]
+        BE[close]
+        BF[waitpid]
+        BG[close]
+        BH[pipe]
+        BI[perror]
+        BJ[exit]
+    end
+
+
+
+```
