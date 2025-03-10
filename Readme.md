@@ -50,7 +50,7 @@ All code in this repository passes the official 42 Norminette validator without 
 ## Final grade
 <img src="https://github.com/user-attachments/assets/765ec3c2-7927-4a92-b718-ec39fc93c64d" alt="grade" style="width:20%;"/>
 
-Validated : 09/03/2025. 
+Validated : 09/03/2025
 
 Mandatory part : 100/100
 
