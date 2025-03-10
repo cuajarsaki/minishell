@@ -51,11 +51,162 @@ Norminette 在所有 42 的 C 專題中強制執行一致的編碼風格，包�
 ## 最終成績
 <img src="https://github.com/user-attachments/assets/765ec3c2-7927-4a92-b718-ec39fc93c64d" alt="grade" style="width:20%;"/>
 
-驗證日期：2025年3月9日
+提交日期：2025年3月9日
 
 必修部分：100/100
 
-加分部分：0/15
+bonus部分：0/15
+
+## flowchart（主幹部分）
+
+```mermaid
+  
+flowchart LR
+    A[開始 main] --> B[初始化 env_list] --> C[設置終端機] --> D[執行 shell] --> E[清理資源] --> F[退出]
+    
+    D --> G[run_shell 循環]
+    G --> H[處理信號] --> I[獲取輸入] --> J{有輸入？}
+    J -->|沒有| G
+    J -->|有| K[解析語法樹] --> L[執行語法樹] --> M[釋放語法樹] --> G
+
+```
+
+##  flowchart（執行部分）
+```mermaid
+
+graph TD
+    A[執行語法樹 exec_ast] --> B[執行命令組 exec_command_group]
+    B --> C{沒有命令？}
+    C -->|是| D[返回 0]
+    C -->|否| E{是單一命令？}
+    E -->|是| F{是 exit/cd/unset/export？}
+    F -->|是| G[執行內置命令 exec_cmd_builtin]
+    F -->|否| H[創建子進程 fork]
+    H -->|子進程| I[執行子進程 exec_child_process]
+    H -->|父進程| J[執行父進程 exec_parent]
+    E -->|否| K[處理命令 process_command]
+    K --> L[設置管道並創建子進程]
+    L --> M[創建子進程 fork]
+    M -->|子進程| N[執行子進程 execute_child]
+    M -->|父進程| O[設置父進程管道]
+    K --> P[執行父進程 exec_parent]
+    B --> Q[釋放命令組 free_command_group]
+    A --> R[返回退出狀態]
+    I --> S[執行命令 exec_cmd]
+    N --> S
+    S --> T[設置文件目錄]
+    T --> U[處理追加輸出]
+    T --> V[處理文字塊 heredoc]
+    T --> W[處理覆寫輸出]
+    T --> X[處理輸入重定向]
+    S --> Y[保存文件描述符]
+    S --> Z[應用重定向]
+    S --> AA[處理命令]
+    AA --> AB{是內置命令？}
+    AB -->|是| AC[處理內置命令]
+    AB -->|否| AD[執行非內置命令]
+    AC --> AE[執行內置命令]
+    AD --> AF[處理帶路徑命令]
+    AD --> AG[處理無路徑命令]
+    AF --> AH[檢查執行權限]
+    AG --> AI[在 PATH 中查找可執行文件]
+    AI --> AJ[在路徑中搜索可執行文件]
+    AD --> AK[執行外部命令]
+    AK --> AL[ft_execvp]
+    AL --> AM[在路徑中嘗試 execve]
+    AL --> AN[execve]
+    AK --> AO[輸出錯誤 perror]
+    AE --> AP[shell_echo]
+    AE --> AQ[shell_cd]
+    AE --> AR[shell_exit]
+    AE --> AS[shell_pwd]
+    AE --> AT[shell_export]
+    AE --> AU[shell_unset]
+    AE --> AV[shell_env]
+    V --> AW[執行文字塊 heredoc]
+    AW --> AX[文字塊循環]
+    U --> AY[打開文件 open]
+    W --> AZ[打開文件 open]
+    X --> BA[打開文件 open]
+    Z --> BB[複製文件描述符 dup2]
+    Y --> BC[複製文件描述符 dup]
+    BB --> BD[關閉文件 close]
+    BC --> BE[關閉文件 close]
+    J --> BF[等待子進程 waitpid]
+    O --> BG[關閉文件 close]
+    L --> BH[創建管道 pipe]
+    BH --> BI[輸出錯誤 perror]
+    BI --> BJ[退出 exit]
+    
+    subgraph "初始化和執行"
+        A[執行語法樹 exec_ast]
+        B[執行命令組 exec_command_group]
+        C{沒有命令？}
+        D[返回 0]
+        E{是單一命令？}
+        F{是 exit/cd/unset/export？}
+        G[執行內置命令 exec_cmd_builtin]
+        H[創建子進程 fork]
+        I[執行子進程 exec_child_process]
+        J[執行父進程 exec_parent]
+        Q[釋放命令組 free_command_group]
+        R[返回退出狀態]
+    end
+    
+    subgraph "命令執行"
+        K[處理命令 process_command]
+        L[設置管道並創建子進程]
+        M[創建子進程 fork]
+        N[執行子進程 execute_child]
+        O[設置父進程管道]
+        P[執行父進程 exec_parent]
+        S[執行命令 exec_cmd]
+        T[設置文件目錄]
+        U[處理追加輸出]
+        V[處理文字塊 heredoc]
+        W[處理覆寫輸出]
+        X[處理輸入重定向]
+        Y[保存文件描述符]
+        Z[應用重定向]
+        AA[處理命令]
+        AB{是內置命令？}
+        AC[處理內置命令]
+        AD[執行非內置命令]
+        AE[執行內置命令]
+        AF[處理帶路徑命令]
+        AG[處理無路徑命令]
+        AH[檢查執行權限]
+        AI[在 PATH 中查找可執行文件]
+        AJ[在路徑中搜索可執行文件]
+        AK[執行外部命令]
+        AL[ft_execvp]
+        AM[在路徑中嘗試 execve]
+        AN[execve]
+        AO[輸出錯誤 perror]
+        AP[shell_echo]
+        AQ[shell_cd]
+        AR[shell_exit]
+        AS[shell_pwd]
+        AT[shell_export]
+        AU[shell_unset]
+        AV[shell_env]
+        AW[執行文字塊 heredoc]
+        AX[文字塊循環]
+        AY[打開文件 open]
+        AZ[打開文件 open]
+        BA[打開文件 open]
+        BB[複製文件描述符 dup2]
+        BC[複製文件描述符 dup]
+        BD[關閉文件 close]
+        BE[關閉文件 close]
+        BF[等待子進程 waitpid]
+        BG[關閉文件 close]
+        BH[創建管道 pipe]
+        BI[輸出錯誤 perror]
+        BJ[退出 exit]
+    end
+
+```
 
 ## 安裝
 1. **複製儲存庫：**
