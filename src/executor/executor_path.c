@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 23:24:32 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/08 23:32:07 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/11 12:14:16 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,21 +16,15 @@ static char	*search_executable_in_paths(const char *cmd, char *paths)
 {
 	char	*dir;
 	char	full_path[1024];
-	size_t	dir_len;
-	size_t	cmd_len;
 
 	dir = ft_strtok(paths, ":");
 	while (dir)
 	{
 		ft_snprintf(full_path, sizeof(full_path), "%s/%s", dir, cmd);
-		dir_len = ft_strlen(dir);
-		cmd_len = ft_strlen(cmd);
-		memcpy(full_path, dir, dir_len);
-		full_path[dir_len] = '/';
-		memcpy(full_path + dir_len + 1, cmd, cmd_len);
-		full_path[dir_len + cmd_len + 1] = '\0';
 		if (access(full_path, X_OK) == 0)
+		{
 			return (ft_strdup(full_path));
+		}
 		dir = ft_strtok(NULL, ":");
 	}
 	return (NULL);
