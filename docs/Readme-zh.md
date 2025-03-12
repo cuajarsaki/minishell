@@ -56,7 +56,8 @@ Minishell 是一個用 C 語言編寫的迷你Shell專題，模仿 Bash 的基�
 - tcsetattr, tcgetattr, tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
 
 ## Norminette 規範遵循
-本專題嚴格遵循 42 School Norminette 規則（v3.3.55）。
+本專題嚴格遵循 [42 School Norminette 規則（v4.1）](https://github.com/42school/norminette/blob/b6b5de4acf8a177f36f103bc5a40265fd8dcb730/pdf/en.norm.pdf)。
+
 Norminette 在所有 42 的 C 專題中強制執行一致的編碼風格，包括：
 
 - 每個函數最多 25 行

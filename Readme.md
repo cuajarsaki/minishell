@@ -56,7 +56,7 @@ Only the following external functions are allowed:
 - tcsetattr, tcgetattr, tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
 
 ## Norminette Compliance
-This project strictly adheres to the 42 School Norminette rules (v3.3.55). The Norminette enforces a consistent coding style across all C projects at 42, including:
+This project strictly adheres to the [42 School Norminette rules (v4.1)](https://github.com/42school/norminette/blob/b6b5de4acf8a177f36f103bc5a40265fd8dcb730/pdf/en.norm.pdf). The Norminette enforces a consistent coding style across all C projects at 42, including:
 
 - 25 lines maximum per function
 - 80 characters maximum per line

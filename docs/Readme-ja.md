@@ -55,7 +55,7 @@ Minishellは、Bashの基本機能を模倣したCで書かれたミニシェル
 - tcsetattr, tcgetattr, tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
 
 ## Norminetteへの準拠
-このプロジェクトは、42 School Norminetteルール（v3.3.55）に厳密に準拠しています。Norminetteは、42のすべてのCプロジェクトで一貫したコーディングスタイルを強制するものであり、以下のようなルールがあります：
+このプロジェクトは、[42 School Norminetteルール（v4.1）](https://github.com/42school/norminette/blob/b6b5de4acf8a177f36f103bc5a40265fd8dcb730/pdf/ja.norm.pdf)に厳密に準拠しています。Norminetteは、42のすべてのCプロジェクトで一貫したコーディングスタイルを強制するものであり、以下のようなルールがあります：
 
 - 関数あたり最大25行
 - 1行あたり最大80文字
