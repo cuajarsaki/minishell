@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 03:36:43 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/12 10:17:17 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/12 10:55:05 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@
 # define PINK "\x1B[35m"
 # define LIGHT_PINK "\x1B[38;5;219m"
 # define RESET "\x1B[0m"
+# define MELON_COLOR "\033[38;5;121m" 
 
 extern volatile sig_atomic_t	g_signal_received;
 

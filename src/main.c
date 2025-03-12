@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 23:57:54 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/09 03:54:19 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/12 10:56:04 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,20 @@ static int	update_exit_status_from_signal(int *exit_stauts)
 	else if (g_signal_received == NOTSIG)
 		return (0);
 	return (*exit_stauts);
+}
+
+static void	print_large_minishell(void)
+{
+	const char	*header;
+
+	header = MELON_COLOR
+		" ███╗   ███╗██╗███╗   ██╗██╗███████╗██╗  ██╗███████╗██╗     ██╗     \n"
+		" ████╗ ████║██║████╗  ██║██║██╔════╝██║  ██║██╔════╝██║     ██║     \n"
+		" ██╔████╔██║██║██╔██╗ ██║██║███████╗███████║█████╗  ██║     ██║     \n"
+		" ██║╚██╔╝██║██║██║ ██╗██║██║╚════██║██╔══██║██╔══╝  ██║     ██║     \n"
+		" ██║ ╚═╝ ██║██║██║  ████║██║███████║██║  ██║███████╗███████╗███████╗\n\n"
+		RESET;
+	write(STDOUT_FILENO, header, strlen(header));
 }
 
 void	run_shell(t_env *env_list, char **envp)
@@ -58,6 +72,7 @@ int	main(int argc, char **argv, char **envp)
 	(void)argv;
 	env_list = init_env_list(envp);
 	setup_terminal(&orig_termios);
+	print_large_minishell();
 	run_shell(env_list, envp);
 	free_env_list(&env_list);
 	reset_terminal_settings(&orig_termios);
