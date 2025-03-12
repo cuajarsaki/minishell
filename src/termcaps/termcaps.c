@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 00:08:24 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/06 21:50:06 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/12 10:14:51 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	handle_input(char *buf, size_t *len, size_t buffsize)
 	char	*str;
 
 	g_signal_received = NOTSIG;
-	str = readline("minishell ❤ ");
+	str = readline(LIGHT_PINK "minishell 💚 "RESET);
 	if (str == NULL)
 	{
 		write(STDOUT_FILENO, "exit\n", 5);

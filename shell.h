@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 03:36:43 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/09 03:58:39 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/12 10:17:17 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,10 @@
 # define RSTSIG 0
 # define SHELL_BUF_SIZE 8192
 # define SIGINT_ 42
+
+# define PINK "\x1B[35m"
+# define LIGHT_PINK "\x1B[38;5;219m"
+# define RESET "\x1B[0m"
 
 extern volatile sig_atomic_t	g_signal_received;
 

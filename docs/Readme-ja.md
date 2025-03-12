@@ -32,6 +32,28 @@ Minishellは、Bashの基本機能を模倣したCで書かれたミニシェル
 | `env`     | すべての環境変数を一覧表示します。                                     |
 | `exit`    | シェルを終了します。                                                 |
 
+## プロジェクト要件
+
+### グローバル変数
+- このプロジェクトでは<u>**1つのグローバル変数**</u>のみ許可されています
+- このグローバル変数はシグナル処理に使用されます
+
+### 使用可能な外部関数
+以下の外部関数のみ使用が許可されています：
+- readline, rl_clear_history, rl_on_new_line, rl_replace_line, rl_redisplay, add_history
+- printf, malloc, free, write, access, open, read, close
+- fork, wait, waitpid, wait3, wait4, signal, sigaction, kill
+- exit
+- getcwd, chdir
+- stat, lstat, fstat
+- unlink, execve
+- dup, dup2, pipe
+- opendir, readdir, closedir
+- strerror, perror
+- isatty, ttyname, ttyslot, ioctl
+- getenv
+- tcsetattr, tcgetattr, tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
+
 ## Norminetteへの準拠
 このプロジェクトは、42 School Norminetteルール（v3.3.55）に厳密に準拠しています。Norminetteは、42のすべてのCプロジェクトで一貫したコーディングスタイルを強制するものであり、以下のようなルールがあります：
 

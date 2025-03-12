@@ -33,6 +33,28 @@ We paid special attention to accurately replicating bash's behavior regarding ex
 | `env`     | Lists all environment variables.                                                         |
 | `exit`    | Exits the shell.        
 
+## Project Requirements
+
+### Global Variables
+- Only **one global variable** is allowed in this project
+- This global variable is used for signal handling
+
+### Allowed External Functions
+Only the following external functions are allowed:
+- readline, rl_clear_history, rl_on_new_line, rl_replace_line, rl_redisplay, add_history
+- printf, malloc, free, write, access, open, read, close
+- fork, wait, waitpid, wait3, wait4, signal, sigaction, kill
+- exit
+- getcwd, chdir
+- stat, lstat, fstat
+- unlink, execve
+- dup, dup2, pipe
+- opendir, readdir, closedir
+- strerror, perror
+- isatty, ttyname, ttyslot, ioctl
+- getenv
+- tcsetattr, tcgetattr, tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
+
 ## Norminette Compliance
 This project strictly adheres to the 42 School Norminette rules (v3.3.55). The Norminette enforces a consistent coding style across all C projects at 42, including:
 

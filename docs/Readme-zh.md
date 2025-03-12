@@ -33,6 +33,28 @@ Minishell 是一個用 C 語言編寫的迷你Shell專題，模仿 Bash 的基�
 | `env`     | 列出所有環境變數。                                            |
 | `exit`    | 退出minishell。                                                    |
 
+## 專題要求
+
+### 全域變數
+- 此專案僅允許使用<u>**一個全域變數**</u>
+- 此全域變數用於rc1信號處理
+
+### 允許使用的外部函數
+僅允許使用以下外部函數：
+- readline, rl_clear_history, rl_on_new_line, rl_replace_line, rl_redisplay, add_history
+- printf, malloc, free, write, access, open, read, close
+- fork, wait, waitpid, wait3, wait4, signal, sigaction, kill
+- exit
+- getcwd, chdir
+- stat, lstat, fstat
+- unlink, execve
+- dup, dup2, pipe
+- opendir, readdir, closedir
+- strerror, perror
+- isatty, ttyname, ttyslot, ioctl
+- getenv
+- tcsetattr, tcgetattr, tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
+
 ## Norminette 規範遵循
 本專題嚴格遵循 42 School Norminette 規則（v3.3.55）。
 Norminette 在所有 42 的 C 專題中強制執行一致的編碼風格，包括：

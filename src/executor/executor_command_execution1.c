@@ -6,7 +6,7 @@
 /*   By: pchung <pchung@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/09 00:39:13 by pchung            #+#    #+#             */
-/*   Updated: 2025/03/09 03:55:08 by pchung           ###   ########.fr       */
+/*   Updated: 2025/03/12 10:06:23 by pchung           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,6 @@
 void	print_error_and_exit(const char *cmd_path, int exit_status,
 		t_exec_ctx *ctx, char **tokens)
 {
-	write(STDERR_FILENO, "minishell ❤", 13);
-	write(STDERR_FILENO, ": ", 2);
 	write(STDERR_FILENO, cmd_path, ft_strlen(cmd_path));
 	if (exit_status == 126)
 		write(STDERR_FILENO, ": Permission denied", 20);
